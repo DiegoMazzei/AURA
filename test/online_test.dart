@@ -64,6 +64,8 @@ void main() {
     expect(other.onlineFavorites, contains(song.id));
     expect(other.playlists.single.trackIds, ['yt:${song.id}']);
     expect(other.tracks.length, 3);
+    expect(other.current.id, 'yt:${song.id}');
+    expect(other.onlineCurrent, isNull);
     await other.playTrack(other.current);
     expect(other.onlineCurrent, isNull);
     other.dispose();

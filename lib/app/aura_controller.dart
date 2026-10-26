@@ -193,6 +193,13 @@ class AuraController extends ChangeNotifier {
         _restoredPosition = Duration(
           milliseconds: (data['position'] as num?)?.toInt() ?? 0,
         );
+        final previousVideo = onlineRecords[onlineCurrentId];
+        if (previousVideo != null) {
+          currentId = nativeTrackFor(previousVideo).id;
+          queue = [currentId, ...queue.where((id) => id != currentId)];
+          onlineCurrentId = null;
+          _restoredPosition = Duration.zero;
+        }
       }
     } catch (_) {
       error = 'La libreria salvata non è leggibile. I file originali sono conservati.';
