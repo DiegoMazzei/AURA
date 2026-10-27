@@ -41,3 +41,15 @@ Riferimenti esaminati: Namida e Orbit-Music. Nessun codice o asset copiato da qu
 - Prima build Debug avviata su “iPhone di prova”; log AURA_MEDIA_SESSION_READY confermato. L’utente ha poi aperto l’icona dalla Home e ricevuto la limitazione JIT di Flutter Debug. Preparato schema condiviso “AURA iPhone”, Run in Release senza debugger, lasciando Runner in Debug. In corso sostituzione dell’app sullo stesso bundle (nessuna disinstallazione o cancellazione dati).
 
 - Build Release completata e avviata su “iPhone di prova” con schema AURA iPhone, confermato da Xcode Running e AURA_MEDIA_SESSION_READY. Prodotto Release-iphoneos presente con il nuovo bundle e framework AOT; richiesta all’utente la prova di chiusura/riapertura dalla Home e ascolto reale in background/schermo bloccato. In attesa dell’esito, requisito audio non dichiarato completato.
+
+## Revisione 0.2 · 27 ottobre 2026
+
+- L’utente ha confermato funzionamento dell’ascolto su iPhone, incluse navigazione e schermata bloccata, nella release precedente.
+- Ricerca principale unificata, senza selettore YouTube/locali; sorgenti dichiarate nelle informazioni.
+- MusicBrainz con riserva di metadati Apple; raggruppamento per identità degli artisti e release group, ospiti inclusi, associazione manuale e protezione delle correzioni personali.
+- LRCLIB per testi sincronizzati e semplici, importazione LRC/testo, Genius esterno. Prova online riuscita: 15 registrazioni con release group e 20 candidati sincronizzati per il brano di controllo.
+- Interfaccia semplificata, vero materiale UIKit da iOS 26, SF Symbols per testi/karaoke/coda. Risolto un difetto di compositing rendendo opaca la route del player.
+- Rimossi demo dalla produzione e gestito avvio vuoto senza miniplayer. Migrazione conserva canzoni e preferiti personali.
+- Copertine online preservate dopo associazione catalogo; verificata visibilità nel simulatore iPhone 18 Pro iOS 27 insieme a dock, navigazione e icone del player.
+- 44 test automatici superati; analisi senza segnalazioni. Golden aggiornati e ispezionati; i golden usano fixture e non validano il materiale UIKit.
+- Schema AURA iPhone Release eseguito su iPhone di prova; Xcode riporta applicazione in esecuzione. La verifica acustica della nuova release resta una prova d’uso sul telefono, distinta dai test automatici.

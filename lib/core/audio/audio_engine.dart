@@ -20,6 +20,7 @@ abstract class AudioEngine extends ChangeNotifier {
     remoteControlsConfigured: false,
   );
   Track? get resolvedMetadata => null;
+  void updateMetadata(Track track) {}
   Duration get position;
   Duration get duration;
   bool get playing;
@@ -128,13 +129,22 @@ class LocalAudioEngine extends AudioEngine {
           .setUrl(resolved.uri.toString())
           .timeout(const Duration(seconds: 25));
       _resolvedMetadata = track.copyWith(
-        title: !track.metadataEdited && resolved.title?.isNotEmpty == true
+        title:
+            !track.metadataEdited &&
+                track.catalogIdentity == null &&
+                resolved.title?.isNotEmpty == true
             ? resolved.title
             : null,
-        artist: !track.metadataEdited && resolved.artist?.isNotEmpty == true
+        artist:
+            !track.metadataEdited &&
+                track.catalogIdentity == null &&
+                resolved.artist?.isNotEmpty == true
             ? resolved.artist
             : null,
-        album: !track.metadataEdited && resolved.album?.isNotEmpty == true
+        album:
+            !track.metadataEdited &&
+                track.catalogIdentity == null &&
+                resolved.album?.isNotEmpty == true
             ? resolved.album
             : null,
         durationSeconds: _player.duration?.inSeconds ?? track.durationSeconds,
@@ -157,6 +167,20 @@ class LocalAudioEngine extends AudioEngine {
         ),
       );
     }
+  }
+
+  @override
+  void updateMetadata(Track track) {
+    final previous = mediaHandler?.mediaItem.value;
+    if (previous == null || previous.id != track.id) return;
+    mediaHandler?.mediaItem.add(
+      previous.copyWith(
+        title: track.title,
+        artist: track.artist,
+        album: track.album,
+        artUri: track.artworkUrl == null ? null : Uri.parse(track.artworkUrl!),
+      ),
+    );
   }
 
   @override

@@ -1,18 +1,30 @@
-# Design system
+# Design system · 0.2
 
-Direzione: mockup approvato, interfaccia nativa Flutter, cosmica e trasparente.
+Direzione richiesta: musica e copertine in primo piano, eleganza Apple Music con un accento pervinca discreto. La nuova direzione sostituisce il precedente mockup cosmico: eliminate particelle e sfondi illustrati dall’interfaccia principale.
 
-- Midnight: #0A1120; chiaro: #F2F4FC.
-- Accenti: #87B7FF blu, #AD96FF viola, #EC9BC5 rosa.
-- Vetro: ClipRRect, BackdropFilter, gradiente traslucido, bordo sottile. È un materiale Flutter ispirato al vetro; non viene chiamato API Liquid Glass nativa Apple.
-- Tipografia Roboto inclusa localmente, con licenza Apache nei font. Il layout segue scala del testo del sistema.
-- Raggi: 12–18 copertine compatte; 24–32 pannelli/dock; 36 artwork grande.
-- Mini player: transizione verticale e Hero per la copertina; cambio brano tramite AnimatedSwitcher.
-- Navigazione: dock traslucido persistente, Home, Cerca, Esplora, Libreria.
-- Movimento ridotto: particelle sospese, transizioni principali azzerate o ridotte. In background il ticker si ferma.
-- Particelle: un CustomPainter, 36 punti deterministici, un controller, nessuna lista di widget animati per particella.
-- Chiaro/scuro: sistema per default, override persistente nelle impostazioni.
+## Materiali
 
-Le copertine e le atmosfere sono originali dimostrativi AURA; non sono immagini o album di artisti commerciali. I colori assegnati guidano l’ambiente. Estrazione dei colori da copertine incorporate nei file non ancora implementata.
+Su iOS 26 e successivi, `AuraNativeUI` integra veri `UIGlassEffect` e `UIButton.Configuration.glass()` attraverso platform view Flutter. Il dock e i comandi appartengono allo strato funzionale flottante; le schede dei contenuti rimangono opache. Nessun BackdropFilter o shader viene presentato come Liquid Glass Apple. Su Android e iOS precedenti vengono usati controlli standard opachi.
 
-Anteprime renderizzate dai widget Flutter: `docs/previews/`. Non sono screenshot di un iPhone fisico. I test grafici disattivano il movimento e usano un orario fisso.
+Il player usa una route opaca: la precedente route trasparente causava la scomparsa degli strati Flutter tra le platform view native. La barra rimane sopra contenuti scorrevoli, così il materiale UIKit ha contenuto da rifrangere. Le impostazioni di accessibilità del materiale sono gestite da UIKit.
+
+## Token
+
+| Ruolo | Scuro | Chiaro |
+|---|---|---|
+| Fondo | #0B0C10 | #FAFAFA |
+| Schede | #191A20 | #EEEEEF |
+| Accento | #A8B5FF | #515FA1 |
+| Testo | ColorScheme.onSurface | ColorScheme.onSurface |
+
+Carattere di sistema SF su iOS, Roboto sulle altre piattaforme; gerarchia 35/24/17/15/12, titoli con peso 600–700. Copertine con raggio 9–12, pannelli 14–18, dock 28. Controlli principali almeno 44 punti. Movimento ridotto rispettato nelle transizioni principali; nessuna decorazione animata continua.
+
+## Contenuti
+
+Nessun brano stock nella libreria di produzione. Avvio vuoto con invito alla ricerca, dock senza miniplayer finché manca una selezione. Le tracce demo rimangono solo come fixture esplicite nei test. Le copertine dei brani online mantengono la miniatura originale anche dopo l’associazione al catalogo; i metadati non devono sostituirle con un URL Cover Art Archive non verificato.
+
+## Riferimenti forniti
+
+Applicati i principi del file `apple-design` consegnato dall’utente e della guida Liquid Glass incollata in chat: gerarchia, contenuto, materiali sul solo strato funzionale, leggibilità e controlli riconoscibili. Il file allegato non include la cartella `references/`; non vengono attribuite citazioni a quei file mancanti. I token CSS sono un riferimento visivo per Flutter, non l’implementazione del materiale Apple.
+
+Le anteprime in `docs/previews` sono render Flutter con fixture e controlli portabili. La verifica dei componenti UIKit avviene nel simulatore iOS; non va dedotta dai golden.

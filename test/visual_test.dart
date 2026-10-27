@@ -25,6 +25,7 @@ void main() {
       tester.platformDispatcher.accessibilityFeaturesTestValue =
           const FakeAccessibilityFeatures(disableAnimations: true);
       final c = AuraController(
+        includeDemoTracks: true,
         audio: FakeAudioEngine(),
         store: MemoryLibraryStore(),
         now: () => DateTime(2026, 10, 27, 21),
@@ -57,7 +58,11 @@ void main() {
     tester.platformDispatcher.accessibilityFeaturesTestValue =
         const FakeAccessibilityFeatures(disableAnimations: true);
     final audio = FakeAudioEngine();
-    final c = AuraController(audio: audio, store: MemoryLibraryStore());
+    final c = AuraController(
+      includeDemoTracks: true,
+      audio: audio,
+      store: MemoryLibraryStore(),
+    );
     await c.initialize();
     c.setTheme(ThemeMode.dark);
     await tester.pumpWidget(AuraApp(controller: c));

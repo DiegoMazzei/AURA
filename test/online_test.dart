@@ -40,6 +40,7 @@ void main() {
     final store = MemoryLibraryStore();
     final audio = FakeAudioEngine();
     final c = AuraController(
+      includeDemoTracks: true,
       audio: audio,
       store: store,
       catalog: FakeMusicCatalog(),
@@ -56,6 +57,7 @@ void main() {
     c.addOnlineTrack(playlist, song);
     await c.save();
     final other = AuraController(
+      includeDemoTracks: true,
       audio: FakeAudioEngine(),
       store: store,
       catalog: FakeMusicCatalog(),
@@ -78,6 +80,7 @@ void main() {
       catalog.pending['prima'] = Completer<List<OnlineTrack>>();
       catalog.pending['seconda'] = Completer<List<OnlineTrack>>();
       final c = AuraController(
+        includeDemoTracks: true,
         audio: FakeAudioEngine(),
         store: MemoryLibraryStore(),
         catalog: catalog,
@@ -105,7 +108,7 @@ void main() {
       await tester.pump();
       expect(find.text('Una stella'), findsOneWidget);
       expect(find.text('Risposta vecchia'), findsNothing);
-      await tester.tap(find.byTooltip('Salva video nei preferiti'));
+      await tester.tap(find.byTooltip('Aggiungi ai preferiti'));
       await tester.pump();
       expect(c.onlineFavorites, contains(song.id));
       expect(tester.takeException(), isNull);
@@ -120,6 +123,7 @@ void main() {
   ) async {
     final catalog = FakeMusicCatalog()..fail = true;
     final c = AuraController(
+      includeDemoTracks: true,
       audio: FakeAudioEngine(),
       store: MemoryLibraryStore(),
       catalog: catalog,

@@ -27,3 +27,12 @@
 19. Il bundle iOS generico app.aura.personal non è disponibile per il Personal Team. Scelto org.example.aura per l’installazione privata e aggiornato l’origin del fallback video. Android conserva l’identificativo esistente.
 
 20. Installazione privata riapribile dalla Home: schema condiviso AURA iPhone con LaunchAction Release e launcher senza debugger. Runner resta Debug per sviluppo. Una build Debug avviata da Xcode non costituisce un’installazione autonoma valida per la prova d’uso dell’utente.
+
+21. Versione 0.2: interfaccia centrata su copertine e musica, senza particelle o etichette di sorgente nella ricerca principale. Materiali UIKit reali (`UIGlassEffect`, configurazione pulsanti `.glass()`) da iOS 26; nessuna imitazione dichiarata come nativa. Su altre piattaforme, controlli opachi standard.
+22. MusicBrainz per identità e gruppi; Apple Search come riserva di metadati, senza preview audio o artwork promozionale Apple. Gli omonimi non vengono fusi soltanto in base al nome. Richieste serializzate e identificate, con backoff.
+23. LRCLIB approvato dall’utente per testi sincronizzati; Genius resta consultazione esterna, senza scraping. I testi privi di tempi non abilitano karaoke fittizio.
+24. Copertine online: conservata la miniatura della sorgente dopo l’associazione al catalogo; CAA può non avere una copertina per una release e non deve far sparire quella esistente.
+25. Rimosse le tracce stock dalla produzione. Nessun miniplayer prima di una selezione reale; test espliciti per avvio vuoto e migrazione.
+26. Route del player opaca: evita perdita di compositing Flutter quando si sovrappongono platform view native del dock e del player. SF Symbols mappati esplicitamente per testi, microfono, coda e playlist.
+
+Fonti tecniche: [MusicBrainz](https://musicbrainz.org/doc/MusicBrainz_API), [Apple Search](https://performance-partners.apple.com/search-api), [LRCLIB](https://lrclib.net/docs), [Genius](https://docs.genius.com/), [UIKit UIGlassEffect](https://developer.apple.com/documentation/uikit/uiglasseffect).

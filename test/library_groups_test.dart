@@ -42,6 +42,7 @@ void main() {
   test('YouTube heart is visible in unified favorites and survives restart and removal', () async {
     final store = MemoryLibraryStore();
     final c = AuraController(
+      includeDemoTracks: true,
       audio: FakeAudioEngine(),
       store: store,
       catalog: FakeMusicCatalog(),
@@ -53,6 +54,7 @@ void main() {
     expect(c.favorites, contains('yt:${t.id}'));
     expect(c.libraryTracks.any((t) => t.id == 'yt:M7lc1UVf-VE'), isTrue);
     final restored = AuraController(
+      includeDemoTracks: true,
       audio: FakeAudioEngine(),
       store: store,
       catalog: FakeMusicCatalog(),
@@ -63,6 +65,7 @@ void main() {
     restored.toggleFavorite('yt:${t.id}');
     await restored.save();
     final again = AuraController(
+      includeDemoTracks: true,
       audio: FakeAudioEngine(),
       store: store,
       catalog: FakeMusicCatalog(),
@@ -78,7 +81,11 @@ void main() {
     'manual artist album edits survive restart and regroup the library',
     () async {
       final store = MemoryLibraryStore();
-      final c = AuraController(audio: FakeAudioEngine(), store: store);
+      final c = AuraController(
+        includeDemoTracks: true,
+        audio: FakeAudioEngine(),
+        store: store,
+      );
       await c.initialize();
       c.updateTrackMetadata(
         c.current,
@@ -87,7 +94,11 @@ void main() {
         album: 'New Album',
       );
       await c.save();
-      final other = AuraController(audio: FakeAudioEngine(), store: store);
+      final other = AuraController(
+        includeDemoTracks: true,
+        audio: FakeAudioEngine(),
+        store: store,
+      );
       await other.initialize();
       expect(other.current.artist, 'New Artist');
       expect(other.current.album, 'New Album');

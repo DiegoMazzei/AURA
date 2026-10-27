@@ -15,7 +15,7 @@ String timeLabel(Duration d) =>
 void openPlayer(BuildContext context, AuraController controller) {
   Navigator.of(context).push(
     PageRouteBuilder<void>(
-      opaque: false,
+      opaque: true,
       transitionDuration: MediaQuery.disableAnimationsOf(context)
           ? Duration.zero
           : const Duration(milliseconds: 520),
@@ -155,42 +155,18 @@ class PlayButton extends StatelessWidget {
                 ),
         );
       }
-      return Semantics(
-        button: true,
-        label: playing ? 'Pausa' : 'Riproduci',
-        child: Container(
-          width: 78,
-          height: 78,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            gradient: const LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [Color(0xffb9cbff), Color(0xff5368ad), Color(0xff272c55)],
-            ),
-            border: Border.all(color: Colors.white.withValues(alpha: .7)),
-            boxShadow: [
-              BoxShadow(
-                color: Color(controller.current.color).withValues(alpha: .3),
-                blurRadius: 28,
-              ),
-            ],
-          ),
-          child: IconButton(
-            tooltip: playing ? 'Pausa' : 'Riproduci',
-            onPressed: controller.busy ? null : controller.togglePlayback,
-            icon: controller.busy
-                ? const SizedBox(
-                    width: 25,
-                    height: 25,
-                    child: CircularProgressIndicator(color: Colors.white),
-                  )
-                : Icon(
-                    playing ? Icons.pause_rounded : Icons.play_arrow_rounded,
-                    color: Colors.white,
-                    size: 40,
-                  ),
-          ),
+      return SizedBox(
+        width: 78,
+        height: 78,
+        child: IconButton(
+          tooltip: playing ? 'Pausa' : 'Riproduci',
+          onPressed: controller.busy ? null : controller.togglePlayback,
+          icon: controller.busy
+              ? const CircularProgressIndicator(strokeWidth: 2)
+              : Icon(
+                  playing ? Icons.pause_rounded : Icons.play_arrow_rounded,
+                  size: 58,
+                ),
         ),
       );
     },
@@ -297,8 +273,8 @@ class PlayerScreen extends StatelessWidget {
                                   c.current.isAsset
                                       ? 'ORIGINALS · DEMO'
                                       : c.current.isYoutube
-                                      ? 'YOUTUBE · AUDIO'
-                                      : 'DALLA TUA LIBRERIA',
+                                      ? 'IN RIPRODUZIONE'
+                                      : 'LA TUA MUSICA',
                                   style: TextStyle(
                                     fontSize: 8,
                                     letterSpacing: 1.6,
@@ -361,7 +337,7 @@ class PlayerScreen extends StatelessWidget {
                             color: Color(c.current.color),
                             imageUrl: c.current.artworkUrl,
                             size: math.min(constraints.maxWidth - 56, 390),
-                            radius: 36,
+                            radius: 12,
                           ),
                         ),
                       ),

@@ -1,3 +1,5 @@
+import 'catalog_match_sheet.dart';
+
 import 'package:flutter/material.dart';
 
 import '../../app/aura_controller.dart';
@@ -52,12 +54,19 @@ class TrackTile extends StatelessWidget {
           onSelected: (value) {
             if (value == 'favorite') controller.toggleFavorite(track.id);
             if (value == 'queue') controller.enqueue(track);
+            if (value == 'catalog') {
+              chooseCatalogMatch(context, controller, track);
+            }
             if (value == 'metadata') {
               editTrackMetadata(context, controller, track);
             }
             if (value == 'playlist') addToPlaylist(context, controller, track);
           },
           itemBuilder: (_) => [
+            const PopupMenuItem(
+              value: 'catalog',
+              child: Text('Associa artista e album'),
+            ),
             PopupMenuItem(
               value: 'favorite',
               child: Text(

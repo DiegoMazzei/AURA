@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../core/design/aura_design.dart';
+import '../core/design/native_materials.dart';
 import '../features/home/home_screen.dart';
 import '../features/search/search_screen.dart';
 import '../features/library/library_screen.dart';
@@ -11,7 +12,6 @@ import '../features/player/player_screen.dart';
 import '../features/karaoke/karaoke_screen.dart';
 import '../features/settings/settings_screen.dart';
 import 'aura_controller.dart';
-import '../features/youtube/online_player_screen.dart';
 
 class AuraApp extends StatefulWidget {
   const AuraApp({super.key, required this.controller});
@@ -120,144 +120,185 @@ class _AuraShellState extends State<AuraShell> with WidgetsBindingObserver {
             : SystemUiOverlayStyle.dark,
         child: Scaffold(
           body: AuraBackground(
-            artwork: _tab == 0 || _tab == 2,
-            color: Color(c.current.color),
             child: SafeArea(
               bottom: false,
-              child: Center(
-                child: ConstrainedBox(
-                  constraints: const BoxConstraints(maxWidth: 720),
-                  child: Column(
-                    children: [
-                      if (c.error != null)
-                        MaterialBanner(
-                          content: Text(c.error!),
-                          leading: const Icon(Icons.info_outline),
-                          actions: [
-                            TextButton(
-                              onPressed: c.dismissError,
-                              child: const Text('Chiudi'),
-                            ),
-                          ],
-                        ),
-                      Expanded(
-                        child: !c.ready
-                            ? const Center(child: CircularProgressIndicator())
-                            : AnimatedSwitcher(
-                                duration:
-                                    MediaQuery.disableAnimationsOf(context)
-                                    ? Duration.zero
-                                    : const Duration(milliseconds: 260),
-                                child: KeyedSubtree(
-                                  key: ValueKey(_tab),
-                                  child: pages[_tab],
-                                ),
-                              ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+              child: Stack(
+                children: [
+                  Positioned.fill(
+                    child: Align(
+                      alignment: Alignment.topCenter,
+                      child: ConstrainedBox(
+                        constraints: const BoxConstraints(maxWidth: 720),
                         child: Column(
-                          mainAxisSize: MainAxisSize.min,
                           children: [
-                            c.onlineCurrent == null
-                                ? MiniPlayer(controller: c)
-                                : OnlineMiniPlayer(controller: c),
-                            const SizedBox(height: 9),
-                            AuraGlassSurface(
-                              radius: 32,
-                              child: Padding(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 13,
-                                  vertical: 5,
-                                ),
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceAround,
-                                  children: List.generate(4, (i) {
-                                    const icons = [
-                                      Icons.home_outlined,
-                                      Icons.search_rounded,
-                                      Icons.explore_outlined,
-                                      Icons.library_music_outlined,
-                                    ];
-                                    const labels = [
-                                      'Home',
-                                      'Cerca',
-                                      'Esplora',
-                                      'Libreria',
-                                    ];
-                                    return Expanded(
-                                      child: Semantics(
-                                        selected: i == _tab,
-                                        button: true,
-                                        label: labels[i],
-                                        child: InkWell(
-                                          onTap: () => _select(i),
-                                          borderRadius: BorderRadius.circular(
-                                            24,
-                                          ),
-                                          child: AnimatedContainer(
-                                            duration: const Duration(
-                                              milliseconds: 230,
-                                            ),
-                                            margin: const EdgeInsets.symmetric(
-                                              horizontal: 3,
-                                            ),
-                                            padding: const EdgeInsets.symmetric(
-                                              vertical: 8,
-                                            ),
-                                            decoration: BoxDecoration(
-                                              borderRadius:
-                                                  BorderRadius.circular(24),
-                                              gradient: i == _tab
-                                                  ? RadialGradient(
-                                                      colors: [
-                                                        auraBlue.withValues(
-                                                          alpha: context.isDark
-                                                              ? .7
-                                                              : .45,
-                                                        ),
-                                                        auraBlue.withValues(
-                                                          alpha: .07,
-                                                        ),
-                                                      ],
-                                                    )
-                                                  : null,
-                                            ),
-                                            child: Column(
-                                              children: [
-                                                Icon(icons[i], size: 23),
-                                                const SizedBox(height: 2),
-                                                Text(
-                                                  labels[i],
-                                                  style: const TextStyle(
-                                                    fontSize: 9,
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    );
-                                  }),
-                                ),
+                            if (c.error != null)
+                              MaterialBanner(
+                                content: Text(c.error!),
+                                leading: const Icon(Icons.info_outline),
+                                actions: [
+                                  TextButton(
+                                    onPressed: c.dismissError,
+                                    child: const Text('Chiudi'),
+                                  ),
+                                ],
                               ),
-                            ),
-                            SizedBox(
-                              height: MediaQuery.paddingOf(context).bottom + 8,
+                            Expanded(
+                              child: !c.ready
+                                  ? const Center(
+                                      child: CircularProgressIndicator(),
+                                    )
+                                  : AnimatedSwitcher(
+                                      duration:
+                                          MediaQuery.disableAnimationsOf(
+                                            context,
+                                          )
+                                          ? Duration.zero
+                                          : const Duration(milliseconds: 200),
+                                      child: KeyedSubtree(
+                                        key: ValueKey(_tab),
+                                        child: pages[_tab],
+                                      ),
+                                    ),
                             ),
                           ],
                         ),
                       ),
-                    ],
+                    ),
                   ),
-                ),
+                  Positioned(
+                    left: 20,
+                    right: 20,
+                    bottom: MediaQuery.paddingOf(context).bottom + 8,
+                    child: Center(
+                      child: ConstrainedBox(
+                        constraints: const BoxConstraints(maxWidth: 680),
+                        child: NativeMaterials.available
+                            ? SizedBox(
+                                height: c.hasCurrent ? 132 : 66,
+                                child: ListenableBuilder(
+                                  listenable: c.audio,
+                                  builder: (_, _) => NativeGlassControl(
+                                    kind: 'dock',
+                                    config: {
+                                      'tab': _tab,
+                                      'hasCurrent': c.hasCurrent,
+                                      'title': c.current.title,
+                                      'artist': c.current.artist,
+                                      'playing': c.audio.playing,
+                                      'busy': c.busy,
+                                      'dark': context.isDark,
+                                      'progress': c.duration.inMilliseconds > 0
+                                          ? c.position.inMilliseconds /
+                                                c.duration.inMilliseconds
+                                          : 0.0,
+                                      'artwork': c.current.artworkUrl ?? '',
+                                    },
+                                    onEvent: (method, args) {
+                                      if (method == 'tab' &&
+                                          args is int &&
+                                          args >= 0 &&
+                                          args < 4) {
+                                        _select(args);
+                                      }
+                                      if (method == 'open') {
+                                        openPlayer(context, c);
+                                      }
+                                      if (method == 'play') c.togglePlayback();
+                                      if (method == 'next') c.next();
+                                    },
+                                  ),
+                                ),
+                              )
+                            : _PortableDock(
+                                controller: c,
+                                selected: _tab,
+                                onSelect: _select,
+                              ),
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
           ),
         ),
       );
     },
+  );
+}
+
+/// Standard platform-neutral controls on Android and older iOS; no fake glass.
+class _PortableDock extends StatelessWidget {
+  const _PortableDock({
+    required this.controller,
+    required this.selected,
+    required this.onSelect,
+  });
+  final AuraController controller;
+  final int selected;
+  final ValueChanged<int> onSelect;
+  @override
+  Widget build(BuildContext context) => Column(
+    mainAxisSize: MainAxisSize.min,
+    children: [
+      if (controller.hasCurrent) MiniPlayer(controller: controller),
+      if (controller.hasCurrent) const SizedBox(height: 8),
+      Material(
+        color: context.isDark
+            ? const Color(0xff202127)
+            : const Color(0xffeaeaec),
+        borderRadius: BorderRadius.circular(28),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 5),
+          child: Row(
+            children: List.generate(4, (i) {
+              const labels = ['Home', 'Cerca', 'Esplora', 'Libreria'];
+              const icons = [
+                Icons.home_outlined,
+                Icons.search_rounded,
+                Icons.auto_awesome_outlined,
+                Icons.library_music_outlined,
+              ];
+              return Expanded(
+                child: Semantics(
+                  selected: i == selected,
+                  button: true,
+                  label: labels[i],
+                  child: InkWell(
+                    borderRadius: BorderRadius.circular(24),
+                    onTap: () => onSelect(i),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 7),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            icons[i],
+                            size: 23,
+                            color: i == selected
+                                ? Theme.of(context).colorScheme.primary
+                                : context.muted,
+                          ),
+                          const SizedBox(height: 3),
+                          Text(
+                            labels[i],
+                            style: TextStyle(
+                              fontSize: 10,
+                              color: i == selected
+                                  ? context.ink
+                                  : context.muted,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              );
+            }),
+          ),
+        ),
+      ),
+    ],
   );
 }

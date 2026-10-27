@@ -12,7 +12,7 @@ void main() {
   setUp(() async {
     audio = FakeAudioEngine();
     store = MemoryLibraryStore();
-    c = AuraController(audio: audio, store: store);
+    c = AuraController(includeDemoTracks: true, audio: audio, store: store);
     await c.initialize();
   });
   tearDown(() => c.dispose());
@@ -106,7 +106,11 @@ void main() {
     await c.seek(const Duration(seconds: 12));
     await c.save();
     final otherAudio = FakeAudioEngine();
-    final restored = AuraController(audio: otherAudio, store: store);
+    final restored = AuraController(
+      includeDemoTracks: true,
+      audio: otherAudio,
+      store: store,
+    );
     await restored.initialize();
     expect(restored.track('local')?.title, 'Local');
     expect(restored.favorites, contains('local'));

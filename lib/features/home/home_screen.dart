@@ -4,6 +4,7 @@ import '../../app/aura_controller.dart';
 import '../../core/design/aura_design.dart';
 import '../../shared/models/music.dart';
 import '../library/track_tile.dart';
+import '../player/player_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({
@@ -30,272 +31,301 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final listening = controller.recent
+    final recent = controller.recent
         .map(controller.track)
         .whereType<Track>()
         .toList();
+    final listening = recent.isNotEmpty ? recent : controller.libraryTracks;
+    final featured = listening.firstOrNull;
     return CustomScrollView(
       key: const PageStorageKey('home'),
       slivers: [
         SliverPadding(
-          padding: const EdgeInsets.fromLTRB(24, 12, 24, 12),
+          padding: const EdgeInsets.fromLTRB(24, 16, 24, 184),
           sliver: SliverList.list(
             children: [
               Row(
                 children: [
-                  const Expanded(
-                    child: Text(
-                      'AURA',
-                      style: TextStyle(
-                        fontSize: 36,
-                        fontWeight: FontWeight.w200,
-                        letterSpacing: -1.8,
-                      ),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'AURA',
+                          style: TextStyle(
+                            fontSize: 11,
+                            fontWeight: FontWeight.w600,
+                            letterSpacing: 3,
+                            color: context.muted,
+                          ),
+                        ),
+                        const SizedBox(height: 6),
+                        const Text(
+                          'Ascolta',
+                          style: TextStyle(
+                            fontSize: 35,
+                            fontWeight: FontWeight.w700,
+                            letterSpacing: -1.3,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                   GlassIcon(
                     icon: Icons.search_rounded,
                     label: 'Cerca',
                     onPressed: onSearch,
-                    size: 44,
                   ),
                   const SizedBox(width: 10),
                   GlassIcon(
                     icon: Icons.tune_rounded,
                     label: 'Impostazioni',
                     onPressed: onSettings,
-                    size: 44,
                   ),
                 ],
               ),
-              const SizedBox(height: 42),
-              SizedBox(
-                width: 240,
-                child: Text(
-                  greeting,
-                  style: const TextStyle(
-                    fontSize: 32,
-                    fontWeight: FontWeight.w600,
-                    letterSpacing: -1.1,
-                    height: 1.08,
-                  ),
-                ),
-              ),
-              const SizedBox(height: 14),
+              const SizedBox(height: 26),
               Text(
-                'La musica rende tutto\npiù leggero.',
+                greeting,
+                style: TextStyle(fontSize: 15, color: context.muted),
+              ),
+              const SizedBox(height: 8),
+              const Text(
+                'Il tuo spazio.\nLa tua musica.',
                 style: TextStyle(
-                  fontSize: 15,
-                  height: 1.5,
-                  color: context.muted,
+                  fontSize: 32,
+                  height: 1.13,
+                  fontWeight: FontWeight.w500,
+                  letterSpacing: -1,
                 ),
               ),
-              const SizedBox(height: 28),
-              Semantics(
-                button: true,
-                label: 'Cerca musica, artisti, mood',
-                child: GestureDetector(
-                  onTap: onSearch,
-                  child: AuraGlassSurface(
-                    radius: 28,
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 17,
-                      vertical: 17,
-                    ),
-                    child: Row(
-                      children: [
-                        const Icon(Icons.search_rounded, size: 22),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: Text(
-                            'Cerca musica, artisti, mood…',
-                            style: TextStyle(
-                              color: context.muted,
-                              fontSize: 14,
-                            ),
-                          ),
+              const SizedBox(height: 26),
+              if (featured == null)
+                AuraGlassSurface(
+                  padding: const EdgeInsets.all(24),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Da dove cominciamo?',
+                        style: TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.w600,
                         ),
-                        const Icon(Icons.arrow_forward_ios_rounded, size: 14),
-                      ],
-                    ),
+                      ),
+                      const SizedBox(height: 12),
+                      const Text(
+                        'Cerca un artista o una canzone. La tua musica prende forma da qui.',
+                      ),
+                      const SizedBox(height: 18),
+                      FilledButton.icon(
+                        onPressed: onSearch,
+                        icon: const Icon(Icons.search),
+                        label: const Text('Cerca musica'),
+                      ),
+                    ],
                   ),
                 ),
-              ),
-              const SizedBox(height: 20),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  _Shortcut(
-                    Icons.auto_awesome_rounded,
-                    'Per te',
-                    () => controller.playTrack(demoTracks.first),
-                    active: true,
-                  ),
-                  _Shortcut(Icons.explore_outlined, 'Scopri', onExplore),
-                  _Shortcut(Icons.blur_on_rounded, 'Atmosfere', onExplore),
-                  _Shortcut(Icons.mic_none_rounded, 'Karaoke', onKaraoke),
-                ],
-              ),
-              SectionTitle(
-                listening.isEmpty
-                    ? 'Il tuo primo ascolto'
-                    : 'Continua ad ascoltare',
-              ),
-              SizedBox(
-                height: 96,
-                child: ListView.separated(
-                  scrollDirection: Axis.horizontal,
-                  itemCount: (listening.isEmpty ? controller.tracks : listening)
-                      .length,
-                  separatorBuilder: (_, _) => const SizedBox(width: 12),
-                  itemBuilder: (ctx, i) {
-                    final t = (listening.isEmpty
-                        ? controller.tracks
-                        : listening)[i];
-                    return SizedBox(
-                      width: 217,
-                      child: AuraGlassSurface(
-                        radius: 21,
-                        child: InkWell(
-                          onTap: () => controller.playTrack(t),
-                          borderRadius: BorderRadius.circular(21),
-                          child: Padding(
-                            padding: const EdgeInsets.all(9),
-                            child: Row(
-                              children: [
-                                CosmicCover(
-                                  color: Color(t.color),
-                                  imageUrl: t.artworkUrl,
-                                  size: 72,
-                                  radius: 14,
+              if (featured != null)
+                GestureDetector(
+                  onTap: () {
+                    controller.playTrack(featured, contextTracks: listening);
+                    openPlayer(context, controller);
+                  },
+                  child: Semantics(
+                    button: true,
+                    label: 'Riproduci ${featured.title}',
+                    child: AspectRatio(
+                      aspectRatio: 1.65,
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(16),
+                        child: Stack(
+                          fit: StackFit.expand,
+                          children: [
+                            CosmicCover(
+                              size: 400,
+                              color: Color(featured.color),
+                              imageUrl: featured.artworkUrl,
+                              radius: 0,
+                            ),
+                            const DecoratedBox(
+                              decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                                  begin: Alignment.topCenter,
+                                  end: Alignment.bottomCenter,
+                                  colors: [
+                                    Colors.transparent,
+                                    Color(0xd9000000),
+                                  ],
                                 ),
-                                const SizedBox(width: 11),
-                                Expanded(
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        t.title,
-                                        maxLines: 1,
-                                        overflow: TextOverflow.ellipsis,
-                                        style: const TextStyle(
-                                          fontSize: 15,
-                                          fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                            Positioned(
+                              left: 22,
+                              right: 22,
+                              bottom: 21,
+                              child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.end,
+                                children: [
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          'RIPRENDI DA QUI',
+                                          style: const TextStyle(
+                                            color: Colors.white70,
+                                            fontSize: 10,
+                                            fontWeight: FontWeight.w600,
+                                            letterSpacing: 2,
+                                          ),
                                         ),
-                                      ),
-                                      const SizedBox(height: 5),
-                                      Text(
-                                        t.artist,
-                                        style: TextStyle(
-                                          fontSize: 12,
-                                          color: context.muted,
+                                        const SizedBox(height: 7),
+                                        Text(
+                                          featured.title,
+                                          maxLines: 2,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: const TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 27,
+                                            fontWeight: FontWeight.w700,
+                                            letterSpacing: -.6,
+                                          ),
                                         ),
-                                      ),
-                                    ],
+                                        const SizedBox(height: 4),
+                                        Text(
+                                          featured.artist,
+                                          maxLines: 1,
+                                          style: const TextStyle(
+                                            color: Colors.white70,
+                                            fontSize: 13,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
                                   ),
-                                ),
-                              ],
+                                  const SizedBox(width: 12),
+                                  const Icon(
+                                    Icons.play_circle_fill_rounded,
+                                    size: 42,
+                                    color: Colors.white,
+                                  ),
+                                ],
+                              ),
                             ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              if (listening.isNotEmpty)
+                SectionTitle(
+                  recent.isEmpty ? 'Per cominciare' : 'Ascoltati di recente',
+                  action: 'Tutti',
+                  onAction: onLibrary,
+                ),
+              if (listening.isNotEmpty)
+                SizedBox(
+                  height: 217,
+                  child: ListView.separated(
+                    scrollDirection: Axis.horizontal,
+                    itemCount: listening.length,
+                    itemBuilder: (context, i) {
+                      final t = listening[i];
+                      return SizedBox(
+                        width: 154,
+                        child: InkWell(
+                          borderRadius: BorderRadius.circular(10),
+                          onTap: () {
+                            controller.playTrack(t, contextTracks: listening);
+                            openPlayer(context, controller);
+                          },
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              CosmicCover(
+                                size: 154,
+                                color: Color(t.color),
+                                imageUrl: t.artworkUrl,
+                                radius: 9,
+                              ),
+                              const SizedBox(height: 9),
+                              Text(
+                                t.title,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: const TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                              const SizedBox(height: 3),
+                              Text(
+                                t.artist,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                  color: context.muted,
+                                  fontSize: 12,
+                                ),
+                              ),
+                            ],
                           ),
                         ),
-                      ),
-                    );
-                  },
+                      );
+                    },
+                    separatorBuilder: (_, _) => const SizedBox(width: 14),
+                  ),
                 ),
-              ),
-              const SectionTitle('Scegli la tua atmosfera'),
-              SizedBox(
-                height: 140,
-                child: ListView.separated(
-                  scrollDirection: Axis.horizontal,
-                  itemCount: 4,
-                  separatorBuilder: (_, _) => const SizedBox(width: 10),
-                  itemBuilder: (_, i) {
-                    final names = [
-                      'Notte\nChill',
-                      'Focus\nProfondo',
-                      'Luce\nSoffusa',
-                      'Fuori\nOrbita',
-                    ];
-                    return Semantics(
-                      button: true,
-                      label: names[i].replaceAll('\n', ' '),
-                      child: GestureDetector(
-                        onTap: () => controller.playTrack(
-                          controller.tracks[i % 2],
-                          contextTracks: controller.tracks.take(2).toList(),
-                        ),
-                        child: CosmicCover(
-                          color: [
-                            auraViolet,
-                            auraBlue,
-                            auraPink,
-                            const Color(0xffe8b783),
-                          ][i],
-                          size: 122,
-                          title: names[i],
-                        ),
-                      ),
-                    );
-                  },
+              const SectionTitle('Fatti per restare'),
+              AuraGlassSurface(
+                radius: 14,
+                child: ListTile(
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 18,
+                    vertical: 8,
+                  ),
+                  leading: Icon(
+                    Icons.favorite_rounded,
+                    color: Theme.of(context).colorScheme.primary,
+                    size: 29,
+                  ),
+                  title: const Text(
+                    'Brani del cuore',
+                    style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
+                  ),
+                  subtitle: Text('${controller.favorites.length} preferiti'),
+                  trailing: const Icon(Icons.chevron_right),
+                  onTap: onLibrary,
                 ),
               ),
               SectionTitle(
-                'Il tuo universo',
+                'La tua raccolta',
                 action: 'Apri',
                 onAction: onLibrary,
               ),
-              AuraGlassSurface(
-                padding: const EdgeInsets.all(18),
-                child: Row(
-                  children: [
-                    const Icon(Icons.library_music_outlined, size: 28),
-                    const SizedBox(width: 14),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text(
-                            'Porta qui la tua musica',
-                            style: TextStyle(fontWeight: FontWeight.w600),
-                          ),
-                          const SizedBox(height: 5),
-                          Text(
-                            'Importa i tuoi file. Ascoltali offline.',
-                            style: TextStyle(
-                              color: context.muted,
-                              fontSize: 12,
-                            ),
-                          ),
-                        ],
+              ...controller.libraryTracks
+                  .take(4)
+                  .map(
+                    (t) => TrackTile(
+                      track: t,
+                      controller: controller,
+                      onTap: () => controller.playTrack(
+                        t,
+                        contextTracks: controller.libraryTracks,
                       ),
                     ),
-                    IconButton(
-                      tooltip: 'Importa audio',
-                      onPressed: controller.importing
-                          ? null
-                          : controller.importAudio,
-                      icon: const Icon(Icons.add_rounded),
-                    ),
-                  ],
-                ),
-              ),
-              const SectionTitle('AURA Originals'),
-              ...controller.tracks
-                  .take(2)
-                  .map((t) => TrackTile(track: t, controller: controller)),
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 18),
-                child: Text(
-                  'YOUR MUSIC. YOUR UNIVERSE.',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 10,
-                    letterSpacing: 2.6,
-                    color: context.muted,
                   ),
+              const SizedBox(height: 20),
+              Text(
+                'YOUR MUSIC. YOUR UNIVERSE.',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: context.muted.withValues(alpha: .4),
+                  fontSize: 9,
+                  letterSpacing: 2,
                 ),
               ),
             ],
@@ -304,32 +334,4 @@ class HomeScreen extends StatelessWidget {
       ],
     );
   }
-}
-
-class _Shortcut extends StatelessWidget {
-  const _Shortcut(this.icon, this.label, this.onTap, {this.active = false});
-  final IconData icon;
-  final String label;
-  final VoidCallback onTap;
-  final bool active;
-  @override
-  Widget build(BuildContext context) => Expanded(
-    child: Column(
-      children: [
-        GlassIcon(
-          icon: icon,
-          label: label,
-          onPressed: onTap,
-          active: active,
-          size: 50,
-        ),
-        const SizedBox(height: 8),
-        Text(
-          label,
-          textAlign: TextAlign.center,
-          style: const TextStyle(fontSize: 11),
-        ),
-      ],
-    ),
-  );
 }

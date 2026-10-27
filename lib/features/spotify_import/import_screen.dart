@@ -20,7 +20,7 @@ class _ImportScreenState extends State<ImportScreen> {
       context,
       MaterialPageRoute<void>(
         builder: (ctx) => Scaffold(
-          appBar: AppBar(title: const Text('Trova su YouTube')),
+          appBar: AppBar(title: const Text('Trova il brano')),
           body: AuraBackground(
             child: OnlineSearchScreen(
               controller: widget.controller,
@@ -91,7 +91,7 @@ class _ImportScreenState extends State<ImportScreen> {
                 ),
               const SizedBox(height: 16),
               Text(
-                'Collegamento diretto Spotify non ancora configurato. Cerca ogni brano su YouTube dentro AURA e scegli il risultato corretto. Nessuna corrispondenza viene scelta automaticamente.',
+                'Collegamento diretto Spotify non ancora configurato. Cerca ogni brano in AURA e scegli il risultato corretto. Nessuna corrispondenza viene scelta automaticamente.',
                 style: TextStyle(
                   color: context.muted,
                   fontSize: 12,
@@ -131,7 +131,7 @@ class _ImportScreenState extends State<ImportScreen> {
                         contentPadding: EdgeInsets.zero,
                         leading: const Icon(Icons.music_note_outlined),
                         title: Text(s.title),
-                        subtitle: Text('${s.artist}\nCerca su YouTube in AURA'),
+                        subtitle: Text('${s.artist}\nCerca in AURA'),
                         isThreeLine: true,
                         trailing: const Icon(
                           Icons.open_in_new_rounded,

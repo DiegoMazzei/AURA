@@ -1,3 +1,5 @@
+import '../../core/catalog/catalog_identity.dart';
+
 class LyricLine {
   const LyricLine(this.at, this.text);
   final Duration at;
@@ -13,6 +15,10 @@ class Track {
     this.isAsset = false,
     this.isYoutube = false,
     this.album = '',
+    this.catalogIdentity,
+    this.plainLyrics = '',
+    this.lyricsSource = '',
+    this.lyricsSourceUrl = '',
     this.metadataEdited = false,
     this.color = 0xff829bff,
     this.durationSeconds = 0,
@@ -21,8 +27,11 @@ class Track {
   final String id, title, artist, source;
   final bool isAsset, isYoutube, metadataEdited;
   final String album;
-  String? get artworkUrl =>
-      isYoutube ? 'https://i.ytimg.com/vi/$source/hqdefault.jpg' : null;
+  final CatalogIdentity? catalogIdentity;
+  final String plainLyrics, lyricsSource, lyricsSourceUrl;
+  String? get artworkUrl => isYoutube
+      ? 'https://i.ytimg.com/vi/$source/hqdefault.jpg'
+      : catalogIdentity?.artworkUrl;
   final int color, durationSeconds;
   final List<LyricLine> lyrics;
   Map<String, dynamic> toJson() => {
@@ -32,6 +41,10 @@ class Track {
     'source': source,
     'isYoutube': isYoutube,
     'album': album,
+    'catalogIdentity': catalogIdentity?.toJson(),
+    'plainLyrics': plainLyrics,
+    'lyricsSource': lyricsSource,
+    'lyricsSourceUrl': lyricsSourceUrl,
     'metadataEdited': metadataEdited,
     'color': color,
     'durationSeconds': durationSeconds,
@@ -46,6 +59,14 @@ class Track {
     source: j['source'] as String,
     isYoutube: j['isYoutube'] == true,
     album: j['album'] as String? ?? '',
+    catalogIdentity: j['catalogIdentity'] is Map
+        ? CatalogIdentity.fromJson(
+            Map<String, dynamic>.from(j['catalogIdentity']),
+          )
+        : null,
+    plainLyrics: j['plainLyrics'] as String? ?? '',
+    lyricsSource: j['lyricsSource'] as String? ?? '',
+    lyricsSourceUrl: j['lyricsSourceUrl'] as String? ?? '',
     metadataEdited: j['metadataEdited'] == true,
     color: (j['color'] as num?)?.toInt() ?? 0xff829bff,
     durationSeconds: (j['durationSeconds'] as num?)?.toInt() ?? 0,
@@ -66,6 +87,11 @@ class Track {
     int? durationSeconds,
     bool? metadataEdited,
     List<LyricLine>? lyrics,
+    CatalogIdentity? catalogIdentity,
+    bool clearCatalog = false,
+    String? plainLyrics,
+    String? lyricsSource,
+    String? lyricsSourceUrl,
   }) => Track(
     id: id,
     title: title ?? this.title,
@@ -78,6 +104,12 @@ class Track {
     durationSeconds: durationSeconds ?? this.durationSeconds,
     metadataEdited: metadataEdited ?? this.metadataEdited,
     lyrics: lyrics ?? this.lyrics,
+    catalogIdentity: clearCatalog
+        ? null
+        : catalogIdentity ?? this.catalogIdentity,
+    plainLyrics: plainLyrics ?? this.plainLyrics,
+    lyricsSource: lyricsSource ?? this.lyricsSource,
+    lyricsSourceUrl: lyricsSourceUrl ?? this.lyricsSourceUrl,
   );
 }
 

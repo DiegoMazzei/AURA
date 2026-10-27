@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../app/aura_controller.dart';
 import '../../core/design/aura_design.dart';
 import '../player/player_screen.dart';
+import 'lyrics_search_sheet.dart';
 
 class KaraokeScreen extends StatefulWidget {
   const KaraokeScreen({super.key, required this.controller});
@@ -127,8 +128,8 @@ class _KaraokeScreenState extends State<KaraokeScreen> {
                         ),
                       ),
                       IconButton(
-                        tooltip: 'Importa testi LRC',
-                        onPressed: () => c.importLyrics(t),
+                        tooltip: 'Trova testi',
+                        onPressed: () => findLyrics(context, c, t),
                         icon: const Icon(Icons.note_add_outlined),
                       ),
                     ],
@@ -158,7 +159,9 @@ class _KaraokeScreenState extends State<KaraokeScreen> {
                         ),
                         Expanded(
                           child: TextButton(
-                            onPressed: () => setState(() => _immersive = true),
+                            onPressed: t.lyrics.isEmpty
+                                ? null
+                                : () => setState(() => _immersive = true),
                             child: Text(
                               'Karaoke',
                               style: TextStyle(
@@ -185,18 +188,51 @@ class _KaraokeScreenState extends State<KaraokeScreen> {
                       style: TextStyle(fontSize: 11, color: context.muted),
                     ),
                   ),
+                if (t.lyricsSource.isNotEmpty)
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 4),
+                    child: Text(
+                      '${t.lyricsSource} · ${t.lyrics.isEmpty ? 'Testo' : 'Sincronizzato'}',
+                      style: TextStyle(color: context.muted, fontSize: 11),
+                    ),
+                  ),
                 Expanded(
-                  child: t.lyrics.isEmpty
+                  child: t.lyrics.isEmpty && t.plainLyrics.isEmpty
                       ? Center(
                           child: EmptyMessage(
                             icon: Icons.lyrics_outlined,
                             title: 'Dai parole alla tua musica',
-                            message: 'Importa un file .lrc con i testi sincronizzati di questo brano.',
+                            message: 'Cerca i testi e scegli la versione del tuo brano.',
                             action: FilledButton.icon(
-                              onPressed: () => c.importLyrics(t),
+                              onPressed: () => findLyrics(context, c, t),
                               icon: const Icon(Icons.add),
-                              label: const Text('Importa LRC'),
+                              label: const Text('Trova testi'),
                             ),
+                          ),
+                        )
+                      : t.lyrics.isEmpty
+                      ? SingleChildScrollView(
+                          padding: const EdgeInsets.fromLTRB(30, 24, 30, 60),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Testo non sincronizzato',
+                                style: TextStyle(
+                                  color: context.muted,
+                                  fontSize: 12,
+                                ),
+                              ),
+                              const SizedBox(height: 20),
+                              Text(
+                                t.plainLyrics,
+                                style: TextStyle(
+                                  fontSize: _fontSize,
+                                  height: 1.45,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ],
                           ),
                         )
                       : ListView(
@@ -221,7 +257,6 @@ class _KaraokeScreenState extends State<KaraokeScreen> {
                                         ? Duration.zero
                                         : const Duration(milliseconds: 300),
                                     style: TextStyle(
-                                      fontFamily: 'Roboto',
                                       fontSize:
                                           _fontSize + (_immersive ? 5 : 0),
                                       height: 1.28,
@@ -232,16 +267,6 @@ class _KaraokeScreenState extends State<KaraokeScreen> {
                                           : context.ink.withValues(
                                               alpha: i < _active ? .3 : .48,
                                             ),
-                                      shadows: i == _active && context.isDark
-                                          ? [
-                                              Shadow(
-                                                color: auraPink.withValues(
-                                                  alpha: .8,
-                                                ),
-                                                blurRadius: 24,
-                                              ),
-                                            ]
-                                          : [],
                                     ),
                                     child: Text(t.lyrics[i].text),
                                   ),

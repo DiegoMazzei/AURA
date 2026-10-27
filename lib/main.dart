@@ -5,6 +5,10 @@ import 'package:audio_service/audio_service.dart';
 import 'package:audio_session/audio_session.dart';
 
 import 'app/aura_app.dart';
+import 'core/design/native_materials.dart';
+import 'core/catalog/music_json_client.dart';
+import 'core/catalog/musicbrainz_catalog.dart';
+import 'core/lyrics/lyrics_provider.dart';
 import 'app/aura_controller.dart';
 import 'core/audio/audio_engine.dart';
 import 'core/audio/aura_audio_handler.dart';
@@ -12,6 +16,7 @@ import 'core/storage/library_store.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await NativeMaterials.initialize();
   AuraAudioHandler? handler;
   String? startupError;
   try {
@@ -31,7 +36,10 @@ Future<void> main() async {
     startupError =
         'I controlli audio di sistema non sono disponibili in questa sessione.';
   }
+  final musicData = PublicMusicJsonClient();
   final controller = AuraController(
+    metadataCatalog: ResilientMetadataCatalog(musicData),
+    lyricsProvider: LrclibLyricsProvider(musicData),
     audio: LocalAudioEngine(mediaHandler: handler),
     store: DeviceLibraryStore(),
   );

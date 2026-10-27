@@ -17,21 +17,28 @@ class LibraryScreen extends StatefulWidget {
 
 class _LibraryScreenState extends State<LibraryScreen> {
   String _view = 'Brani';
+  String _query = '';
   @override
   Widget build(BuildContext context) {
     final c = widget.controller;
-    final library = c.libraryTracks;
+    final library = c.libraryTracks
+        .where(
+          (t) => '${t.title} ${t.artist} ${t.album}'.toLowerCase().contains(
+            _query.toLowerCase(),
+          ),
+        )
+        .toList();
     final groups = _view == 'Artisti'
         ? groupByArtist(library)
         : groupByAlbum(library);
     return ListView(
-      padding: const EdgeInsets.fromLTRB(24, 16, 24, 30),
+      padding: const EdgeInsets.fromLTRB(24, 16, 24, 184),
       children: [
         Row(
           children: [
             const Expanded(
               child: Text(
-                'Il tuo universo',
+                'Libreria',
                 style: TextStyle(
                   fontSize: 30,
                   fontWeight: FontWeight.w600,
@@ -56,9 +63,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
           child: ListTile(
             leading: const Icon(Icons.favorite_rounded, color: auraPink),
             title: const Text('Brani del cuore'),
-            subtitle: Text(
-              '${c.favorites.length} preferiti · YouTube e file locali',
-            ),
+            subtitle: Text('${c.favorites.length} preferiti'),
             trailing: const Icon(Icons.chevron_right),
             onTap: () => Navigator.push(
               context,
@@ -79,6 +84,14 @@ class _LibraryScreenState extends State<LibraryScreen> {
             }
           },
         ),
+        TextField(
+          onChanged: (value) => setState(() => _query = value),
+          decoration: const InputDecoration(
+            hintText: 'Cerca nella libreria',
+            prefixIcon: Icon(Icons.search),
+          ),
+        ),
+        const SizedBox(height: 14),
         SingleChildScrollView(
           scrollDirection: Axis.horizontal,
           child: Row(
@@ -96,8 +109,39 @@ class _LibraryScreenState extends State<LibraryScreen> {
                 .toList(),
           ),
         ),
+        if (c.metadataCatalog != null) ...[
+          Align(
+            alignment: Alignment.centerLeft,
+            child: TextButton.icon(
+              onPressed: c.updatingCatalog ? null : c.enrichLibraryMetadata,
+              icon: c.updatingCatalog
+                  ? const SizedBox(
+                      width: 14,
+                      height: 14,
+                      child: CircularProgressIndicator(strokeWidth: 1.5),
+                    )
+                  : const Icon(Icons.auto_awesome_outlined, size: 16),
+              label: Text(
+                c.updatingCatalog
+                    ? '${c.catalogDone} / ${c.catalogTotal}'
+                    : 'Completa artisti e album',
+              ),
+            ),
+          ),
+          if (c.catalogMessage != null)
+            Text(
+              c.catalogMessage!,
+              style: TextStyle(color: context.muted, fontSize: 12),
+            ),
+        ],
         const SizedBox(height: 15),
         if (_view == 'Brani') ...[
+          if (library.isEmpty)
+            const EmptyMessage(
+              icon: Icons.search_off_rounded,
+              title: 'Nessun risultato',
+              message: 'Prova con un altro titolo, artista o album.',
+            ),
           if (c.importing) const LinearProgressIndicator(),
           ...library.map(
             (t) => TrackTile(
@@ -174,7 +218,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
           ),
         ),
         Text(
-          'I file locali funzionano offline. La musica YouTube richiede una connessione. Artista e album si possono correggere dalle opzioni del brano.',
+          'La tua raccolta, ordinata per chi la crea.',
           style: TextStyle(color: context.muted, fontSize: 12, height: 1.5),
         ),
       ],

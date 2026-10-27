@@ -39,16 +39,13 @@ Le licenze richiedono lettura/accettazione dell’utente. Il file atteso dopo un
 
 ## Prima prova dell’app
 
-1. Dalla Home riprodurre Orbita, una base demo originale.
-2. Aprire il mini player e provare pausa, avanzamento e cambio brano.
-3. Toccare il cuore e ritrovare il brano in Libreria → Brani del cuore.
-4. Creare una playlist e scegliere Brani nella sua schermata.
-5. Importare propri file da Libreria → +.
-6. Aprire Testi/Karaoke e importare un file LRC per un brano.
-7. Cerca apre YouTube senza chiavi API. Cerca un brano, scegli il risultato e avvia il player. In alternativa incolla un link https YouTube.
-8. Libreria → Brani del cuore raccoglie tutti i preferiti; Artisti e Album raggruppano i brani. Dal menu di un brano si possono correggere le informazioni.
-9. Libreria → Importa le tue playlist accetta JSON o CSV; esempio in docs/examples.
-10. Impostazioni permette sistema/chiaro/scuro.
+1. Aprire Cerca e cercare un artista o una canzone: non vengono aggiunti brani demo.
+2. Avviare un risultato, aprire il miniplayer e provare pausa, seek e coda.
+3. Aggiungere il brano ai preferiti e ritrovarlo in Libreria → Brani del cuore.
+4. In Libreria usare Artisti e Album; “Completa artisti e album” avvia l’associazione del catalogo. Per scegliere una versione precisa usare il menu del brano → Associa artista e album.
+5. Nel player aprire Testi → Trova testi, scegliere una versione LRCLIB; se sincronizzata, provare Karaoke e tap-to-seek. Sono disponibili anche LRC, testo personale e consultazione Genius.
+6. Navigare in altre schermate, uscire dall’app e bloccare l’iPhone; ascolto e comandi devono continuare.
+7. Importazione di file personali e playlist JSON/CSV resta nelle rispettive sezioni.
 
 ## Verifiche
 

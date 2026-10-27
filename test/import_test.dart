@@ -75,14 +75,22 @@ void main() {
     () async {
       final store = MemoryLibraryStore()
         ..metadata = 'title,artist,playlist\nOrbit,Studio,Demo';
-      final c = AuraController(audio: FakeAudioEngine(), store: store);
+      final c = AuraController(
+        includeDemoTracks: true,
+        audio: FakeAudioEngine(),
+        store: store,
+      );
       await c.initialize();
       expect(await c.importMusicMetadata(), 1);
       expect(await c.importMusicMetadata(), 0);
       expect(c.tracks.length, 2);
       expect(c.importedCollections.single.songs.single.artist, 'Studio');
       await c.save();
-      final restored = AuraController(audio: FakeAudioEngine(), store: store);
+      final restored = AuraController(
+        includeDemoTracks: true,
+        audio: FakeAudioEngine(),
+        store: store,
+      );
       await restored.initialize();
       expect(restored.importedCollections.single.name, 'Demo');
       final uri =

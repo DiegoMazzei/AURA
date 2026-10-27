@@ -6,6 +6,9 @@ import 'package:flutter/foundation.dart' show compute;
 import 'package:flutter/material.dart';
 
 import '../core/audio/audio_engine.dart';
+import '../core/catalog/catalog_identity.dart';
+import '../core/catalog/musicbrainz_catalog.dart';
+import '../core/lyrics/lyrics_provider.dart';
 import '../core/storage/library_store.dart';
 import '../shared/models/music.dart';
 import '../features/spotify_import/metadata_import.dart';
@@ -20,13 +23,28 @@ class AuraController extends ChangeNotifier {
     required this.store,
     DateTime Function()? now,
     MusicCatalog? catalog,
+    this.metadataCatalog,
+    this.lyricsProvider,
+    this.includeDemoTracks = false,
   }) : now = now ?? DateTime.now,
        catalog = catalog ?? YoutubeCatalog() {
+    if (includeDemoTracks) {
+      tracks = List.of(demoTracks);
+      queue = demoTracks.map((t) => t.id).toList();
+      currentId = demoTracks.first.id;
+    }
     audio.addListener(_audioChanged);
     audio.onComplete = _completed;
   }
+  final bool includeDemoTracks;
   final DateTime Function() now;
   final MusicCatalog catalog;
+  final MetadataCatalog? metadataCatalog;
+  final LyricsProvider? lyricsProvider;
+  bool updatingCatalog = false;
+  int catalogDone = 0, catalogTotal = 0;
+  String? catalogMessage;
+  final Map<String, DateTime> _catalogAttempts = {};
   final Map<String, OnlineTrack> onlineRecords = {};
   final Set<String> onlineFavorites = {};
   List<AuraPlaylist> onlinePlaylists = [];
@@ -35,13 +53,13 @@ class AuraController extends ChangeNotifier {
   OnlineTrack? get onlineCurrent => onlineRecords[onlineCurrentId];
   final AudioEngine audio;
   final LibraryStore store;
-  List<Track> tracks = List.of(demoTracks);
+  List<Track> tracks = [];
   List<AuraPlaylist> playlists = [];
   List<ImportedCollection> importedCollections = [];
   final Set<String> favorites = {};
   List<String> recent = [];
-  List<String> queue = demoTracks.map((t) => t.id).toList();
-  String currentId = demoTracks.first.id;
+  List<String> queue = [];
+  String currentId = '';
   ThemeMode themeMode = ThemeMode.system;
   RepeatSetting repeat = RepeatSetting.off;
   bool shuffle = false, ready = false, busy = false, importing = false;
@@ -51,8 +69,13 @@ class AuraController extends ChangeNotifier {
   bool _disposed = false;
   Future<void> _writes = Future.value();
   Timer? _positionSave;
-  Track get current =>
-      tracks.firstWhere((t) => t.id == currentId, orElse: () => tracks.first);
+  Track get current => tracks.firstWhere(
+    (t) => t.id == currentId,
+    orElse: () => tracks.isEmpty
+        ? const Track(id: '', title: '', artist: '', source: '')
+        : tracks.first,
+  );
+  bool get hasCurrent => current.id.isNotEmpty;
   Track? track(String id) {
     for (final t in tracks) {
       if (t.id == id) return t;
@@ -113,7 +136,7 @@ class AuraController extends ChangeNotifier {
             .map((j) => Track.fromJson(Map<String, dynamic>.from(j as Map)))
             .toList();
         tracks = [
-          ...demoTracks.map((t) {
+          ...(includeDemoTracks ? demoTracks : <Track>[]).map((t) {
             final lines = (data['demoLyrics'] as Map?)?[t.id] as List?;
             final base = lines == null
                 ? t
@@ -135,9 +158,16 @@ class AuraController extends ChangeNotifier {
                     artist: info['artist'] as String?,
                     album: info['album'] as String?,
                     metadataEdited: info['metadataEdited'] == true,
+                    plainLyrics: info['plainLyrics'] as String?,
+                    lyricsSource: info['lyricsSource'] as String?,
+                    lyricsSourceUrl: info['lyricsSourceUrl'] as String?,
                   );
           }),
-          ...imported,
+          ...imported.where(
+            (t) =>
+                includeDemoTracks ||
+                (!t.isAsset && !demoTracks.any((demo) => demo.id == t.id)),
+          ),
         ];
         for (final id in onlineFavorites) {
           final t = onlineRecords[id];
@@ -205,6 +235,9 @@ class AuraController extends ChangeNotifier {
       error = 'La libreria salvata non è leggibile. I file originali sono conservati.';
     }
     if (_disposed) return;
+    if (track(currentId) == null && tracks.isNotEmpty) {
+      currentId = tracks.first.id;
+    }
     ready = true;
     _positionSave = Timer.periodic(const Duration(seconds: 5), (_) {
       if (audio.playing) unawaited(save());
@@ -223,13 +256,7 @@ class AuraController extends ChangeNotifier {
     'importedCollections': importedCollections.map((c) => c.toJson()).toList(),
     'tracks': tracks.where((t) => !t.isAsset).map((t) => t.toJson()).toList(),
     'demoMetadata': {
-      for (final t in tracks.where((v) => v.isAsset))
-        t.id: {
-          'title': t.title,
-          'artist': t.artist,
-          'album': t.album,
-          'metadataEdited': t.metadataEdited,
-        },
+      for (final t in tracks.where((v) => v.isAsset)) t.id: t.toJson(),
     },
     'demoLyrics': {
       for (final t in tracks.where((t) => t.isAsset))
@@ -280,7 +307,7 @@ class AuraController extends ChangeNotifier {
   }
 
   Future<void> playTrack(Track t, {List<Track>? contextTracks}) async {
-    if (busy || !ready) return;
+    if (busy || !ready || t.id.isEmpty) return;
     busy = true;
     onlineCurrentId = null;
     error = null;
@@ -314,11 +341,12 @@ class AuraController extends ChangeNotifier {
       await audio.setVolume(volume);
       audio.play();
       recent = [t.id, ...recent.where((id) => id != t.id)].take(30).toList();
+      unawaited(enrichTrackMetadata(track(t.id) ?? t));
       unawaited(save());
     } catch (_) {
       if (!_disposed) {
         error = current.isYoutube
-            ? 'Questa sorgente YouTube non è disponibile. Riprova o scegli un altro risultato.'
+            ? 'Questo brano non è disponibile. Riprova o scegli un altro risultato.'
             : 'Audio non disponibile. Controlla il file e riprova.';
       }
     } finally {
@@ -578,6 +606,109 @@ class AuraController extends ChangeNotifier {
       artist: artist.trim(),
       album: album.trim(),
       metadataEdited: true,
+      clearCatalog: true,
+    );
+    if (currentId == t.id) audio.updateMetadata(tracks[i]);
+    notifyListeners();
+    unawaited(save());
+  }
+
+  Future<bool> enrichTrackMetadata(Track seed, {bool force = false}) async {
+    if (metadataCatalog == null || seed.isAsset || seed.metadataEdited) {
+      return false;
+    }
+    if (!force &&
+        (seed.catalogIdentity != null ||
+            (_catalogAttempts[seed.id] != null &&
+                now().difference(_catalogAttempts[seed.id]!).inHours < 24))) {
+      return false;
+    }
+    _catalogAttempts[seed.id] = now();
+    try {
+      final candidates = await metadataCatalog!.search(seed);
+      final confident = candidates
+          .where((m) => isConfidentCatalogMatch(seed, m))
+          .toList();
+      if (confident.isEmpty) return false;
+      // Distinct equally confident recordings require explicit selection.
+      final first = confident.first;
+      if (confident.any(
+        (m) =>
+            m.score == first.score &&
+            m.identity.recordingId != first.identity.recordingId,
+      )) {
+        return false;
+      }
+      final current = track(seed.id);
+      if (_disposed ||
+          current == null ||
+          current.metadataEdited ||
+          current.title != seed.title ||
+          current.artist != seed.artist) {
+        return false;
+      }
+      applyCatalogIdentity(current, first.identity);
+      return true;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  void applyCatalogIdentity(Track seed, CatalogIdentity identity) {
+    final i = tracks.indexWhere((t) => t.id == seed.id);
+    if (i < 0) return;
+    final t = tracks[i];
+    tracks[i] = t.copyWith(
+      title: identity.title,
+      artist: identity.artists.map((a) => a.name).join(', '),
+      album: identity.album,
+      catalogIdentity: identity,
+      metadataEdited: false,
+    );
+    if (currentId == t.id) audio.updateMetadata(tracks[i]);
+    notifyListeners();
+    unawaited(save());
+  }
+
+  Future<void> enrichLibraryMetadata() async {
+    if (updatingCatalog || metadataCatalog == null) return;
+    updatingCatalog = true;
+    catalogDone = 0;
+    final pending = libraryTracks
+        .where(
+          (t) => !t.isAsset && !t.metadataEdited && t.catalogIdentity == null,
+        )
+        .toList();
+    catalogTotal = pending.length;
+    catalogMessage = null;
+    notifyListeners();
+    var matched = 0;
+    for (final t in pending) {
+      if (_disposed) return;
+      if (await enrichTrackMetadata(t, force: true)) matched++;
+      catalogDone++;
+      notifyListeners();
+    }
+    if (_disposed) return;
+    updatingCatalog = false;
+    catalogMessage = matched > 0 ? '$matched brani aggiornati' : 'Nessuna associazione certa. Puoi scegliere i dati dalle opzioni del brano.';
+    notifyListeners();
+  }
+
+  void attachLyrics(
+    Track seed, {
+    required List<LyricLine> lines,
+    String plain = '',
+    String source = '',
+    String sourceUrl = '',
+  }) {
+    final i = tracks.indexWhere((t) => t.id == seed.id);
+    if (i < 0) return;
+    tracks[i] = tracks[i].copyWith(
+      lyrics: lines,
+      plainLyrics: plain,
+      lyricsSource: source,
+      lyricsSourceUrl: sourceUrl,
     );
     notifyListeners();
     unawaited(save());
@@ -629,7 +760,13 @@ class AuraController extends ChangeNotifier {
         return;
       }
       final i = tracks.indexWhere((v) => v.id == t.id);
-      tracks[i] = t.withLyrics(lines);
+      if (i < 0) return;
+      tracks[i] = tracks[i].copyWith(
+        lyrics: lines,
+        plainLyrics: '',
+        lyricsSource: 'File LRC',
+        lyricsSourceUrl: '',
+      );
       notifyListeners();
       await save();
     } catch (_) {

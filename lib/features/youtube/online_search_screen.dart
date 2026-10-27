@@ -11,12 +11,12 @@ class OnlineSearchScreen extends StatefulWidget {
   const OnlineSearchScreen({
     super.key,
     required this.controller,
-    required this.onLocal,
+    this.onLocal,
     this.initialQuery = '',
     this.showLocalLink = true,
   });
   final AuraController controller;
-  final VoidCallback onLocal;
+  final VoidCallback? onLocal;
   final String initialQuery;
   final bool showLocalLink;
   @override
@@ -51,7 +51,7 @@ class _OnlineSearchScreenState extends State<OnlineSearchScreen> {
       await openOnlinePlayer(
         context,
         widget.controller,
-        OnlineTrack(id: id, title: 'Video YouTube', artist: 'YouTube'),
+        OnlineTrack(id: id, title: 'Nuovo ascolto', artist: 'In caricamento'),
       );
       return;
     }
@@ -71,7 +71,8 @@ class _OnlineSearchScreenState extends State<OnlineSearchScreen> {
       if (!mounted || revision != _revision) return;
       setState(() {
         _loading = false;
-        _error = 'YouTube non risponde al momento. Controlla la connessione e riprova.';
+        _error =
+            'La ricerca non è disponibile. Controlla la connessione e riprova.';
       });
     }
   }
@@ -97,7 +98,7 @@ class _OnlineSearchScreenState extends State<OnlineSearchScreen> {
 
   @override
   Widget build(BuildContext context) => ListView(
-    padding: const EdgeInsets.fromLTRB(24, 16, 24, 32),
+    padding: const EdgeInsets.fromLTRB(24, 16, 24, 184),
     children: [
       const Text(
         'Cerca',
@@ -108,23 +109,6 @@ class _OnlineSearchScreenState extends State<OnlineSearchScreen> {
         ),
       ),
       const SizedBox(height: 15),
-      Wrap(
-        alignment: WrapAlignment.spaceBetween,
-        crossAxisAlignment: WrapCrossAlignment.center,
-        spacing: 12,
-        children: [
-          const Chip(
-            label: Text('YouTube'),
-            avatar: Icon(Icons.play_circle_outline, size: 18),
-          ),
-          if (widget.showLocalLink)
-            TextButton(
-              onPressed: widget.onLocal,
-              child: const Text('Sul dispositivo'),
-            ),
-        ],
-      ),
-      const SizedBox(height: 12),
       AuraGlassSurface(
         radius: 25,
         child: TextField(
@@ -137,7 +121,7 @@ class _OnlineSearchScreenState extends State<OnlineSearchScreen> {
           textInputAction: TextInputAction.search,
           decoration: InputDecoration(
             fillColor: Colors.transparent,
-            hintText: 'Brano, artista o link YouTube…',
+            hintText: 'Artisti, brani e album…',
             prefixIcon: const Icon(Icons.search),
             suffixIcon: IconButton(
               tooltip: 'Cancella',
@@ -152,7 +136,7 @@ class _OnlineSearchScreenState extends State<OnlineSearchScreen> {
       ),
       const SizedBox(height: 15),
       Text(
-        'Cerca, scegli, ascolta. Senza chiavi API.',
+        'Trova il tuo prossimo ascolto.',
         style: TextStyle(color: context.muted, fontSize: 13),
       ),
       if (_loading)
@@ -177,7 +161,7 @@ class _OnlineSearchScreenState extends State<OnlineSearchScreen> {
               ? 'Tutta la musica che cerchi'
               : 'Nessun risultato',
           message: _field.text.trim().isEmpty
-              ? 'Scrivi il nome di un artista o di una canzone. I video si riproducono qui, nel player YouTube.'
+              ? 'Un artista, un brano, una nuova scoperta.'
               : 'Prova con un altro titolo o artista.',
         ),
       ..._results.map(
@@ -187,12 +171,12 @@ class _OnlineSearchScreenState extends State<OnlineSearchScreen> {
             borderRadius: BorderRadius.circular(11),
             child: Image.network(
               t.thumbnail,
-              width: 65,
-              height: 52,
+              width: 56,
+              height: 56,
               fit: BoxFit.cover,
               errorBuilder: (_, _, _) => const SizedBox(
-                width: 65,
-                height: 52,
+                width: 56,
+                height: 56,
                 child: Icon(Icons.music_video_rounded),
               ),
             ),
@@ -213,8 +197,8 @@ class _OnlineSearchScreenState extends State<OnlineSearchScreen> {
               openOnlinePlayer(context, widget.controller, t, tracks: _results),
           trailing: IconButton(
             tooltip: widget.controller.onlineFavorites.contains(t.id)
-                ? 'Rimuovi video dai preferiti'
-                : 'Salva video nei preferiti',
+                ? 'Rimuovi dai preferiti'
+                : 'Aggiungi ai preferiti',
             icon: Icon(
               widget.controller.onlineFavorites.contains(t.id)
                   ? Icons.favorite

@@ -10,7 +10,11 @@ import 'fakes.dart';
 void main() {
   late AuraController c;
   setUp(() async {
-    c = AuraController(audio: FakeAudioEngine(), store: MemoryLibraryStore());
+    c = AuraController(
+      includeDemoTracks: true,
+      audio: FakeAudioEngine(),
+      store: MemoryLibraryStore(),
+    );
     await c.initialize();
     c.setTheme(ThemeMode.dark);
   });
@@ -30,18 +34,19 @@ void main() {
   }
 
   testWidgets(
-    'navigation search filters actual library and handles no result',
+    'library search filters actual collection and handles no result',
     (tester) async {
       await mount(tester);
-      await tester.tap(find.text('Cerca').last);
+      await tester.tap(find.text('Libreria').last);
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 350));
-      await tester.tap(find.text('Sul dispositivo'));
-      await tester.pump();
       await tester.enterText(find.byType(TextField), 'Afterglow');
       await tester.pump(const Duration(milliseconds: 300));
       expect(find.text('Afterglow'), findsWidgets);
-      expect(find.text('Brani · 1'), findsOneWidget);
+      expect(
+        find.text('Orbita'),
+        findsOneWidget,
+      ); // The persistent mini player is retained.
       await tester.enterText(find.byType(TextField), 'nonexistent');
       await tester.pump(const Duration(milliseconds: 300));
       expect(find.text('Nessun risultato'), findsOneWidget);
@@ -86,7 +91,7 @@ void main() {
     await tester.tap(find.text('Crea'));
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 350));
-    await tester.enterText(find.byType(TextField), 'Le mie stelle');
+    await tester.enterText(find.byType(TextField).last, 'Le mie stelle');
     await tester.tap(find.text('Salva'));
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 400));
@@ -104,6 +109,8 @@ void main() {
       await tester.tap(find.text('Libreria'));
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 400));
+      await tester.ensureVisible(find.text('Importa le tue playlist'));
+      await tester.pump();
       await tester.tap(find.text('Importa le tue playlist'));
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 400));

@@ -16,15 +16,28 @@ String _normalized(String value) =>
     value.trim().toLowerCase().replaceAll(RegExp(r'\s+'), ' ');
 List<MusicGroup> groupByArtist(Iterable<Track> tracks) {
   final groups = <String, List<Track>>{};
+  final names = <String, String>{};
   for (final t in tracks) {
-    (groups[_normalized(t.artist)] ??= []).add(t);
+    final credits = t.catalogIdentity?.artists;
+    if (credits != null && credits.isNotEmpty) {
+      for (final a in credits) {
+        final key = 'mb:${a.id}';
+        names[key] = a.name;
+        (groups[key] ??= []).add(t);
+      }
+    } else {
+      final key = 'name:${_normalized(t.artist)}';
+      names[key] = t.artist;
+      (groups[key] ??= []).add(t);
+    }
   }
-  return groups.values
+  return groups.entries
       .map(
-        (list) => MusicGroup(
-          name: list.first.artist,
-          subtitle: '${list.length} brani',
-          tracks: list,
+        (e) => MusicGroup(
+          name: names[e.key]!,
+          subtitle:
+              '${e.value.length} ${e.value.length == 1 ? 'brano' : 'brani'}',
+          tracks: e.value,
         ),
       )
       .toList()
@@ -34,7 +47,10 @@ List<MusicGroup> groupByArtist(Iterable<Track> tracks) {
 List<MusicGroup> groupByAlbum(Iterable<Track> tracks) {
   final groups = <String, List<Track>>{};
   for (final t in tracks) {
-    final key = '${_normalized(t.artist)}::${_normalized(t.album)}';
+    final identity = t.catalogIdentity;
+    final key = identity?.releaseGroupId.isNotEmpty == true
+        ? 'mb:${identity!.releaseGroupId}'
+        : '${_normalized(identity?.albumArtist ?? t.artist)}::${_normalized(t.album)}';
     (groups[key] ??= []).add(t);
   }
   return groups.values
@@ -43,7 +59,9 @@ List<MusicGroup> groupByAlbum(Iterable<Track> tracks) {
           name: list.first.album.trim().isEmpty
               ? 'Album da completare'
               : list.first.album,
-          subtitle: list.first.artist,
+          subtitle: list.first.catalogIdentity?.albumArtist.isNotEmpty == true
+              ? list.first.catalogIdentity!.albumArtist
+              : list.first.artist,
           tracks: list,
           unknownAlbum: list.first.album.trim().isEmpty,
         ),
