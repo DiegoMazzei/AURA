@@ -126,3 +126,11 @@ Riferimenti esaminati: Namida e Orbit-Music. Nessun codice o asset copiato da qu
 - Preparazione SDK Android e JDK Temurin verificati tramite SHA-256; cache di compilazione in work/.
 
 Validazione: 86 test Flutter superati, analisi senza problemi, APK release universale generato; firma APK v2 e integrità ZIP verificate. Android API minima 24. Prova su telefono Android ancora da effettuare dall’utente.
+
+## 0.6.1 — scoperta degli artisti simili
+
+- Home → Artisti → Esplora apre una griglia di ritratti; la selezione di un artista carica i correlati e conserva gli ultimi otto passaggi. Le pagine artista hanno anche «Scopri artisti simili».
+- Suggerimenti da Deezer Related Artists, risoluzione del nome esatto con preferenza per la voce più seguita in caso di omonimia, risultati deduplicati e cache limitata. Nessun seguito o preferito aggiunto automaticamente.
+- Apertura della scheda artista nel catalogo e mini player persistente. Le risposte obsolete non sostituiscono la selezione più recente; errori e assenza di suggerimenti hanno recupero esplicito.
+- Le immagini restituite dal catalogo vengono usate direttamente con cache su disco, evitando una ricerca separata per ogni ritratto.
+- Verifica live Gemitaiz → Ernia → correlati riuscita. Suite preesistente e nuovi test funzionali superati; anteprima mobile controllata in docs/previews/discovery-dark.png. Analisi senza problemi.

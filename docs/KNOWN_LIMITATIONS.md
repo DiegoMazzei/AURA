@@ -25,3 +25,5 @@
 
 - Foto e copertine dipendono dalla copertura e disponibilita' di TheAudioDB/Deezer. Le immagini risolte sono tenute in cache sul dispositivo; in assenza di una copertina viene provata la miniatura originale. Non e' garantita una foto per ogni artista o un'immagine per ogni edizione.
 - Artisti preferiti espliciti: i recenti non aggiungono artisti in Libreria. La Home distingue artisti seguiti da una selezione editoriale di scoperta. Non viene dichiarata una classifica in tempo reale.
+
+- Scoperta artisti: correlazioni fornite da Deezer, non da Spotify e non dedotte da un profilo di ascolto. La disponibilità varia per artista; in assenza di un abbinamento esatto non vengono inventati suggerimenti. Se più artisti condividono esattamente il nome viene preferita la voce con più fan: resta possibile un’omonimia non risolvibile automaticamente. La cronologia dell’esplorazione dura nella schermata e non segue gli artisti automaticamente.

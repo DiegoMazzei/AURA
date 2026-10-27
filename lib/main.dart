@@ -9,6 +9,7 @@ import 'core/design/native_materials.dart';
 import 'core/artwork/music_artwork.dart';
 import 'core/catalog/music_json_client.dart';
 import 'core/catalog/artist_directory.dart';
+import 'core/catalog/artist_recommendations.dart';
 import 'core/catalog/musicbrainz_catalog.dart';
 import 'core/lyrics/lyrics_provider.dart';
 import 'app/aura_controller.dart';
@@ -42,6 +43,7 @@ Future<void> main() async {
   final controller = AuraController(
     metadataCatalog: ResilientMetadataCatalog(musicData),
     artistDirectory: AppleArtistDirectory(musicData),
+    artistRecommendations: DeezerArtistRecommendations(PublicMusicJsonClient()),
     artwork: MusicArtwork(PublicMusicJsonClient()),
     lyricsProvider: LrclibLyricsProvider(musicData),
     audio: LocalAudioEngine(mediaHandler: handler),

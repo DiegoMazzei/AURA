@@ -6,6 +6,8 @@ import '../../core/catalog/artist_directory.dart';
 import '../../core/design/aura_design.dart';
 import '../../shared/models/music.dart';
 import '../catalog/catalog_screen.dart';
+import '../discovery/artist_discovery_screen.dart';
+import '../../core/catalog/artist_recommendations.dart';
 import '../player/player_screen.dart';
 
 const discoveryArtists = [
@@ -243,8 +245,18 @@ class _HomeScreenState extends State<HomeScreen> {
                     c.favoriteArtists.isEmpty
                         ? 'Scopri artisti'
                         : 'Artisti preferiti',
-                    action: 'Cerca',
-                    onAction: widget.onSearch,
+                    action: c.artistRecommendations == null
+                        ? 'Cerca'
+                        : 'Esplora',
+                    onAction: c.artistRecommendations == null
+                        ? widget.onSearch
+                        : () => openArtistDiscovery(
+                            context,
+                            c,
+                            starters: artists
+                                .map((a) => SuggestedArtist(name: a.name))
+                                .toList(),
+                          ),
                   ),
                   SizedBox(
                     height: 134,

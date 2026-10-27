@@ -123,7 +123,7 @@ class SettingsScreen extends StatelessWidget {
             ),
             const SectionTitle('Privacy e accessibilità'),
             Text(
-              'La libreria rimane sul dispositivo. AURA non usa analitica propria. Le ricerche comunicano con YouTube; la catalogazione invia titolo e artista a MusicBrainz o Apple, la ricerca dei testi a LRCLIB. Per le immagini vengono inviati nomi di artisti e album a TheAudioDB o Deezer. Genius si apre solo quando lo scegli. Le animazioni seguono il movimento ridotto del sistema.',
+              'La libreria rimane sul dispositivo. AURA non usa analitica propria. Le ricerche comunicano con YouTube; la catalogazione invia titolo e artista a MusicBrainz o Apple, la ricerca dei testi a LRCLIB. Per le immagini vengono inviati nomi di artisti e album a TheAudioDB o Deezer. La scoperta degli artisti simili invia l’artista scelto a Deezer. Genius si apre solo quando lo scegli. Le animazioni seguono il movimento ridotto del sistema.',
               style: TextStyle(color: context.muted, height: 1.6),
             ),
             const SizedBox(height: 30),
@@ -147,7 +147,7 @@ class SettingsScreen extends StatelessWidget {
             const SizedBox(height: 9),
             Center(
               child: Text(
-                '0.6.0 · Anteprima',
+                '0.6.1 · Anteprima',
                 style: TextStyle(color: context.muted, fontSize: 11),
               ),
             ),

@@ -10,6 +10,7 @@ import '../core/artwork/music_artwork.dart';
 import '../core/catalog/catalog_identity.dart';
 import '../core/catalog/recording_search.dart';
 import '../core/catalog/artist_directory.dart';
+import '../core/catalog/artist_recommendations.dart';
 import '../core/catalog/musicbrainz_catalog.dart';
 import '../core/lyrics/lyrics_provider.dart';
 import '../core/storage/library_store.dart';
@@ -28,6 +29,7 @@ class AuraController extends ChangeNotifier {
     MusicCatalog? catalog,
     this.metadataCatalog,
     this.artistDirectory,
+    this.artistRecommendations,
     this.artwork,
     this.lyricsProvider,
     this.includeDemoTracks = false,
@@ -46,6 +48,7 @@ class AuraController extends ChangeNotifier {
   final MusicCatalog catalog;
   final MetadataCatalog? metadataCatalog;
   final ArtistDirectory? artistDirectory;
+  final ArtistRecommendations? artistRecommendations;
   final ArtworkRepository? artwork;
   final Map<int, DirectoryArtist> favoriteArtists = {};
   final LyricsProvider? lyricsProvider;

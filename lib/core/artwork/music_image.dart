@@ -34,7 +34,7 @@ class _MusicImageState extends State<MusicImage> {
     // A track already has a usable thumbnail. Display its disk-cached image
     // before asking a metadata service to identify another cover.
     final fallback = widget.fallbackUrl;
-    if (!widget.portrait && fallback != null && fallback.isNotEmpty) {
+    if (fallback != null && fallback.isNotEmpty) {
       try {
         return await DefaultCacheManager().getSingleFile(fallback);
       } catch (_) {

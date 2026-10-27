@@ -11,6 +11,8 @@ import '../player/player_screen.dart' show MiniPlayer, openPlayer;
 import '../../core/design/aura_design.dart';
 import '../../core/artwork/music_image.dart';
 import '../youtube/online_search_screen.dart';
+import '../discovery/artist_discovery_screen.dart';
+import '../../core/catalog/artist_recommendations.dart';
 
 Future<void> openTrackArtist(
   BuildContext context,
@@ -362,6 +364,19 @@ class _ArtistScreenState extends State<ArtistScreen> {
                         );
                       },
                     ),
+                    if (widget.controller.artistRecommendations != null)
+                      TextButton.icon(
+                        onPressed: () => openArtistDiscovery(
+                          context,
+                          widget.controller,
+                          seed: SuggestedArtist(name: widget.artist.name),
+                          starters: widget.controller.favoriteArtists.values
+                              .map((a) => SuggestedArtist(name: a.name))
+                              .toList(),
+                        ),
+                        icon: const Icon(Icons.bubble_chart_outlined),
+                        label: const Text('Scopri artisti simili'),
+                      ),
                     const SizedBox(height: 28),
                     _Categories(
                       labels: const ['Brani', 'Album', 'Feat.'],
