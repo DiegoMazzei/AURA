@@ -4,9 +4,10 @@ import 'package:flutter/material.dart';
 
 import '../../app/aura_controller.dart';
 import '../../core/catalog/artist_directory.dart';
-import '../../core/catalog/musicbrainz_catalog.dart';
+import '../../core/catalog/recording_search.dart';
+import '../../core/catalog/musicbrainz_catalog.dart' show normalizeMusicText;
 import '../../shared/models/music.dart';
-import '../player/player_screen.dart' show MiniPlayer;
+import '../player/player_screen.dart' show MiniPlayer, openPlayer;
 import '../../core/design/aura_design.dart';
 import '../../core/artwork/music_image.dart';
 import '../youtube/online_search_screen.dart';
@@ -36,8 +37,9 @@ void openCatalogAlbum(
 Future<void> openCatalogSong(
   BuildContext context,
   AuraController c,
-  DirectorySong song,
-) async {
+  DirectorySong song, {
+  List<DirectorySong>? albumSongs,
+}) async {
   final selected = await showModalBottomSheet<OnlineTrack>(
     context: context,
     isScrollControlled: true,
@@ -45,6 +47,12 @@ Future<void> openCatalogSong(
     builder: (_) => _RecordingPicker(controller: c, song: song),
   );
   if (selected == null || !context.mounted) return;
+  if (albumSongs != null) {
+    final loading = c.playAlbumSong(song, albumSongs, selected: selected);
+    if (context.mounted) openPlayer(context, c);
+    await loading;
+    return;
+  }
   final native = c.nativeTrackFor(selected);
   c.applyCatalogIdentity(native, song.identity);
   await openOnlinePlayer(context, c, selected);
@@ -61,28 +69,19 @@ class _RecordingPicker extends StatefulWidget {
 class _RecordingPickerState extends State<_RecordingPicker> {
   late Future<List<OnlineTrack>> _results = _load();
   Future<List<OnlineTrack>> _load() async {
-    final results = await widget.controller.catalog.search(
-      '${widget.song.artist} ${widget.song.title}',
+    final song = widget.song;
+    final seed = Track(
+      id: 'catalog:${song.id}',
+      title: song.title,
+      artist: song.artist,
+      album: song.album,
+      source: '',
+      isYoutube: true,
+      catalogIdentity: song.identity,
+      durationSeconds: song.seconds,
     );
-    final exact = results
-        .where(
-          (t) => isConfidentCatalogMatch(
-            Track(
-              id: 'yt:${t.id}',
-              title: t.title,
-              artist: t.artist,
-              source: t.id,
-              isYoutube: true,
-              durationSeconds: t.durationSeconds,
-            ),
-            CatalogMatch(
-              widget.song.identity,
-              score: 100,
-              durationSeconds: widget.song.seconds,
-            ),
-          ),
-        )
-        .toList();
+    final results = await findRecordings(widget.controller.catalog, seed);
+    final exact = results.where((t) => matchesRecording(seed, t)).toList();
     // Do not silently pick between distinct equally plausible recordings.
     if (exact.length == 1 && mounted) {
       Navigator.pop(context, exact.single);
@@ -142,7 +141,9 @@ class _RecordingPickerState extends State<_RecordingPicker> {
                 }
                 if (snap.data!.isEmpty) {
                   return const Center(
-                    child: Text('Nessuna registrazione disponibile.'),
+                    child: Text(
+                      'Nessuna registrazione disponibile per questo brano. Il catalogo può mostrare anche uscite non ancora pubblicate.',
+                    ),
                   );
                 }
                 return ListView(
@@ -652,6 +653,14 @@ class _AlbumScreenState extends State<AlbumScreen> {
           '${widget.album.artist} · ${widget.album.year == 0 ? '' : widget.album.year}',
           style: TextStyle(fontSize: 17, color: context.muted),
         ),
+        if (widget.album.releaseDate?.isAfter(widget.controller.now()) == true)
+          Padding(
+            padding: const EdgeInsets.only(top: 16),
+            child: Text(
+              'In uscita il ${_dateLabel(widget.album.releaseDate!)}. La scaletta è in anteprima: alcuni brani potrebbero non essere ancora disponibili.',
+              style: TextStyle(color: context.muted),
+            ),
+          ),
         const SizedBox(height: 30),
         FutureBuilder<List<DirectorySong>>(
           future: _songs,
@@ -678,7 +687,12 @@ class _AlbumScreenState extends State<AlbumScreen> {
                     song: s,
                     numbered: true,
                     controller: widget.controller,
-                    onTap: () => openCatalogSong(context, widget.controller, s),
+                    onTap: () => openCatalogSong(
+                      context,
+                      widget.controller,
+                      s,
+                      albumSongs: snap.data!,
+                    ),
                   ),
                 ),
               ],
@@ -886,4 +900,22 @@ class _CatalogScaffold extends StatelessWidget {
           : null,
     ),
   );
+}
+
+String _dateLabel(DateTime date) {
+  const months = [
+    'gennaio',
+    'febbraio',
+    'marzo',
+    'aprile',
+    'maggio',
+    'giugno',
+    'luglio',
+    'agosto',
+    'settembre',
+    'ottobre',
+    'novembre',
+    'dicembre',
+  ];
+  return '${date.day} ${months[date.month - 1]} ${date.year}';
 }

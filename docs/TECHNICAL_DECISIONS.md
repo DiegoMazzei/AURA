@@ -49,3 +49,9 @@ Fonti tecniche: [MusicBrainz](https://musicbrainz.org/doc/MusicBrainz_API), [App
 ## 2026-10-27 · Materiale nativo e latenza immagini
 
 Sostituiti i controlli custom del dock con UITabBarController e UITabAccessory. Evitate modifiche private alle sottoviste UIKit. Restano i comandi glass di sistema per gli altri pulsanti. Per le immagini: fallback del brano immediato da cache, fonti indipendenti con deduplicazione, immagini Deezer medium per ridurre il download e righe artista lazy. I limiti delle fonti e i controlli sulle corrispondenze rimangono attivi. Il tempo del primo caricamento dipende ancora da rete e fonti; non viene dichiarata una latenza garantita.
+
+## 2026-10-27 · Ordine album e uscite annunciate
+
+Corretto il passaggio scheda album -> player, che prima perdeva il contesto e manteneva la vecchia coda. Un nuovo avvio album disabilita shuffle; l’utente può riattivarlo. Successiva, precedente, fine automatica e controlli remoti condividono la stessa coda. Una registrazione assente conserva la propria posizione e produce un errore esplicito; nessuna sostituzione automatica con interpreti o versioni diversi. Upload alternativi sono provati solo con titolo, crediti e durata compatibili.
+
+La ricerca prova crediti completi, artista principale/titolo e titolo/album. I crediti di un album collaborativo non sono assegnati a ogni traccia. La data completa delle uscite viene conservata e mostrata quando futura. Verifica pubblica del catalogo il 27 ottobre 2026: Seven Tears (6800830209), thélème / Jean-Christophe Groffe / Sting, releaseDate 2026-11-27; la presenza della scaletta non prova la disponibilità delle registrazioni. Le ricerche pubbliche dei primi titoli davano nessun risultato con tutti i crediti, oppure interpretazioni di altri artisti con query più generiche: queste non sono selezionate automaticamente.

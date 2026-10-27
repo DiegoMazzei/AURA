@@ -54,3 +54,7 @@ La directory e' iniettata in produzione e sostituibile nei test. Consultare il c
 ## Caricamento artwork · 0.4.1
 
 Code di richieste separate per host, mantenendo intervalli e Retry-After. TheAudioDB e Deezer vengono consultati senza attendersi a vicenda; prevale il primo risultato con identità corrispondente. Le miniature dei brani già disponibili passano direttamente alla cache su disco senza ricerca preliminare. Discografia e brani nella scheda artista usano SliverList per istanziare solo le righe vicine al viewport. Nessuna modifica al motore audio.
+
+## Coda album · 0.4.2
+
+Avviando una riga nella scheda album, il controller sostituisce la coda con la scaletta ordinata per disco e numero. Le voci usano ID catalogo stabili e possono non avere ancora una sorgente: la risoluzione avviene quando sono riprodotte, senza cercare tutto l’album in anticipo. Solo gli ID dei video sono persistenti, mai URL media temporanei. Coda, posizione selezionata e associazioni risolte sopravvivono al riavvio; gli ascolti non aggiungono la discografia alla libreria.

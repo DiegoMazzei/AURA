@@ -84,3 +84,12 @@ Riferimenti esaminati: Namida e Orbit-Music. Nessun codice o asset copiato da qu
 - Scheda artista con liste lazy: la discografia non istanzia tutte le immagini fuori schermo. Immagini Deezer medium per contenere download. Nessun cambiamento al percorso audio.
 - 55 test superati, compresi fonte lenta e discografia da 200 album. Analisi senza segnalazioni. Tempi di rete non misurati sul dispositivo e non garantiti.
 - Release 0.4.1 build 5 installata e avviata su iPhone di prova; Xcode conferma app in esecuzione. Verificato artefatto AOT senza kernel Debug.
+
+## Revisione 0.4.2 - scaletta album e brani non disponibili
+
+- Avvio da album con coda completa ordinata e risoluzione delle sorgenti al bisogno; non viene più riutilizzata la vecchia coda. Shuffle inizialmente disattivato per rispettare la scaletta.
+- Ricerca con query alternative e controlli su titolo, interpreti e durata; una sorgente non disponibile non viene sostituita con una canzone estranea. Errori mantengono la scaletta e permettono il passaggio manuale alla traccia successiva.
+- Avviso con data di uscita per album annunciati; Seven Tears risulta in uscita il 27 novembre 2026 nel catalogo Apple. Crediti delle tracce distinti dai crediti collaborativi dell’album.
+- 63 test superati, analisi senza segnalazioni. Coperti ordine da traccia intermedia, precedente/successiva automatica, fine album, riavvio, sorgente alternativa, assenza di sorgenti, avvio dalla riga UI, data futura e crediti collaborativi.
+
+- Release 0.4.2 build 6 installata e avviata su iPhone di prova. Xcode riporta app in esecuzione; artefatto AOT senza kernel Debug verificato. I test della coda non sostituiscono una prova acustica sul telefono.

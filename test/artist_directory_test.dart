@@ -174,7 +174,121 @@ class _Client implements MusicJsonClient {
   }
 }
 
+class _CollaborativeClient implements MusicJsonClient {
+  @override
+  Future<Object?> get(Uri uri) async => {
+    'results': [
+      {
+        'kind': 'song',
+        'trackId': 4,
+        'collectionId': 2,
+        'artistId': 1,
+        'artistName': 'thélème & Jean-Christophe Groffe',
+        'trackName': 'Semper Dowland Semper Dolens',
+        'trackNumber': 8,
+        'discNumber': 1,
+        'trackTimeMillis': 180000,
+      },
+    ],
+  };
+}
+
 void main() {
+  test('collaborative album credits do not add Sting to every instrumental recording', () async {
+    final directory = AppleArtistDirectory(_CollaborativeClient());
+    final songs = await directory.songs(
+      const DirectoryAlbum(
+        id: 2,
+        artistId: 1,
+        title: 'Seven Tears',
+        artist: 'thélème, Jean-Christophe Groffe & Sting',
+        year: 2026,
+        trackCount: 17,
+      ),
+    );
+    expect(songs.single.identity.artists.map((a) => a.name), [
+      'thélème',
+      'Jean-Christophe Groffe',
+    ]);
+    expect(
+      songs.single.identity.albumArtist,
+      'thélème, Jean-Christophe Groffe & Sting',
+    );
+  });
+
+  testWidgets(
+    'album row starts the entire album queue rather than a single search result',
+    (tester) async {
+      final catalog = FakeMusicCatalog()
+        ..results = const [
+          OnlineTrack(
+            id: 'abcdefghijk',
+            title: 'Una canzone',
+            artist: 'Gemitaiz',
+            durationSeconds: 180,
+          ),
+        ];
+      final c = AuraController(
+        audio: FakeAudioEngine(),
+        store: MemoryLibraryStore(),
+        artistDirectory: _Directory(),
+        catalog: catalog,
+      );
+      await c.initialize();
+      await tester.pumpWidget(
+        MaterialApp(
+          home: AlbumScreen(controller: c, album: album),
+        ),
+      );
+      await tester.pumpAndSettle();
+      await tester.ensureVisible(find.text(solo.title));
+      await tester.tap(find.text(solo.title));
+      await tester.pumpAndSettle();
+      expect(c.current.id, 'catalog:apple:3');
+      expect(c.queueTracks.map((t) => t.title), [solo.title, feat.title]);
+      expect(c.audio.playing, isTrue);
+      expect(c.libraryTracks, isEmpty);
+      expect(tester.takeException(), isNull);
+      await tester.pumpWidget(const SizedBox());
+      c.dispose();
+    },
+  );
+  testWidgets(
+    'announced albums show release date instead of implying every track is available',
+    (tester) async {
+      final c = AuraController(
+        audio: FakeAudioEngine(),
+        store: MemoryLibraryStore(),
+        artistDirectory: _Directory(),
+        now: () => DateTime(2026, 10, 27),
+      );
+      await c.initialize();
+      await tester.pumpWidget(
+        MaterialApp(
+          home: AlbumScreen(
+            controller: c,
+            album: DirectoryAlbum(
+              id: 2,
+              artistId: 1,
+              title: 'Seven Tears',
+              artist: 'thélème & Sting',
+              year: 2026,
+              trackCount: 17,
+              releaseDate: DateTime.utc(2026, 11, 27),
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      expect(
+        find.textContaining('In uscita il 27 novembre 2026'),
+        findsOneWidget,
+      );
+      await tester.pumpWidget(const SizedBox());
+      c.dispose();
+    },
+  );
+
   testWidgets('large discography only mounts covers near the viewport', (
     tester,
   ) async {

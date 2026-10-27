@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import '../core/audio/audio_engine.dart';
 import '../core/artwork/music_artwork.dart';
 import '../core/catalog/catalog_identity.dart';
+import '../core/catalog/recording_search.dart';
 import '../core/catalog/artist_directory.dart';
 import '../core/catalog/musicbrainz_catalog.dart';
 import '../core/lyrics/lyrics_provider.dart';
@@ -325,6 +326,84 @@ class AuraController extends ChangeNotifier {
     notifyListeners();
   }
 
+  Track _albumTrack(DirectorySong song) {
+    final id = 'catalog:${song.identity.recordingId}';
+    final existing = track(id);
+    if (existing != null) return existing;
+    final value = Track(
+      id: id,
+      title: song.title,
+      artist: song.artist,
+      album: song.album,
+      source: '',
+      isYoutube: true,
+      durationSeconds: song.seconds,
+      catalogIdentity: song.identity,
+    );
+    tracks.add(value);
+    return value;
+  }
+
+  Future<void> playAlbumSong(
+    DirectorySong song,
+    List<DirectorySong> songs, {
+    OnlineTrack? selected,
+  }) async {
+    if (busy || !ready) return;
+    final ordered = List<DirectorySong>.of(songs)
+      ..sort((a, b) {
+        final disc = a.disc.compareTo(b.disc);
+        return disc != 0 ? disc : a.number.compareTo(b.number);
+      });
+    final albumTracks = ordered.map(_albumTrack).toList();
+    var target = _albumTrack(song);
+    if (selected != null) {
+      if (target.source != selected.id) _loadedId = null;
+      target = target.copyWith(source: selected.id);
+      tracks[tracks.indexWhere((t) => t.id == target.id)] = target;
+      onlineRecords[selected.id] = selected;
+    }
+    // An explicit album start follows its numbered tracklist. Shuffle can be
+    // enabled again by the user after starting playback.
+    shuffle = false;
+    await playTrack(target, contextTracks: albumTracks);
+  }
+
+  Future<void> _loadRecording(Track seed) async {
+    if (!seed.id.startsWith('catalog:')) {
+      await audio.load(seed);
+      return;
+    }
+    Object? failure;
+    if (seed.source.isNotEmpty) {
+      try {
+        await audio.load(seed);
+        return;
+      } catch (e) {
+        failure = e;
+      }
+    }
+    await audio.pause();
+    final candidates = await findRecordings(catalog, seed);
+    for (final candidate
+        in candidates
+            .where((t) => t.id != seed.source && matchesRecording(seed, t))
+            .take(3)) {
+      if (_disposed) return;
+      final resolved = seed.copyWith(source: candidate.id);
+      try {
+        await audio.load(resolved);
+        if (_disposed) return;
+        tracks[tracks.indexWhere((t) => t.id == seed.id)] = resolved;
+        onlineRecords[candidate.id] = candidate;
+        return;
+      } catch (e) {
+        failure = e;
+      }
+    }
+    throw failure ?? StateError('Nessuna registrazione compatibile');
+  }
+
   Future<void> playTrack(Track t, {List<Track>? contextTracks}) async {
     if (busy || !ready || t.id.isEmpty) return;
     busy = true;
@@ -340,7 +419,9 @@ class AuraController extends ChangeNotifier {
     try {
       if (audio.error != null) _loadedId = null;
       if (_loadedId != t.id) {
-        await audio.load(t);
+        _loadedId = null;
+        await _loadRecording(t);
+        error = null;
         if (_disposed) return;
         _loadedId = t.id;
         final details = audio.resolvedMetadata;
@@ -364,9 +445,12 @@ class AuraController extends ChangeNotifier {
       unawaited(save());
     } catch (_) {
       if (!_disposed) {
-        error = current.isYoutube
+        error = current.id.startsWith('catalog:')
+            ? 'Registrazione non disponibile per “${current.title}”. Apri il brano nell’album per scegliere un’altra versione. La scaletta è conservata.'
+            : current.isYoutube
             ? 'Questo brano non è disponibile. Riprova o scegli un altro risultato.'
             : 'Audio non disponibile. Controlla il file e riprova.';
+        unawaited(save());
       }
     } finally {
       if (!_disposed) {

@@ -26,9 +26,11 @@ class DirectoryAlbum {
     required this.artist,
     required this.year,
     required this.trackCount,
+    this.releaseDate,
   });
   final int id, artistId, year, trackCount;
   final String title, artist;
+  final DateTime? releaseDate;
 }
 
 class DirectorySong {
@@ -134,6 +136,7 @@ class AppleArtistDirectory implements ArtistDirectory {
           title: j['collectionName'] as String? ?? '',
           artist: name,
           year: DateTime.tryParse(j['releaseDate'] as String? ?? '')?.year ?? 0,
+          releaseDate: DateTime.tryParse(j['releaseDate'] as String? ?? ''),
           trackCount: (j['trackCount'] as num?)?.toInt() ?? 0,
         );
       }
@@ -197,6 +200,7 @@ class AppleArtistDirectory implements ArtistDirectory {
         title: j['collectionName'] as String? ?? '',
         artist: j['artistName'] as String? ?? artist.name,
         year: DateTime.tryParse(j['releaseDate'] as String? ?? '')?.year ?? 0,
+        releaseDate: DateTime.tryParse(j['releaseDate'] as String? ?? ''),
         trackCount: (j['trackCount'] as num?)?.toInt() ?? 0,
       );
     }
@@ -262,7 +266,15 @@ List<CatalogArtist> _credits(Map row, Map<int, String> known) {
       .where((s) => s.isNotEmpty)
       .toList();
   final names = split(raw);
-  final primary = known[aid] ?? names.firstOrNull ?? raw;
+  final knownName = known[aid];
+  // A collaborative album credit is not the performer of every track.
+  final primary =
+      knownName != null &&
+          names.any(
+            (n) => normalizeMusicText(n) == normalizeMusicText(knownName),
+          )
+      ? knownName
+      : names.firstOrNull ?? raw;
   final title = row['trackName'] as String? ?? '';
   final feature = RegExp(
     r'[\[(](?:feat\.?|ft\.?|featuring)\s+([^\])]+)',

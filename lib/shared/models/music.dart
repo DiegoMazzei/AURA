@@ -29,7 +29,9 @@ class Track {
   final String album;
   final CatalogIdentity? catalogIdentity;
   final String plainLyrics, lyricsSource, lyricsSourceUrl;
-  String? get artworkUrl => isYoutube
+  bool get needsRecording =>
+      isYoutube && source.isEmpty && catalogIdentity != null;
+  String? get artworkUrl => isYoutube && source.isNotEmpty
       ? 'https://i.ytimg.com/vi/$source/hqdefault.jpg'
       : catalogIdentity?.artworkUrl;
   final int color, durationSeconds;
@@ -82,6 +84,7 @@ class Track {
   Track withLyrics(List<LyricLine> lines) => copyWith(lyrics: lines);
   Track copyWith({
     String? title,
+    String? source,
     String? artist,
     String? album,
     int? durationSeconds,
@@ -97,7 +100,7 @@ class Track {
     title: title ?? this.title,
     artist: artist ?? this.artist,
     album: album ?? this.album,
-    source: source,
+    source: source ?? this.source,
     isAsset: isAsset,
     isYoutube: isYoutube,
     color: color,
