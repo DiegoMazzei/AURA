@@ -113,6 +113,13 @@ class AuraController extends ChangeNotifier {
   }
 
   ThemeMode themeMode = ThemeMode.system;
+  int accentColor = 0xff9750e8;
+  void setAccentColor(int value) {
+    accentColor = 0xff000000 | (value & 0xffffff);
+    notifyListeners();
+    unawaited(save());
+  }
+
   RepeatSetting repeat = RepeatSetting.off;
   bool shuffle = false, ready = false, busy = false, importing = false;
   double volume = .8;
@@ -280,6 +287,9 @@ class AuraController extends ChangeNotifier {
         if (restoredQueue.isNotEmpty) queue = restoredQueue;
         final id = data['current'] as String?;
         if (id != null && track(id) != null) currentId = id;
+        accentColor =
+            0xff000000 |
+            (((data['accentColor'] as num?)?.toInt() ?? 0xff9750e8) & 0xffffff);
         themeMode = ThemeMode.values.firstWhere(
           (v) => v.name == data['theme'],
           orElse: () => ThemeMode.system,
@@ -352,6 +362,7 @@ class AuraController extends ChangeNotifier {
     'current': currentId,
     'position': position.inMilliseconds,
     'theme': themeMode.name,
+    'accentColor': accentColor,
     'repeat': repeat.name,
     'shuffle': shuffle,
     'volume': volume,

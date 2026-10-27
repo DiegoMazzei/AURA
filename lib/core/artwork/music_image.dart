@@ -92,11 +92,11 @@ class _MusicImageState extends State<MusicImage> {
   );
   Widget _fallback() => widget.portrait
       ? ColoredBox(
-          color: const Color(0xff30233e),
+          color: Theme.of(context).colorScheme.primaryContainer,
           child: Center(
             child: Icon(
               Icons.person_rounded,
-              color: const Color(0xffb99ed0),
+              color: Theme.of(context).colorScheme.onPrimaryContainer,
               size: widget.size * .42,
             ),
           ),
@@ -105,6 +105,6 @@ class _MusicImageState extends State<MusicImage> {
           size: widget.size,
           radius: widget.radius,
           imageUrl: null,
-          color: const Color(0xff9b62ef),
+          color: Theme.of(context).colorScheme.primary,
         );
 }

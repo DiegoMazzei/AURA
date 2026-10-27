@@ -39,7 +39,7 @@ class OnlineLibraryScreen extends StatelessWidget {
       return Scaffold(
         appBar: AppBar(title: const Text('Il tuo YouTube')),
         body: AuraBackground(
-          color: auraViolet,
+          color: Theme.of(context).colorScheme.primary,
           child: ListView(
             padding: const EdgeInsets.all(24),
             children: [

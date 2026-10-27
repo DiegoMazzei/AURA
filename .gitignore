@@ -52,3 +52,6 @@ app.*.map.json
 
 # Generated golden comparison artifacts
 test/failures/
+
+# Android Gradle configuration diagnostics
+/android/build/

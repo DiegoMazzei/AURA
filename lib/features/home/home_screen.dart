@@ -57,10 +57,13 @@ class _HomeScreenState extends State<HomeScreen> {
             Container(
               width: 43,
               height: 43,
-              decoration: const BoxDecoration(
+              decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 gradient: LinearGradient(
-                  colors: [Color(0xffb6a2ce), Color(0xff6b547f)],
+                  colors: [
+                    Theme.of(context).colorScheme.primary,
+                    Theme.of(context).colorScheme.primaryContainer,
+                  ],
                 ),
               ),
               child: Center(
@@ -70,7 +73,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       : c.displayName.characters.first.toUpperCase(),
                   style: TextStyle(
                     fontSize: 25,
-                    color: Colors.white,
+                    color: Theme.of(context).colorScheme.onPrimary,
                     fontWeight: FontWeight.w700,
                   ),
                 ),
@@ -114,10 +117,14 @@ class _HomeScreenState extends State<HomeScreen> {
                   child: ChoiceChip(
                     label: Text(['Tutto', 'Musica', 'Artisti'][i]),
                     selected: _filter == i,
-                    selectedColor: const Color(0xff78618e),
+                    selectedColor: Theme.of(context)
+                        .colorScheme
+                        .primaryContainer,
                     showCheckmark: false,
                     labelStyle: TextStyle(
-                      color: _filter == i ? Colors.white : context.ink,
+                      color: _filter == i
+                          ? Theme.of(context).colorScheme.onPrimaryContainer
+                          : context.ink,
                       fontSize: 15,
                     ),
                     padding: const EdgeInsets.symmetric(

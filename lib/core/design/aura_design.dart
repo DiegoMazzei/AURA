@@ -7,13 +7,15 @@ const auraBlue = Color(0xffb486ff);
 const auraViolet = Color(0xffac72fa);
 const auraPink = Color(0xffe09bb9);
 
-ThemeData auraTheme(Brightness brightness) {
+ThemeData auraTheme(
+  Brightness brightness, {
+  Color accent = const Color(0xff9750e8),
+}) {
   final dark = brightness == Brightness.dark;
   final scheme = ColorScheme.fromSeed(
-    seedColor: const Color(0xff9750e8),
+    seedColor: accent,
     brightness: brightness,
     surface: dark ? const Color(0xff19171f) : const Color(0xfff5f1f0),
-    primary: dark ? auraBlue : const Color(0xff7435bc),
   );
   final family = defaultTargetPlatform == TargetPlatform.iOS
       ? '.SF Pro Text'
@@ -103,7 +105,10 @@ class AuraGlassSurface extends StatelessWidget {
   Widget build(BuildContext context) => Material(
     color:
         tint?.withValues(alpha: .08) ??
-        (context.isDark ? const Color(0xff21162f) : const Color(0xffeee6f8)),
+        Color.alphaBlend(
+          Theme.of(context).colorScheme.primary.withValues(alpha: .06),
+          Theme.of(context).colorScheme.surface,
+        ),
     borderRadius: BorderRadius.circular(radius),
     clipBehavior: Clip.antiAlias,
     child: Padding(padding: padding, child: child),
@@ -189,6 +194,7 @@ class GlassIcon extends StatelessWidget {
               'label': label,
               'active': active,
               'enabled': onPressed != null,
+              'accent': Theme.of(context).colorScheme.primary.toARGB32(),
               'dark': context.isDark,
             },
             onEvent: (method, _) {
@@ -214,11 +220,11 @@ class AuraBackground extends StatelessWidget {
   const AuraBackground({
     super.key,
     required this.child,
-    this.color = auraBlue,
+    this.color,
     this.artwork = false,
   });
   final Widget child;
-  final Color color;
+  final Color? color;
   final bool artwork;
   @override
   Widget build(BuildContext context) => DecoratedBox(
@@ -229,7 +235,9 @@ class AuraBackground extends StatelessWidget {
         radius: 1.8,
         colors: [
           Color.alphaBlend(
-            color.withValues(alpha: context.isDark ? .24 : .17),
+            (color ?? Theme.of(context).colorScheme.primary).withValues(
+              alpha: context.isDark ? .24 : .17,
+            ),
             Theme.of(context).scaffoldBackgroundColor,
           ),
           Theme.of(context).scaffoldBackgroundColor,

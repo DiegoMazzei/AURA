@@ -62,7 +62,10 @@ class _LibraryScreenState extends State<LibraryScreen> {
         const SizedBox(height: 22),
         AuraGlassSurface(
           child: ListTile(
-            leading: const Icon(Icons.favorite_rounded, color: auraPink),
+            leading: Icon(
+              Icons.favorite_rounded,
+              color: Theme.of(context).colorScheme.primary,
+            ),
             title: const Text('Brani del cuore'),
             subtitle: Text('${c.favorites.length} preferiti'),
             trailing: const Icon(Icons.chevron_right),
@@ -317,7 +320,7 @@ class _Favorites extends StatelessWidget {
           ),
         ),
         body: AuraBackground(
-          color: auraPink,
+          color: Theme.of(context).colorScheme.primary,
           child: ListView(
             padding: const EdgeInsets.all(24),
             children: [
@@ -446,13 +449,13 @@ class PlaylistScreen extends StatelessWidget {
           ],
         ),
         body: AuraBackground(
-          color: auraViolet,
+          color: Theme.of(context).colorScheme.primary,
           child: ReorderableListView(
             padding: const EdgeInsets.fromLTRB(24, 10, 24, 40),
             header: Column(
               children: [
                 CosmicCover(
-                  color: auraViolet,
+                  color: Theme.of(context).colorScheme.primary,
                   size: 190,
                   title: playlist.name,
                   radius: 30,

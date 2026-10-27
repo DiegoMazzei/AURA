@@ -10,7 +10,7 @@
 - Metadati: lettura di titolo/artista/album/durata dai file locali; tag musicali YouTube quando disponibili. I dati mancanti si possono modificare manualmente; nessun album inventato. Artwork YouTube remoto; per i file locali resta il fallback AURA, senza estrazione copertine embedded.
 - Persistenza: adatta a una libreria personale contenuta, non a un catalogo di milioni di righe. Import metadati limitato a 20 MiB.
 - Formati: selezione mp3/m4a/aac/wav/flac/ogg; il decoder effettivo dipende dal sistema. Un file non supportato genera un errore recuperabile.
-- Android: SDK non presente al controllo; nessun APK prodotto o avvio Android verificato.
+- Android: APK release universale 0.6.0 compilato e firma verificata. Nessun avvio su telefono Android o emulatore verificato in questa sessione. La firma di sviluppo serve alle prove personali; prima della distribuzione pubblica occorre una chiave di rilascio dedicata.
 - Performance: nessuna misurazione 120 FPS, batteria o profilo su dispositivo reale effettuata.
 - File importati: rimozione definitiva di file dalla libreria e pulizia spazio non ancora esposte. La rimozione da una playlist non cancella audio.
 - Test iOS da terminale: limitazioni di sandbox SwiftPM/CoreSimulator; vedere log locali e avanzamento.

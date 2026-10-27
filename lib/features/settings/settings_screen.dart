@@ -82,6 +82,7 @@ class SettingsScreen extends StatelessWidget {
                 ],
               ),
             ),
+            _AccentPicker(controller: controller),
             const SectionTitle('La tua musica'),
             ListTile(
               contentPadding: EdgeInsets.zero,
@@ -146,7 +147,7 @@ class SettingsScreen extends StatelessWidget {
             const SizedBox(height: 9),
             Center(
               child: Text(
-                '0.5.1 · Sviluppo',
+                '0.6.0 · Anteprima',
                 style: TextStyle(color: context.muted, fontSize: 11),
               ),
             ),
@@ -154,5 +155,197 @@ class SettingsScreen extends StatelessWidget {
         ),
       ),
     ),
+  );
+}
+
+class _AccentPicker extends StatelessWidget {
+  const _AccentPicker({required this.controller});
+  final AuraController controller;
+  static const colors = <String, int>{
+    'Viola': 0xff9750e8,
+    'Blu': 0xff2876dd,
+    'Turchese': 0xff008b8b,
+    'Verde': 0xff29834b,
+    'Rosa': 0xffc63e85,
+    'Corallo': 0xffc64c40,
+    'Ambra': 0xffa86b09,
+    'Grafite': 0xff646474,
+  };
+  @override
+  Widget build(BuildContext context) => Padding(
+    padding: const EdgeInsets.only(top: 24),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          'Il tuo colore',
+          style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+        ),
+        const SizedBox(height: 8),
+        Text(
+          'Cambia accenti, controlli e atmosfera dell’app.',
+          style: TextStyle(color: context.muted),
+        ),
+        const SizedBox(height: 16),
+        Wrap(
+          spacing: 10,
+          runSpacing: 10,
+          children: [
+            for (final entry in colors.entries)
+              Semantics(
+                selected: controller.accentColor == entry.value,
+                child: Tooltip(
+                  message: entry.key,
+                  child: InkWell(
+                    customBorder: const CircleBorder(),
+                    onTap: () => controller.setAccentColor(entry.value),
+                    child: Container(
+                      width: 48,
+                      height: 48,
+                      decoration: BoxDecoration(
+                        color: Color(entry.value),
+                        shape: BoxShape.circle,
+                      ),
+                      child: controller.accentColor == entry.value
+                          ? const Icon(Icons.check_rounded, color: Colors.white)
+                          : null,
+                    ),
+                  ),
+                ),
+              ),
+          ],
+        ),
+        const SizedBox(height: 12),
+        OutlinedButton.icon(
+          icon: const Icon(Icons.palette_outlined),
+          label: const Text('Colore personalizzato'),
+          onPressed: () async {
+            final color = await showDialog<int>(
+              context: context,
+              builder: (_) =>
+                  _CustomColorDialog(initial: controller.accentColor),
+            );
+            if (color != null) controller.setAccentColor(color);
+          },
+        ),
+      ],
+    ),
+  );
+}
+
+class _CustomColorDialog extends StatefulWidget {
+  const _CustomColorDialog({required this.initial});
+  final int initial;
+  @override
+  State<_CustomColorDialog> createState() => _CustomColorDialogState();
+}
+
+class _CustomColorDialogState extends State<_CustomColorDialog> {
+  late final field = TextEditingController(
+    text: (widget.initial & 0xffffff)
+        .toRadixString(16)
+        .padLeft(6, '0')
+        .toUpperCase(),
+  );
+  String? error;
+  @override
+  void dispose() {
+    field.dispose();
+    super.dispose();
+  }
+
+  Color get _color {
+    final value = field.text.trim().replaceFirst(RegExp(r'^#'), '');
+    return Color(
+      RegExp(r'^[a-fA-F0-9]{6}$').hasMatch(value)
+          ? 0xff000000 | int.parse(value, radix: 16)
+          : widget.initial,
+    );
+  }
+
+  Widget _colorSlider(
+    String label,
+    double value,
+    HSLColor Function(double) change,
+  ) => Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      Text(label, style: const TextStyle(fontSize: 12)),
+      Slider(
+        value: value,
+        semanticFormatterCallback: (v) => '$label ${(v * 100).round()}%',
+        onChanged: (v) => setState(() {
+          field.text = (change(v).toColor().toARGB32() & 0xffffff)
+              .toRadixString(16)
+              .padLeft(6, '0')
+              .toUpperCase();
+          error = null;
+        }),
+      ),
+    ],
+  );
+  @override
+  Widget build(BuildContext context) => AlertDialog(
+    title: const Text('Scegli il tuo colore'),
+    content: SingleChildScrollView(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            height: 52,
+            width: double.infinity,
+            decoration: BoxDecoration(
+              color: _color,
+              borderRadius: BorderRadius.circular(16),
+            ),
+          ),
+          const SizedBox(height: 18),
+          _colorSlider(
+            'Tonalità',
+            HSLColor.fromColor(_color).hue / 360,
+            (v) => HSLColor.fromColor(_color).withHue(v * 360),
+          ),
+          _colorSlider(
+            'Saturazione',
+            HSLColor.fromColor(_color).saturation,
+            (v) => HSLColor.fromColor(_color).withSaturation(v),
+          ),
+          _colorSlider(
+            'Luminosità',
+            HSLColor.fromColor(_color).lightness,
+            (v) => HSLColor.fromColor(_color).withLightness(v),
+          ),
+          const SizedBox(height: 12),
+          TextField(
+            controller: field,
+            maxLength: 7,
+            onChanged: (_) => setState(() => error = null),
+            textCapitalization: TextCapitalization.characters,
+            decoration: InputDecoration(
+              labelText: 'Codice HEX',
+              hintText: '#9750E8',
+              errorText: error,
+            ),
+          ),
+        ],
+      ),
+    ),
+    actions: [
+      TextButton(
+        onPressed: () => Navigator.pop(context),
+        child: const Text('Annulla'),
+      ),
+      FilledButton(
+        onPressed: () {
+          final raw = field.text.trim().replaceFirst(RegExp(r'^#'), '');
+          if (!RegExp(r'^[a-fA-F0-9]{6}$').hasMatch(raw)) {
+            setState(() => error = 'Inserisci sei cifre, ad esempio 9750E8');
+            return;
+          }
+          Navigator.pop(context, 0xff000000 | int.parse(raw, radix: 16));
+        },
+        child: const Text('Applica'),
+      ),
+    ],
   );
 }

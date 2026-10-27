@@ -22,16 +22,22 @@ class AuraApp extends StatefulWidget {
 
 class _AuraAppState extends State<AuraApp> {
   late ThemeMode _mode;
+  late int _accent;
   @override
   void initState() {
     super.initState();
     _mode = widget.controller.themeMode;
+    _accent = widget.controller.accentColor;
     widget.controller.addListener(_changed);
   }
 
   void _changed() {
-    if (_mode != widget.controller.themeMode) {
-      setState(() => _mode = widget.controller.themeMode);
+    if (_mode != widget.controller.themeMode ||
+        _accent != widget.controller.accentColor) {
+      setState(() {
+        _mode = widget.controller.themeMode;
+        _accent = widget.controller.accentColor;
+      });
     }
   }
 
@@ -45,8 +51,8 @@ class _AuraAppState extends State<AuraApp> {
   Widget build(BuildContext context) => MaterialApp(
     title: 'AURA',
     debugShowCheckedModeBanner: false,
-    theme: auraTheme(Brightness.light),
-    darkTheme: auraTheme(Brightness.dark),
+    theme: auraTheme(Brightness.light, accent: Color(_accent)),
+    darkTheme: auraTheme(Brightness.dark, accent: Color(_accent)),
     themeMode: _mode,
     home: AuraShell(controller: widget.controller),
   );
@@ -192,6 +198,10 @@ class _AuraShellState extends State<AuraShell> with WidgetsBindingObserver {
                                           ? c.position.inMilliseconds /
                                                 c.duration.inMilliseconds
                                           : 0.0,
+                                      'accent': Theme.of(context)
+                                          .colorScheme
+                                          .primary
+                                          .toARGB32(),
                                       'artwork':
                                           c.artwork?.cachedAlbum(
                                             c

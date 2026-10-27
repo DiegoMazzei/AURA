@@ -73,3 +73,20 @@ Bundle iOS aggiornato per evitare il conflitto di registrazione: `org.example.au
 ### Riapertura dall’icona dell’iPhone
 
 Una build Flutter Debug su iPhone richiede l’avvio da Xcode/Flutter e può mostrare la schermata nera “In iOS 14+, debug mode Flutter apps can only be launched…” se aperta dall’icona. Lo schema condiviso `AURA iPhone` compila ed esegue Release senza debugger, così l’app può essere riaperta dalla Home. Lo schema `Runner` rimane Debug per sviluppo e test. Il certificato personale conserva i propri limiti di validità: Release non elimina la necessità della firma.
+
+## APK di prova 0.6.0
+
+La build `flutter build apk --release` produce un APK universale in
+`build/app/outputs/flutter-apk/app-release.apk`. Questa configurazione usa la
+firma di sviluppo Android per le prove personali; prima della distribuzione
+pubblica serve una chiave di rilascio dedicata.
+
+Sul Mac di sviluppo gli strumenti locali si trovano in `work/android-sdk`,
+`work/android-tools/jdk-17.0.21+9/Contents/Home` e `work/gradle-home`.
+Impostare ANDROID_HOME, JAVA_HOME e GRADLE_USER_HOME a quei percorsi quando
+si ripete la build. Le licenze SDK sono state accettate con autorizzazione
+esplicita dell’utente.
+
+Per installare: trasferire l’APK sul dispositivo Android, aprirlo e consentire
+l’installazione da quell’app quando Android lo richiede. Le preferenze colore
+sono in Impostazioni → Aspetto → Il tuo colore.

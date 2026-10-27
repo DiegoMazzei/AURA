@@ -163,7 +163,8 @@ final class AuraControlView: UIView {
     config = data
     overrideUserInterfaceStyle = data["dark"] as? Bool == true ? .dark : .light
     if kind == "panel" { setNeedsLayout(); return }
-    let accent = UIColor(red: 0.70, green: 0.45, blue: 0.98, alpha: 1)
+    let rgb = (data["accent"] as? NSNumber)?.uint32Value ?? 0xffb486ff
+    let accent = UIColor(red: CGFloat((rgb >> 16) & 255) / 255, green: CGFloat((rgb >> 8) & 255) / 255, blue: CGFloat(rgb & 255) / 255, alpha: 1)
     if kind == "button" {
       var style: UIButton.Configuration
       if #available(iOS 26.0, *) { style = .glass() } else { style = .plain() }
@@ -301,7 +302,8 @@ final class AuraDockController: UITabBarController, UITabBarControllerDelegate {
   func update(_ data: [String: Any]) {
     loadViewIfNeeded()
     overrideUserInterfaceStyle = data["dark"] as? Bool == true ? .dark : .light
-    tabBar.tintColor = UIColor(red: 0.70, green: 0.45, blue: 0.98, alpha: 1)
+    let rgb = (data["accent"] as? NSNumber)?.uint32Value ?? 0xffb486ff
+    tabBar.tintColor = UIColor(red: CGFloat((rgb >> 16) & 255) / 255, green: CGFloat((rgb >> 8) & 255) / 255, blue: CGFloat(rgb & 255) / 255, alpha: 1)
     let selected = data["tab"] as? Int ?? 0
     if (0..<3).contains(selected), selectedIndex != selected { selectedIndex = selected }
     let hasMusic = data["hasCurrent"] as? Bool ?? false

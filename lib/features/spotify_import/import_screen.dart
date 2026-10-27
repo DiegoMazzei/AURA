@@ -42,7 +42,7 @@ class _ImportScreenState extends State<ImportScreen> {
       return Scaffold(
         appBar: AppBar(title: const Text('Porta il tuo universo')),
         body: AuraBackground(
-          color: auraViolet,
+          color: Theme.of(context).colorScheme.primary,
           child: ListView(
             padding: const EdgeInsets.all(24),
             children: [

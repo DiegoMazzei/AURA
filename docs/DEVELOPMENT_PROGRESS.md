@@ -117,3 +117,12 @@ Riferimenti esaminati: Namida e Orbit-Music. Nessun codice o asset copiato da qu
 - Ricerca testi LRCLIB normalizzata e automatica; timing incompatibile mostrato solo come testo semplice.
 - Equalizzatore iOS a cinque bande con MTAudioProcessingTap; verifica DSP con segnale e XCTest su campioni realmente decodificati da AVPlayer. Android usa AndroidEqualizer.
 - Importazione Spotify PKCE preparata: richiede configurazione Client ID dell’utente, non verificata con un account reale. Istruzioni in SPOTIFY_SETUP.md.
+
+## 0.6.0 — personalizzazione e prima build Android
+
+- Otto colori predefiniti e selettore libero con tonalità, saturazione, luminosità e codice HEX nelle impostazioni. Accento salvato nella libreria locale, ripristinato al riavvio e applicato alle schermate già aperte.
+- Accenti condivisi tra tema Material, sfondo ambientale, home, navigazione, karaoke e controlli UIKit. Modalità chiara/scura/automatica indipendente dal colore.
+- Test di cambio colore su una route aperta, persistenza e validazione del codice personalizzato.
+- Preparazione SDK Android e JDK Temurin verificati tramite SHA-256; cache di compilazione in work/.
+
+Validazione: 86 test Flutter superati, analisi senza problemi, APK release universale generato; firma APK v2 e integrità ZIP verificate. Android API minima 24. Prova su telefono Android ancora da effettuare dall’utente.

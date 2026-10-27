@@ -170,7 +170,7 @@ class _OnlinePlayerScreenState extends State<OnlinePlayerScreen>
       return Scaffold(
         appBar: AppBar(title: const Text('AURA · YouTube')),
         body: AuraBackground(
-          color: auraViolet,
+          color: Theme.of(context).colorScheme.primary,
           child: SafeArea(
             child: ListView(
               padding: const EdgeInsets.fromLTRB(20, 12, 20, 32),
@@ -220,7 +220,7 @@ class _OnlinePlayerScreenState extends State<OnlinePlayerScreen>
                         c.onlineFavorites.contains(t.id)
                             ? Icons.favorite
                             : Icons.favorite_border,
-                        color: auraPink,
+                        color: Theme.of(context).colorScheme.primary,
                       ),
                     ),
                   ],
@@ -273,7 +273,9 @@ class _OnlinePlayerScreenState extends State<OnlinePlayerScreen>
                             onPressed: c.toggleShuffle,
                             icon: Icon(
                               Icons.shuffle,
-                              color: c.shuffle ? auraBlue : context.muted,
+                              color: c.shuffle
+                                  ? Theme.of(context).colorScheme.primary
+                                  : context.muted,
                             ),
                           ),
                           IconButton(
@@ -317,7 +319,7 @@ class _OnlinePlayerScreenState extends State<OnlinePlayerScreen>
                                   : Icons.repeat,
                               color: c.repeat == RepeatSetting.off
                                   ? context.muted
-                                  : auraBlue,
+                                  : Theme.of(context).colorScheme.primary,
                             ),
                           ),
                         ],

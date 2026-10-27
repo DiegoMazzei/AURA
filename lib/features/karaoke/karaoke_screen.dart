@@ -83,7 +83,7 @@ class _KaraokeScreenState extends State<KaraokeScreen> {
       final t = c.current;
       return Scaffold(
         body: AuraBackground(
-          color: auraPink,
+          color: Theme.of(context).colorScheme.primary,
           artwork: false,
           child: SafeArea(
             child: Column(
