@@ -39,3 +39,5 @@ Riferimenti esaminati: Namida e Orbit-Music. Nessun codice o asset copiato da qu
 - Nuovo identificativo registrato: Xcode ora mostra un profilo gestito e un certificato Apple Development, senza l’errore di bundle occupato. Avvio su iPhone in corso; audio e controlli OS non ancora confermati dall’utente.
 
 - Prima build Debug avviata su “iPhone di prova”; log AURA_MEDIA_SESSION_READY confermato. L’utente ha poi aperto l’icona dalla Home e ricevuto la limitazione JIT di Flutter Debug. Preparato schema condiviso “AURA iPhone”, Run in Release senza debugger, lasciando Runner in Debug. In corso sostituzione dell’app sullo stesso bundle (nessuna disinstallazione o cancellazione dati).
+
+- Build Release completata e avviata su “iPhone di prova” con schema AURA iPhone, confermato da Xcode Running e AURA_MEDIA_SESSION_READY. Prodotto Release-iphoneos presente con il nuovo bundle e framework AOT; richiesta all’utente la prova di chiusura/riapertura dalla Home e ascolto reale in background/schermo bloccato. In attesa dell’esito, requisito audio non dichiarato completato.
