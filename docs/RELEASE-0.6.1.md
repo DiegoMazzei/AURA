@@ -47,8 +47,8 @@ Non è una distribuzione App Store/Play Store né una build sottoposta a un audi
 
 Lo storico originale di sviluppo è ora incluso dalla 0.1.0, con dati personali
 rimossi dai vecchi file. Autori, date e messaggi conservati; gli hash cambiano
-per la ripulitura. Vedi [storia e problemi](https://github.com/DiegoMazzei/aura/blob/main/docs/STORIA.md).
+per la ripulitura. Vedi [storia e problemi](https://github.com/DiegoMazzei/AURA/blob/main/docs/STORIA.md).
 
 ## Vetrina e storico
 
-[Vetrina animata](https://diegomazzei.github.io/aura/) · [Galleria dei temi](https://github.com/DiegoMazzei/aura/blob/main/docs/GALLERIA.md) · [Storia dalla 0.1.0](https://github.com/DiegoMazzei/aura/blob/main/docs/STORIA.md).
+[Vetrina animata](https://diegomazzei.github.io/AURA/) · [Galleria dei temi](https://github.com/DiegoMazzei/AURA/blob/main/docs/GALLERIA.md) · [Storia dalla 0.1.0](https://github.com/DiegoMazzei/AURA/blob/main/docs/STORIA.md).

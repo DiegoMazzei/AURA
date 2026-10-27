@@ -5,7 +5,7 @@ chiaro. Tema e accento sono stati cambiati nelle impostazioni dell’app sul
 simulatore iPhone; alle schermate non sono applicati filtri di colore.
 Le immagini sono ridimensionate e compresse per il web.
 
-[Prova la vetrina animata](https://diegomazzei.github.io/aura/#aspetto).
+[Prova la vetrina animata](https://diegomazzei.github.io/AURA/#aspetto).
 Nell’app è disponibile anche un selettore di colore personalizzato, oltre agli otto preset.
 
 <table><tr><th>Colore</th><th>Scuro</th><th>Chiaro</th></tr>

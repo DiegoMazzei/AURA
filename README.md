@@ -1,8 +1,8 @@
 <div align="center">
 
-[![AURA — Apri la vetrina animata](docs/showcase/aura-banner.svg)](https://diegomazzei.github.io/aura/)
+[![AURA — Apri la vetrina animata](docs/showcase/aura-banner.svg)](https://diegomazzei.github.io/AURA/)
 
-[![Apri la vetrina animata](docs/showcase/open-site.svg)](https://diegomazzei.github.io/aura/)
+[![Apri la vetrina animata](docs/showcase/open-site.svg)](https://diegomazzei.github.io/AURA/)
 
 **Dispositivi animati · Tema chiaro e scuro · Tutti gli otto colori**
 
@@ -18,7 +18,7 @@ Un progetto di [Diego Mazzei](https://github.com/DiegoMazzei).
 
 **Segui un artista. Scopri un mondo. Fallo tuo.**
 
-[Vetrina animata](https://diegomazzei.github.io/aura/) · [Scarica la release](https://github.com/DiegoMazzei/aura/releases/tag/v0.6.1) · [Installazione](docs/INSTALLAZIONE.md) · [Novità](CHANGELOG.md) · [Sicurezza](SECURITY.md)
+[Vetrina animata](https://diegomazzei.github.io/AURA/) · [Scarica la release](https://github.com/DiegoMazzei/AURA/releases/tag/v0.6.1) · [Installazione](docs/INSTALLAZIONE.md) · [Novità](CHANGELOG.md) · [Sicurezza](SECURITY.md)
 
 ![Versione](https://img.shields.io/badge/versione-0.6.1-b89be8?style=flat-square)
 ![Piattaforme](https://img.shields.io/badge/piattaforme-iOS%20%7C%20Android-35303f?style=flat-square)
@@ -42,9 +42,9 @@ un’interfaccia dai colori personalizzabili.
 
 | Piattaforma | File | Come si usa |
 | :--- | :--- | :--- |
-| **Android 7+** | [Scarica APK](https://github.com/DiegoMazzei/aura/releases/download/v0.6.1/AURA-0.6.1-Android.apk) | Installazione manuale; build di prova con firma di sviluppo |
-| **iOS** | [Scarica IPA da firmare](https://github.com/DiegoMazzei/aura/releases/download/v0.6.1/AURA-0.6.1-iOS-unsigned.ipa) | Richiede firma e provisioning; non è installabile direttamente dal download |
-| **Integrità** | [SHA256](https://github.com/DiegoMazzei/aura/releases/download/v0.6.1/SHA256SUMS.txt) | Verifica i file scaricati |
+| **Android 7+** | [Scarica APK](https://github.com/DiegoMazzei/AURA/releases/download/v0.6.1/AURA-0.6.1-Android.apk) | Installazione manuale; build di prova con firma di sviluppo |
+| **iOS** | [Scarica IPA da firmare](https://github.com/DiegoMazzei/AURA/releases/download/v0.6.1/AURA-0.6.1-iOS-unsigned.ipa) | Richiede firma e provisioning; non è installabile direttamente dal download |
+| **Integrità** | [SHA256](https://github.com/DiegoMazzei/AURA/releases/download/v0.6.1/SHA256SUMS.txt) | Verifica i file scaricati |
 
 Sorgenti e pacchetti sono disponibili pubblicamente. Questa è una **versione di anteprima**.
 Per iOS non è ancora disponibile una distribuzione TestFlight.
@@ -56,7 +56,7 @@ Per iOS non è ancora disponibile una distribuzione TestFlight.
 rosa, corallo, ambra e grafite nei due temi. Il sito mostra i dispositivi
 in movimento e permette di cambiare la schermata visualizzata.
 
-[Vetrina interattiva](https://diegomazzei.github.io/aura/#aspetto) · [Galleria completa](docs/GALLERIA.md)
+[Vetrina interattiva](https://diegomazzei.github.io/AURA/#aspetto) · [Galleria completa](docs/GALLERIA.md)
 
 | Tema scuro · Viola | Tema chiaro · Blu |
 | :---: | :---: |
@@ -132,11 +132,11 @@ La cronologia comprende tutti i **16 commit originali di sviluppo**, dalla
 0.1.0 alla 0.6.1, seguiti dal lavoro di pubblicazione. Il diario documenta
 problemi, diagnosi, correzioni e verifiche, con collegamenti ai commit.
 
-[Storia completa](docs/STORIA.md) · [Tutti i commit](https://github.com/DiegoMazzei/aura/commits/main/)
+[Storia completa](docs/STORIA.md) · [Tutti i commit](https://github.com/DiegoMazzei/AURA/commits/main/)
 
 ## Partecipa
 
-Hai trovato un problema o hai un’idea? [Apri una segnalazione](https://github.com/DiegoMazzei/aura/issues/new/choose)
+Hai trovato un problema o hai un’idea? [Apri una segnalazione](https://github.com/DiegoMazzei/AURA/issues/new/choose)
 con i passaggi per riprodurlo oppure racconta il miglioramento che vorresti.
 Non allegare token, credenziali o librerie personali.
 
