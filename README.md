@@ -38,23 +38,19 @@ Per iOS non è ancora disponibile una distribuzione TestFlight.
 
 ## Dentro l’interfaccia
 
-Queste immagini sono render dei **widget reali dell’app**, prodotti dai test
-visivi della versione 0.6.1 con dati dimostrativi. Non sono mockup né catture
-da un telefono: fotografie e copertine di rete non sono caricate nei test e
-compaiono i segnaposto. I materiali nativi iOS dipendono dal sistema operativo.
-I brani demo visibili sono fixture di test e non un catalogo precaricato per l’utente.
+Screenshot reali di AURA 0.6.1 in esecuzione sul simulatore iPhone, con
+catalogo e immagini caricati dai provider. Nessuna ricostruzione grafica:
+i render deterministici usati dai test rimangono separati in `docs/previews/`.
 
 <table>
-<tr><th>Home · Scoperta</th><th>Player · Ascolto</th><th>Artisti · Connessioni</th></tr>
-<tr><td><img src="docs/previews/home-dark.png" width="260" alt="Home scura AURA, render del test visivo"/></td><td><img src="docs/previews/player-dark.png" width="260" alt="Player AURA, render del test visivo"/></td><td><img src="docs/previews/discovery-dark.png" width="260" alt="Artisti simili, render del test visivo"/></td></tr>
+<tr><th>Home</th><th>Player</th><th>Artisti simili</th></tr>
+<tr><td><img src="docs/showcase/home-ios.png" width="260" alt="Home scura AURA sul simulatore iPhone"/></td><td><img src="docs/showcase/player-ios.png" width="260" alt="Player reale con copertina"/></td><td><img src="docs/showcase/discovery-ios.png" width="260" alt="Artisti simili con fotografie"/></td></tr>
+<tr><th>Scheda artista</th><th>Album e scaletta</th><th>Personalizzazione</th></tr>
+<tr><td><img src="docs/showcase/artist-ios.png" width="260" alt="Scheda artista con brani e discografia"/></td><td><img src="docs/showcase/album-ios.png" width="260" alt="Scaletta dell’album"/></td><td><img src="docs/showcase/appearance-ios.png" width="260" alt="Impostazioni di tema e colore"/></td></tr>
 </table>
 
-<details>
-<summary>Tema chiaro e karaoke</summary>
-
-<table><tr><td><img src="docs/previews/home-light.png" width="280" alt="Home chiara"/></td><td><img src="docs/previews/karaoke-dark.png" width="280" alt="Testi sincronizzati dimostrativi"/></td></tr></table>
-
-</details>
+Le immagini rappresentano una sessione dimostrativa, senza dati personali.
+Le fotografie e le copertine appartengono ai rispettivi titolari.
 
 ## Cosa è disponibile
 
