@@ -26,6 +26,8 @@ class DeviceLibraryStore implements LibraryStore {
     return Directory('${docs.path}/aura').create(recursive: true);
   }
 
+  Future<Directory> libraryDirectory() => _root();
+
   @override
   Future<Map<String, dynamic>?> read() async {
     final file = File('${(await _root()).path}/library.json');

@@ -96,7 +96,12 @@ Future<void> openCatalogSong(
 }
 
 class CatalogSearchScreen extends StatefulWidget {
-  const CatalogSearchScreen({super.key, required this.controller});
+  const CatalogSearchScreen({
+    super.key,
+    required this.controller,
+    this.initialQuery = '',
+  });
+  final String initialQuery;
   final AuraController controller;
   @override
   State<CatalogSearchScreen> createState() => _CatalogSearchScreenState();
@@ -109,6 +114,15 @@ class _CatalogSearchScreenState extends State<CatalogSearchScreen> {
   DirectoryResults? _results;
   bool _loading = false;
   String? _error;
+  @override
+  void initState() {
+    super.initState();
+    if (widget.initialQuery.isNotEmpty) {
+      _field.text = widget.initialQuery;
+      _changed(widget.initialQuery);
+    }
+  }
+
   void _changed(String text) {
     _debounce?.cancel();
     _revision++;

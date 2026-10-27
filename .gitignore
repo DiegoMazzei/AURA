@@ -76,3 +76,7 @@ test/failures/
 **/xcuserdata/
 *.apk
 *.ipa
+
+# Personal catalog transfer archives
+*.zip
+**/catalog.json

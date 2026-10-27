@@ -1,6 +1,6 @@
 # Privacy di AURA
 
-Queste note descrivono la versione 0.6.1; non sono una certificazione di sicurezza.
+Queste note descrivono la versione 0.7.0; non sono una certificazione di sicurezza.
 
 ## Dati sul dispositivo
 
@@ -11,7 +11,7 @@ L’eventuale backup dipende dal sistema operativo e dalle sue impostazioni;
 su Android questa versione usa il comportamento di backup predefinito.
 
 I pacchetti distribuiti non includono la libreria personale dello sviluppatore.
-L’APK di prova mantiene alcuni identificatori pubblici dello sviluppatore.
+Il repository e i commit riportano l’autore pubblico del progetto.
 
 ## Servizi esterni
 
@@ -36,3 +36,10 @@ Non inserire password Spotify nell’app né nelle segnalazioni GitHub.
 Le issue pubbliche sono visibili a chiunque. Non allegare file della libreria,
 credenziali, identificativi dei dispositivi o screenshot con dati personali.
 Per vulnerabilità consulta [SECURITY.md](SECURITY.md).
+
+## Backup del catalogo
+
+Solo quando lo scegli, AURA esporta un file ZIP con i dati della libreria e i file
+audio locali (massimo 100 MB). Non contiene token o credenziali e non viene
+caricato automaticamente su GitHub o su un servizio AURA. Il backup non è
+cifrato: salvalo in uno spazio privato. [Guida](docs/CATALOGO_BACKUP.md).

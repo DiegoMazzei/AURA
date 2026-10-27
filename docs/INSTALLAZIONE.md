@@ -1,17 +1,17 @@
-# Installa AURA 0.6.1
+# Installa AURA 0.7.0
 
 ## Android · APK di prova
 
-Scarica `AURA-0.6.1-Android.apk` dalla release e aprilo sul telefono.
+Scarica `AURA-0.7.0-Android.apk` dalla release e aprilo sul telefono.
 Consenti l’installazione da quella sorgente quando Android lo richiede.
 Richiede Android 7 o successivo; include ARM64, ARMv7 e x86_64.
 La build usa una firma di sviluppo: è destinata a prove, non al Play Store.
-L’APK esistente mantiene gli identificatori dello sviluppatore già presenti
-nella build installata; non contiene la libreria o la cronologia del telefono.
+Le build pubbliche usano la configurazione dei sorgenti ripuliti. Non contengono
+la libreria o la cronologia di un telefono.
 
 ## iOS · IPA da firmare
 
-`AURA-0.6.1-iOS-unsigned.ipa` è una build Release per dispositivi fisici,
+`AURA-0.7.0-iOS-unsigned.ipa` è una build Release per dispositivi fisici,
 senza certificati, profili di provisioning o dispositivi personali registrati.
 Non si installa direttamente toccando il file su iPhone: deve essere firmata
 con un account e un profilo compatibili con il dispositivo.
@@ -34,3 +34,7 @@ shasum -a 256 -c SHA256SUMS.txt
 ```
 
 I download sono disponibili dalla pagina pubblica delle release GitHub.
+
+## Cambiare telefono
+
+Usa Impostazioni → Trasferisci il catalogo. [Guida al backup](CATALOGO_BACKUP.md).

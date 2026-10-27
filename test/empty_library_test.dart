@@ -22,7 +22,7 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.text('Orbita'), findsNothing);
       expect(find.text('Afterglow'), findsNothing);
-      expect(find.text('Cerca musica'), findsOneWidget);
+      expect(find.text('Cerca la tua musica'), findsOneWidget);
       expect(tester.takeException(), isNull);
       await tester.pumpWidget(const SizedBox());
       c.dispose();

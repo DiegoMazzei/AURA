@@ -1,21 +1,17 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 
 import '../../app/aura_controller.dart';
 import '../../core/artwork/music_image.dart';
 import '../../core/catalog/artist_directory.dart';
+import '../../core/catalog/home_recommendations.dart';
 import '../../core/design/aura_design.dart';
 import '../../shared/models/music.dart';
 import '../catalog/catalog_screen.dart';
 import '../discovery/artist_discovery_screen.dart';
 import '../../core/catalog/artist_recommendations.dart';
 import '../player/player_screen.dart';
-
-const discoveryArtists = [
-  DirectoryArtist(id: 441911933, name: 'Gemitaiz', genre: 'Hip-Hop/Rap'),
-  DirectoryArtist(id: 479756766, name: 'The Weeknd', genre: 'R&B/Soul'),
-  DirectoryArtist(id: 159260351, name: 'Taylor Swift', genre: 'Pop'),
-  DirectoryArtist(id: 271256, name: 'Drake', genre: 'Hip-Hop/Rap'),
-];
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({
@@ -35,16 +31,86 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   int _filter = 0;
-  late final Future<DirectoryResults> _suggestions =
-      widget.controller.artistDirectory?.search('Gemitaiz') ??
-      Future.value(const DirectoryResults());
+  DirectoryResults _suggestions = const DirectoryResults();
+  StreamSubscription<DirectoryResults>? _feed;
+  String? _tasteKey;
+  bool _loading = false, _failed = false, _personal = false;
+  int _request = 0;
+  @override
+  void initState() {
+    super.initState();
+    _refresh();
+  }
+
+  @override
+  void didUpdateWidget(covariant HomeScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    _refresh();
+  }
+
+  @override
+  void dispose() {
+    _feed?.cancel();
+    super.dispose();
+  }
+
+  void _refresh({bool force = false}) {
+    final c = widget.controller;
+    final directory = c.artistDirectory;
+    if (directory == null) return;
+    final recent = c.recent.map(c.track).whereType<Track>().toList();
+    final favorites = c.favorites.map(c.track).whereType<Track>().toList();
+    final seeds = homeTaste(
+      followed: c.favoriteArtists.values,
+      recent: recent,
+      favorites: favorites,
+    );
+    final heard = {
+      ...recent,
+      ...favorites,
+    }.map((t) => homeSongKey(t.title, t.artist)).toSet();
+    final key =
+        '${seeds.take(3).map((a) => '${a.id}:${a.name}').join('|')}::${heard.join('|')}';
+    if (!force && key == _tasteKey) return;
+    _tasteKey = key;
+    _personal = seeds.isNotEmpty;
+    _feed?.cancel();
+    final request = ++_request;
+    _failed = false;
+    if (seeds.isEmpty) {
+      _suggestions = const DirectoryResults();
+      _loading = false;
+      return;
+    }
+    _loading = true;
+    _feed = HomeRecommendations(directory)
+        .watch(seeds, heard: heard)
+        .listen(
+          (result) {
+            if (!mounted || request != _request) return;
+            setState(() => _suggestions = result);
+          },
+          onError: (Object error) {
+            if (mounted && request == _request) {
+              setState(() {
+                _failed = true;
+                _loading = false;
+              });
+            }
+          },
+          onDone: () {
+            if (mounted && request == _request) {
+              setState(() => _loading = false);
+            }
+          },
+        );
+  }
+
   @override
   Widget build(BuildContext context) {
     final c = widget.controller;
     final recent = c.recent.map(c.track).whereType<Track>().toList();
-    final artists = c.favoriteArtists.isNotEmpty
-        ? c.favoriteArtists.values.toList()
-        : discoveryArtists;
+    final artists = c.favoriteArtists.values.toList();
     final hour = c.now().hour;
     final greeting = hour < 12
         ? 'Buongiorno,'
@@ -139,17 +205,74 @@ class _HomeScreenState extends State<HomeScreen> {
             ],
           ),
         ),
+        if (!_personal || (_filter == 2 && artists.isEmpty))
+          Padding(
+            padding: const EdgeInsets.only(top: 26),
+            child: AuraDashboardPanel(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Da dove vuoi iniziare?',
+                    style: TextStyle(fontSize: 26, fontWeight: FontWeight.w600),
+                  ),
+                  const SizedBox(height: 12),
+                  Text(
+                    'Cerca la musica che ami o esplora un genere. I suggerimenti nasceranno dai tuoi ascolti e dagli artisti che scegli di seguire.',
+                    style: TextStyle(color: context.muted, height: 1.6),
+                  ),
+                  const SizedBox(height: 20),
+                  FilledButton.icon(
+                    onPressed: widget.onSearch,
+                    icon: const Icon(Icons.search),
+                    label: const Text('Cerca la tua musica'),
+                  ),
+                  const SizedBox(height: 18),
+                  Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    children: [
+                      for (final genre in [
+                        'Pop',
+                        'Rock',
+                        'Hip-Hop',
+                        'Elettronica',
+                        'Jazz',
+                        'Classica',
+                      ])
+                        ActionChip(
+                          label: Text(genre),
+                          onPressed: () => Navigator.of(context).push(
+                            MaterialPageRoute<void>(
+                              builder: (_) => CatalogSearchScreen(
+                                controller: c,
+                                initialQuery: genre,
+                              ),
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
         if (_filter != 2)
-          FutureBuilder<DirectoryResults>(
-            future: _suggestions,
-            builder: (context, snapshot) {
-              final albums =
-                  snapshot.data?.albums.take(8).toList() ?? <DirectoryAlbum>[];
-              if (recent.isEmpty && albums.isEmpty) {
-                if (c.artistDirectory != null && !snapshot.hasError) {
+          Builder(
+            builder: (context) {
+              final albums = _suggestions.albums.take(8).toList();
+              if (albums.isEmpty) {
+                if (_loading) {
                   return const Padding(
                     padding: EdgeInsets.symmetric(vertical: 28),
                     child: LinearProgressIndicator(minHeight: 2),
+                  );
+                }
+                if (_failed) {
+                  return TextButton.icon(
+                    onPressed: () => setState(() => _refresh(force: true)),
+                    icon: const Icon(Icons.refresh),
+                    label: const Text('Ricarica i suggerimenti'),
                   );
                 }
                 return const SizedBox.shrink();
@@ -161,7 +284,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       _HomeHeading(
-                        'In primo piano',
+                        _personal ? 'Album per te' : 'In primo piano',
                         action: 'Cerca',
                         onAction: widget.onSearch,
                       ),
@@ -169,41 +292,29 @@ class _HomeScreenState extends State<HomeScreen> {
                         height: 216,
                         child: ListView.separated(
                           scrollDirection: Axis.horizontal,
-                          itemCount: recent.take(6).length + albums.length,
+                          itemCount: albums.length,
                           separatorBuilder: (_, _) => const SizedBox(width: 16),
                           itemBuilder: (context, i) {
-                            final count = recent.take(6).length;
-                            final t = i < count ? recent[i] : null;
-                            final a = i >= count ? albums[i - count] : null;
+                            final a = albums[i];
                             return SizedBox(
                               width: 150,
                               child: InkWell(
                                 borderRadius: BorderRadius.circular(14),
-                                onTap: () {
-                                  if (t != null) {
-                                    c.playTrack(t, contextTracks: recent);
-                                    openPlayer(context, c);
-                                  } else {
-                                    openCatalogAlbum(context, c, a!);
-                                  }
-                                },
+                                onTap: () => openCatalogAlbum(context, c, a),
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     MusicImage(
                                       controller: c,
-                                      artist:
-                                          t?.catalogIdentity?.albumArtist ??
-                                          t?.artist ??
-                                          a!.artist,
-                                      album: t?.album ?? a!.title,
-                                      fallbackUrl: t?.artworkUrl,
+                                      artist: a.artist,
+                                      album: a.title,
+
                                       size: 150,
                                       radius: 12,
                                     ),
                                     const SizedBox(height: 10),
                                     Text(
-                                      t?.title ?? a!.title,
+                                      a.title,
                                       maxLines: 1,
                                       overflow: TextOverflow.ellipsis,
                                       style: const TextStyle(
@@ -213,7 +324,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                     ),
                                     const SizedBox(height: 3),
                                     Text(
-                                      t?.artist ?? a!.artist,
+                                      a.artist,
                                       maxLines: 1,
                                       overflow: TextOverflow.ellipsis,
                                       style: TextStyle(
@@ -234,7 +345,7 @@ class _HomeScreenState extends State<HomeScreen> {
               );
             },
           ),
-        if (_filter != 1 && c.artistDirectory != null)
+        if (_filter != 1 && c.artistDirectory != null && artists.isNotEmpty)
           Padding(
             padding: const EdgeInsets.only(top: 18),
             child: AuraDashboardPanel(
@@ -333,16 +444,16 @@ class _HomeScreenState extends State<HomeScreen> {
                   },
                 ),
               ),
-        ] else if (_filter != 2 && c.artistDirectory != null)
-          FutureBuilder<DirectoryResults>(
-            future: _suggestions,
-            builder: (context, snapshot) {
-              if (!snapshot.hasData) return const SizedBox.shrink();
+        ],
+        if (_filter != 2 && c.artistDirectory != null)
+          Builder(
+            builder: (context) {
+              if (_suggestions.songs.isEmpty) return const SizedBox.shrink();
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const _HomeHeading('Dal catalogo'),
-                  ...snapshot.data!.songs
+                  _HomeHeading(_personal ? 'Brani per te' : 'Da scoprire'),
+                  ..._suggestions.songs
                       .take(5)
                       .map(
                         (s) => SongRow(
@@ -355,22 +466,6 @@ class _HomeScreenState extends State<HomeScreen> {
               );
             },
           ),
-        if (c.artistDirectory == null && recent.isEmpty) ...[
-          const SizedBox(height: 26),
-          const Text(
-            'La tua prossima canzone\nti aspetta.',
-            style: TextStyle(fontSize: 28, fontWeight: FontWeight.w600),
-          ),
-          const SizedBox(height: 20),
-          Align(
-            alignment: Alignment.centerLeft,
-            child: FilledButton.icon(
-              onPressed: widget.onSearch,
-              icon: const Icon(Icons.search),
-              label: const Text('Cerca musica'),
-            ),
-          ),
-        ],
       ],
     );
   }

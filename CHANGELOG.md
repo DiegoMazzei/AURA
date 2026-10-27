@@ -1,5 +1,14 @@
 # Storia di AURA
 
+## 0.7.0 · La tua musica parte da te
+
+- Prima apertura neutra con ricerca e generi, nessun artista o brano predefinito.
+- Home personalizzata in base a seguiti, ascolti recenti e preferiti.
+- Esporta/importa un catalogo tra iOS e Android: preferiti, artisti, playlist, cronologia e audio locale entro 100 MB.
+- Merge senza cancellazioni, gestione dei duplicati e controllo dei file del backup.
+- 102 test superati e analisi senza segnalazioni.
+
+
 ## 0.6.1 · Scopri la tua prossima ossessione
 
 - Esplorazione interattiva degli artisti simili, con fotografie e percorso di navigazione.

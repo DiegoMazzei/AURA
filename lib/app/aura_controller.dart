@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:math';
+import 'dart:io';
 
 import 'package:flutter/foundation.dart' show compute;
 
@@ -14,6 +15,10 @@ import '../core/catalog/artist_recommendations.dart';
 import '../core/catalog/musicbrainz_catalog.dart';
 import '../core/lyrics/lyrics_provider.dart';
 import '../core/storage/library_store.dart';
+import '../core/storage/catalog_backup.dart';
+
+import 'package:crypto/crypto.dart';
+
 import '../shared/models/music.dart';
 import '../features/spotify_import/metadata_import.dart';
 import '../features/youtube/online_track.dart';
@@ -379,6 +384,101 @@ class AuraController extends ChangeNotifier {
       }
     });
     return _writes;
+  }
+
+  Future<void> importCatalogBackup(CatalogBackup backup) async {
+    final next = mergeCatalog(snapshot(), backup);
+    final restoredTracks = (next['tracks'] as List)
+        .map((v) => Track.fromJson(Map<String, dynamic>.from(v as Map)))
+        .toList();
+    final restoredPlaylists = (next['playlists'] as List)
+        .map((v) => AuraPlaylist.fromJson(Map<String, dynamic>.from(v as Map)))
+        .toList();
+    final restoredArtists = (next['favoriteArtists'] as List)
+        .map(
+          (v) => DirectoryArtist.fromJson(Map<String, dynamic>.from(v as Map)),
+        )
+        .toList();
+    final restoredCollections = (next['importedCollections'] as List)
+        .map(
+          (v) =>
+              ImportedCollection.fromJson(Map<String, dynamic>.from(v as Map)),
+        )
+        .toList();
+    final restoredRecords = (next['onlineRecords'] as List)
+        .map((v) => OnlineTrack.fromJson(Map<String, dynamic>.from(v as Map)))
+        .toList();
+    final restoredFavorites = List<String>.from(next['favorites'] as List);
+    final restoredRecent = List<String>.from(next['recent'] as List);
+    final created = <File>[];
+    await audio.pause();
+    await _writes;
+    try {
+      final needed = restoredTracks
+          .where((t) => !t.isYoutube)
+          .map((t) => t.source)
+          .toSet();
+      if (backup.audio.isNotEmpty) {
+        if (store is! DeviceLibraryStore) {
+          throw StateError('Archivio audio non disponibile.');
+        }
+        final root = await (store as DeviceLibraryStore).libraryDirectory();
+        await Directory('${root.path}/audio').create(recursive: true);
+        for (final entry in backup.audio.entries) {
+          final path = backup.audioPaths[entry.key]!;
+          if (!needed.contains(path)) continue;
+          final target = File('${root.path}/$path');
+          if (await target.exists()) {
+            if (sha256.convert(await target.readAsBytes()).toString() !=
+                sha256.convert(entry.value).toString()) {
+              throw const FormatException(
+                'Un file locale è in conflitto con il backup.',
+              );
+            }
+          } else {
+            created.add(target);
+            await target.writeAsBytes(entry.value, flush: true);
+          }
+        }
+      }
+      await store.write(next);
+    } catch (_) {
+      for (final file in created) {
+        if (await file.exists()) await file.delete();
+      }
+      rethrow;
+    }
+    tracks = [...tracks.where((t) => t.isAsset), ...restoredTracks];
+    playlists = restoredPlaylists;
+    favorites
+      ..clear()
+      ..addAll(restoredFavorites);
+    favoriteArtists
+      ..clear()
+      ..addEntries(restoredArtists.map((a) => MapEntry(a.id, a)));
+    importedCollections = restoredCollections;
+    onlineRecords
+      ..clear()
+      ..addEntries(restoredRecords.map((t) => MapEntry(t.id, t)));
+    onlineFavorites
+      ..clear()
+      ..addAll(List<String>.from(next['onlineFavorites'] as List));
+    recent = restoredRecent;
+    displayName = (next['displayName'] as String? ?? '').characters
+        .take(40)
+        .toString();
+    themeMode = ThemeMode.values.firstWhere(
+      (m) => m.name == next['theme'],
+      orElse: () => themeMode,
+    );
+    accentColor =
+        0xff000000 |
+        (((next['accentColor'] as num?)?.toInt() ?? accentColor) & 0xffffff);
+    if (track(currentId) == null && tracks.isNotEmpty) {
+      currentId = tracks.first.id;
+    }
+    error = null;
+    notifyListeners();
   }
 
   bool _wasPlaying = false;

@@ -10,7 +10,7 @@ Non pubblicare credenziali, exploit con dati personali o file della libreria.
 Indica versione, piattaforma, impatto e passaggi minimi per riprodurre il problema.
 Non è garantito un tempo di risposta: AURA è un progetto personale in anteprima.
 
-## Stato della versione 0.6.1
+## Stato della versione 0.7.0
 
 - Controlli di base sui sorgenti per credenziali comuni e metadati personali;
   non sostituiscono un audit completo.

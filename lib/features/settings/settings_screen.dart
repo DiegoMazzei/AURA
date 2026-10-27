@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../app/aura_controller.dart';
 import '../../core/design/aura_design.dart';
 import '../spotify_import/import_screen.dart';
+import 'catalog_transfer_screen.dart';
 import '../spotify_import/spotify_connect_screen.dart';
 
 class SettingsScreen extends StatelessWidget {
@@ -91,6 +92,18 @@ class SettingsScreen extends StatelessWidget {
               subtitle: const Text('MP3, M4A, AAC, WAV, FLAC, OGG'),
               onTap: controller.importing ? null : controller.importAudio,
             ),
+            ListTile(
+              leading: const Icon(Icons.move_down_outlined),
+              title: const Text('Trasferisci il catalogo'),
+              subtitle: const Text('Esporta o importa un backup AURA'),
+              trailing: const Icon(Icons.chevron_right),
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute<void>(
+                  builder: (_) => CatalogTransferScreen(controller: controller),
+                ),
+              ),
+            ),
             const SectionTitle('Connessioni'),
             ListTile(
               leading: const Icon(Icons.file_download_outlined),
@@ -147,7 +160,7 @@ class SettingsScreen extends StatelessWidget {
             const SizedBox(height: 9),
             Center(
               child: Text(
-                '0.6.1 · Anteprima',
+                '0.7.0 · Anteprima',
                 style: TextStyle(color: context.muted, fontSize: 11),
               ),
             ),

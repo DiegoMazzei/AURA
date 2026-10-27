@@ -6,7 +6,7 @@
 
 **Dispositivi animati · Tema chiaro e scuro · Tutti gli otto colori**
 
-Schermate reali dell’app, in un ciclo di 16 secondi. [Anteprima statica](docs/showcase/aura-banner.svg).
+Schermate reali di una sessione personalizzata, in un ciclo di 16 secondi. La nuova installazione parte neutra: nessun artista o brano predefinito. [Anteprima statica](docs/showcase/aura-banner.svg).
 
 
 <img src="assets/icons/aura-icon.png" width="112" height="112" alt="Icona AURA" />
@@ -20,9 +20,9 @@ Un progetto di [Diego Mazzei](https://github.com/DiegoMazzei).
 
 **Segui un artista. Scopri un mondo. Fallo tuo.**
 
-[Vetrina animata](https://diegomazzei.github.io/AURA/) · [Scarica la release](https://github.com/DiegoMazzei/AURA/releases/tag/v0.6.1) · [Installazione](docs/INSTALLAZIONE.md) · [Novità](CHANGELOG.md) · [Sicurezza](SECURITY.md)
+[Vetrina animata](https://diegomazzei.github.io/AURA/) · [Scarica la release](https://github.com/DiegoMazzei/AURA/releases/tag/v0.7.0) · [Installazione](docs/INSTALLAZIONE.md) · [Novità](CHANGELOG.md) · [Sicurezza](SECURITY.md)
 
-![Versione](https://img.shields.io/badge/versione-0.6.1-b89be8?style=flat-square)
+![Versione](https://img.shields.io/badge/versione-0.7.0-b89be8?style=flat-square)
 ![Piattaforme](https://img.shields.io/badge/piattaforme-iOS%20%7C%20Android-35303f?style=flat-square)
 ![Stato](https://img.shields.io/badge/stato-public%20preview-35303f?style=flat-square)
 
@@ -40,17 +40,27 @@ un’interfaccia dai colori personalizzabili.
 | Discografie ed edizioni raggruppate | Coda che mantiene l’ordine dell’album | Preferiti e playlist locali |
 | Esplorazione degli artisti simili | Testi e karaoke quando sincronizzati | Artisti seguiti scelti da te |
 
-## Download · 0.6.1
+## Download · 0.7.0
 
 | Piattaforma | File | Come si usa |
 | :--- | :--- | :--- |
-| **Android 7+** | [Scarica APK](https://github.com/DiegoMazzei/AURA/releases/download/v0.6.1/AURA-0.6.1-Android.apk) | Installazione manuale; build di prova con firma di sviluppo |
-| **iOS** | [Scarica IPA da firmare](https://github.com/DiegoMazzei/AURA/releases/download/v0.6.1/AURA-0.6.1-iOS-unsigned.ipa) | Richiede firma e provisioning; non è installabile direttamente dal download |
-| **Integrità** | [SHA256](https://github.com/DiegoMazzei/AURA/releases/download/v0.6.1/SHA256SUMS.txt) | Verifica i file scaricati |
+| **Android 7+** | [Scarica APK](https://github.com/DiegoMazzei/AURA/releases/download/v0.7.0/AURA-0.7.0-Android.apk) | Installazione manuale; build di prova con firma di sviluppo |
+| **iOS** | [Scarica IPA da firmare](https://github.com/DiegoMazzei/AURA/releases/download/v0.7.0/AURA-0.7.0-iOS-unsigned.ipa) | Richiede firma e provisioning; non è installabile direttamente dal download |
+| **Integrità** | [SHA256](https://github.com/DiegoMazzei/AURA/releases/download/v0.7.0/SHA256SUMS.txt) | Verifica i file scaricati |
 
 Sorgenti e pacchetti sono disponibili pubblicamente. Questa è una **versione di anteprima**.
 Per iOS non è ancora disponibile una distribuzione TestFlight.
 [Leggi le istruzioni complete](docs/INSTALLAZIONE.md).
+
+## Novità · 0.7.0
+
+- **Prima apertura neutra:** cerca la tua musica o esplora i generi, senza artisti predefiniti.
+- **Home personale:** suggerimenti basati su artisti seguiti, ascolti e preferiti.
+- **Catalogo trasferibile:** esporta un backup ZIP e importalo su iPhone o Android senza cancellare la libreria esistente.
+
+<img src="docs/showcase/start-light-070-ios.png" width="260" alt="Prima apertura neutra della versione 0.7.0">
+
+[Come trasferire il catalogo](docs/CATALOGO_BACKUP.md) · [Note della release](docs/RELEASE-0.7.0.md)
 
 ## Chiara o scura. Sempre tua.
 
@@ -90,8 +100,7 @@ Le fotografie e le copertine appartengono ai rispettivi titolari.
 - iOS: superfici native dove supportate e controlli di riproduzione di sistema.
 
 Copertura del catalogo, immagini, testi e disponibilità della riproduzione
-dipendono dai servizi esterni. La Home personalizzata in sviluppo e la Jam
-non sono incluse in questa release. AURA non è affiliata ai servizi citati.
+dipendono dai servizi esterni. La Home si personalizza dopo le tue scelte e gli ascolti; la Jam non è inclusa. AURA non è affiliata ai servizi citati.
 
 ## Sviluppo
 
@@ -119,10 +128,11 @@ ricevono le richieste di ricerca e rete. I token Spotify vengono usati in memori
 per l’importazione. I dati locali non hanno una cifratura aggiuntiva dell’app;
 Android mantiene il comportamento di backup predefinito del sistema.
 
-Il repository contiene i sorgenti della versione 0.6.1. Librerie dei dispositivi,
+Il repository contiene i sorgenti della versione 0.7.0. Librerie dei dispositivi,
 chiavi, certificati e profili Apple personali sono esclusi.
-L’APK di prova già compilato conserva gli identificatori dello sviluppatore,
-come spiegato nella guida. Non è stato eseguito un audit di sicurezza completo.
+Le build pubbliche non includono librerie personali, password o token. Il nome
+dell’autore e i riferimenti pubblici al progetto restano visibili su GitHub.
+Sono stati eseguiti controlli di base e test, non una verifica di sicurezza esaustiva.
 
 Il codice AURA non ha ancora una licenza di redistribuzione assegnata.
 Le licenze dei componenti di terze parti, del font Roboto e della copia modificata
