@@ -1,5 +1,12 @@
 <div align="center">
 
+[![AURA — Apri la vetrina animata](docs/showcase/aura-banner.svg)](https://diegomazzei.github.io/aura/)
+
+[![Apri la vetrina animata](docs/showcase/open-site.svg)](https://diegomazzei.github.io/aura/)
+
+**Dispositivi animati · Tema chiaro e scuro · Tutti gli otto colori**
+
+
 <img src="assets/icons/aura-icon.png" width="112" height="112" alt="Icona AURA" />
 
 # AURA
@@ -8,7 +15,6 @@
 
 Un progetto di [Diego Mazzei](https://github.com/DiegoMazzei).
 
-![AURA — Your music. Your universe.](docs/showcase/aura-banner.svg)
 
 **Segui un artista. Scopri un mondo. Fallo tuo.**
 
