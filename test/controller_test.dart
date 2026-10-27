@@ -52,6 +52,18 @@ void main() {
       expect(audio.playing, isTrue);
     },
   );
+  test('retry after a stream failure resolves the source again', () async {
+    await c.playTrack(demoTracks.first);
+    expect(audio.loadCount, 1);
+    await audio.pause();
+    audio.error = 'expired remote source';
+    audio.notifyListeners();
+    await c.playTrack(demoTracks.first);
+    expect(audio.loadCount, 2);
+    expect(audio.error, isNull);
+    expect(c.error, isNull);
+    expect(audio.playing, isTrue);
+  });
   test('shuffle avoids current track when alternatives exist', () async {
     c.toggleShuffle();
     await c.playTrack(demoTracks.first);

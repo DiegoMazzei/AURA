@@ -23,7 +23,7 @@ flutter test
 flutter run
 ```
 
-Aprire `ios/Runner.xcworkspace` in Xcode per la build iOS. Android richiede SDK/JDK configurati. Identificativo privato provvisorio: `app.aura.personal`.
+Aprire `ios/Runner.xcworkspace` in Xcode per la build iOS. Android richiede SDK/JDK configurati. Identificativi privati: iOS `org.example.aura`; Android `app.aura.personal`.
 
 ## Documentazione
 

@@ -67,7 +67,7 @@ class _OnlinePlayerScreenState extends State<OnlinePlayerScreen>
       params: const YoutubePlayerParams(
         showControls: true,
         showFullscreenButton: true,
-        origin: 'https://app.aura.personal',
+        origin: 'https://org.example.aura',
         interfaceLanguage: 'it',
         captionLanguage: 'it',
         playsInline: true,

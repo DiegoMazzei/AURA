@@ -13,7 +13,7 @@ flutter test
 
 ## iOS
 
-Aprire `ios/Runner.xcworkspace` con Xcode. Scheme Runner. Selezionare un simulatore installato e Run. Per un iPhone fisico: collegarlo, autorizzare il Mac, abilitare modalità sviluppatore se richiesta, scegliere il team personale in Signing & Capabilities e selezionare il dispositivo come destinazione. Account e conferme sul dispositivo spettano all’utente.
+Aprire `ios/Runner.xcworkspace` con Xcode. Schema Runner per sviluppo Debug sul simulatore. Per installazione autonoma su iPhone usare lo schema **AURA iPhone**, che esegue Release senza debugger. Selezionare il dispositivo e Run. Per un iPhone fisico: collegarlo, autorizzare il Mac, abilitare modalità sviluppatore se richiesta, scegliere il team personale in Signing & Capabilities e selezionare il dispositivo come destinazione. Account e conferme sul dispositivo spettano all’utente.
 
 Per l’uso con Flutter CLI fuori dalle restrizioni della sessione:
 
@@ -64,3 +64,15 @@ Rigenerazione consapevole delle immagini dopo una modifica visuale:
 flutter test test/visual_test.dart --update-goldens
 flutter test tool/generate_icons.dart
 ```
+
+### Prova su iPhone richiesta
+
+In Xcode è disponibile la destinazione “iPhone di prova”. Se Signing & Capabilities segnala sessione scaduta, aggiornare l’account Apple in Xcode → Settings → Accounts, poi usare Try Again e Run. Autenticazione Apple e conferme sul telefono richiedono l’utente.
+
+Dopo l’installazione: cercare un brano, confermare uscita audio, tornare a Home e Libreria, quindi bloccare lo schermo per almeno 30 secondi. Verificare ascolto continuo e comandi play/pausa dalla schermata di blocco. Il solo cursore che avanza non conferma questi requisiti.
+
+Bundle iOS aggiornato per evitare il conflitto di registrazione: `org.example.aura`. Android mantiene `app.aura.personal`.
+
+### Riapertura dall’icona dell’iPhone
+
+Una build Flutter Debug su iPhone richiede l’avvio da Xcode/Flutter e può mostrare la schermata nera “In iOS 14+, debug mode Flutter apps can only be launched…” se aperta dall’icona. Lo schema condiviso `AURA iPhone` compila ed esegue Release senza debugger, così l’app può essere riaperta dalla Home. Lo schema `Runner` rimane Debug per sviluppo e test. Il certificato personale conserva i propri limiti di validità: Release non elimina la necessità della firma.

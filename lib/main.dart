@@ -25,7 +25,9 @@ Future<void> main() async {
     );
     final session = await AudioSession.instance;
     await session.configure(const AudioSessionConfiguration.music());
-  } catch (_) {
+    debugPrint('AURA_MEDIA_SESSION_READY');
+  } catch (error) {
+    debugPrint('AURA_MEDIA_SESSION_FAILED: $error');
     startupError =
         'I controlli audio di sistema non sono disponibili in questa sessione.';
   }

@@ -292,6 +292,7 @@ class AuraController extends ChangeNotifier {
     currentId = t.id;
     notifyListeners();
     try {
+      if (audio.error != null) _loadedId = null;
       if (_loadedId != t.id) {
         await audio.load(t);
         if (_disposed) return;

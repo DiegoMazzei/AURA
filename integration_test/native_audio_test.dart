@@ -65,6 +65,11 @@ void main() {
           await Future<void>.delayed(const Duration(seconds: 2));
           expect(audio.playing, isTrue);
           expect(audio.position.inMilliseconds, greaterThan(200));
+          await audio.seek(const Duration(seconds: 90));
+          audio.play();
+          await Future<void>.delayed(const Duration(seconds: 3));
+          expect(audio.position.inSeconds, greaterThanOrEqualTo(91));
+          expect(audio.error, isNull);
           await audio.seek(const Duration(seconds: 4));
           await audio.pause();
           expect(audio.position.inMilliseconds, inInclusiveRange(3900, 4400));

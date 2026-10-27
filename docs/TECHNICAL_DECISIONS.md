@@ -21,3 +21,9 @@
 
 16. Preferiti e playlist YouTube precedenti vengono migrati nella libreria unica con identificatori yt:. I gruppi Artisti normalizzano spazi e maiuscole; gli Album includono l’artista nella chiave. Metadati corretti manualmente prevalgono sugli aggiornamenti del provider.
 17. Namida è un riferimento di architettura Flutter (just_audio/audio_service), non una dipendenza né una base copiata. Licenza del progetto consultata: source available con restrizioni sul riuso e rebranding. Orbit-Music è una vetrina senza motore riutilizzabile. Nessun loro codice o asset è incluso in AURA.
+
+18. Correzione 403: il manifest audio-only e una risposta 206 sui primi 1 KB non sono una prova di riproducibilità. Diagnosi con richieste successive e aperte riproduce il 403. Preferita una sorgente MP4 progressiva, consumata da just_audio come audio nativo; niente eccezioni ATS/HTTP né server loopback aggiunti. Aumenta il traffico rispetto all’audio-only. Test nativo ora include seek a 90 secondi e avanzamento successivo.
+
+19. Il bundle iOS generico app.aura.personal non è disponibile per il Personal Team. Scelto org.example.aura per l’installazione privata e aggiornato l’origin del fallback video. Android conserva l’identificativo esistente.
+
+20. Installazione privata riapribile dalla Home: schema condiviso AURA iPhone con LaunchAction Release e launcher senza debugger. Runner resta Debug per sviluppo. Una build Debug avviata da Xcode non costituisce un’installazione autonoma valida per la prova d’uso dell’utente.

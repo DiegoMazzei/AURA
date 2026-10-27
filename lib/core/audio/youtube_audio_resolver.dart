@@ -22,7 +22,18 @@ class YoutubeAudioResolver {
       final manifest = await yt.videos.streams
           .getManifest(id)
           .timeout(const Duration(seconds: 30));
-      final compatible =
+      // Progressive MP4 remains compatible with native open-ended range
+      // requests. Adaptive SDK-less audio can advertise URLs that then return
+      // 403 on later ranges even after the initial bytes were accepted.
+      final progressive =
+          manifest.muxed
+              .where((s) => s.container == StreamContainer.mp4)
+              .toList()
+            ..sort(
+              (a, b) =>
+                  a.bitrate.bitsPerSecond.compareTo(b.bitrate.bitsPerSecond),
+            );
+      final audio =
           manifest.audioOnly
               .where((s) => s.container == StreamContainer.mp4)
               .toList()
@@ -30,7 +41,12 @@ class YoutubeAudioResolver {
               (a, b) =>
                   b.bitrate.bitsPerSecond.compareTo(a.bitrate.bitsPerSecond),
             );
-      if (compatible.isEmpty) throw StateError('No compatible source');
+      final source = progressive.isNotEmpty
+          ? progressive.first
+          : audio.isNotEmpty
+          ? audio.first
+          : null;
+      if (source == null) throw StateError('No compatible source');
       String? title, artist, album;
       Duration? duration;
       try {
@@ -48,7 +64,7 @@ class YoutubeAudioResolver {
         /* Missing music tags must not prevent a playable source. */
       }
       return ResolvedYoutubeAudio(
-        uri: compatible.first.url,
+        uri: source.url,
         title: title,
         artist: artist,
         album: album,

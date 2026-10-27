@@ -18,8 +18,11 @@ class FakeAudioEngine extends AudioEngine {
   String? error;
   bool failLoad = false;
   String? loadedId;
+  int loadCount = 0;
   @override
   Future<void> load(Track track) async {
+    loadCount++;
+    error = null;
     if (failLoad) throw StateError('fixture load failure');
     loadedId = track.id;
     position = Duration.zero;
