@@ -190,7 +190,17 @@ class _AuraShellState extends State<AuraShell> with WidgetsBindingObserver {
                                           ? c.position.inMilliseconds /
                                                 c.duration.inMilliseconds
                                           : 0.0,
-                                      'artwork': c.current.artworkUrl ?? '',
+                                      'artwork':
+                                          c.artwork?.cachedAlbum(
+                                            c
+                                                    .current
+                                                    .catalogIdentity
+                                                    ?.albumArtist ??
+                                                c.current.artist,
+                                            c.current.album,
+                                          ) ??
+                                          c.current.artworkUrl ??
+                                          '',
                                     },
                                     onEvent: (method, args) {
                                       if (method == 'tab' &&

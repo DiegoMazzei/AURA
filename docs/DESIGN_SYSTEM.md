@@ -12,9 +12,9 @@ Il player usa una route opaca: la precedente route trasparente causava la scompa
 
 | Ruolo | Scuro | Chiaro |
 |---|---|---|
-| Fondo | #0B0C10 | #FAFAFA |
-| Schede | #191A20 | #EEEEEF |
-| Accento | #A8B5FF | #515FA1 |
+| Fondo | #100B18 | #FAF7FF |
+| Schede | #21162F | #EEE6F8 |
+| Accento | #B486FF | #7435BC |
 | Testo | ColorScheme.onSurface | ColorScheme.onSurface |
 
 Carattere di sistema SF su iOS, Roboto sulle altre piattaforme; gerarchia 35/24/17/15/12, titoli con peso 600–700. Copertine con raggio 9–12, pannelli 14–18, dock 28. Controlli principali almeno 44 punti. Movimento ridotto rispettato nelle transizioni principali; nessuna decorazione animata continua.
@@ -34,3 +34,11 @@ Le anteprime in `docs/previews` sono render Flutter con fixture e controlli port
 Tre destinazioni: Ascolta, Cerca, Libreria. Eliminati Esplora duplicato, grande billboard con slogan e schede ridondanti. Copertine recenti, preferiti e raccolta sono i soli contenuti di Ascolta; l'avvio vuoto invita alla ricerca.
 
 Cerca: un campo e quattro filtri - Tutto, Brani, Artisti, Album. Artisti prioritari nella vista mista. Schede artista con titolo, genere e tre sezioni Brani/Album/Feat.; schede album con scaletta ordinata per disco e traccia. Miniplayer accessibile nei dettagli. I segnaposto del catalogo non rappresentano copertine reali; le copertine disponibili dei brani riprodotti rimangono visibili.
+
+## Direzione 0.4 - riferimento fotografico viola
+
+Il nuovo riferimento `docs/reference/ui-purple-direction.png` sostituisce la precedente direzione grafica: saluto compatto, filtri a pillola, dischi orizzontali da 154 punti con raggi 14, artisti fotografici circolari da 88 e gerarchia editoriale. Nessuna etichetta Trending senza una fonte di classifica.
+
+Palette scura: fondo #100B18, schede #21162F, accento #B486FF, selezioni #8342CD. Variante chiara #FAF7FF e accento #7435BC. Restano materiali UIKit nel dock e controlli di sistema, con tinta viola. Tre destinazioni: Ascolta, Cerca, Libreria.
+
+Schede artista: foto circolare 168 punti, azione Segui artista, sezioni Brani/Album/Feat. Schede album: copertina da 240 punti e scaletta. Foto e copertine compaiono anche nelle righe di ricerca e negli artisti salvati. Immagini mancanti non sono sostituite da foto inventate.

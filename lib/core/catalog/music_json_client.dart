@@ -33,7 +33,13 @@ class PublicMusicJsonClient implements MusicJsonClient {
   Future<Object?> _get(Uri uri) async {
     final host = uri.host;
     if (uri.scheme != 'https' ||
-        !{'musicbrainz.org', 'lrclib.net', 'itunes.apple.com'}.contains(host)) {
+        !{
+          'musicbrainz.org',
+          'lrclib.net',
+          'itunes.apple.com',
+          'www.theaudiodb.com',
+          'api.deezer.com',
+        }.contains(host)) {
       throw const MusicServiceException('Fonte musicale non supportata.');
     }
     final blocked = _blockedUntil[host];
@@ -42,7 +48,11 @@ class PublicMusicJsonClient implements MusicJsonClient {
         'Il catalogo è occupato. Riprova più tardi.',
       );
     }
-    final interval = host == 'musicbrainz.org'
+    final interval = host == 'www.theaudiodb.com'
+        ? 2100
+        : host == 'api.deezer.com'
+        ? 550
+        : host == 'musicbrainz.org'
         ? 1100
         : host == 'itunes.apple.com'
         ? 3100

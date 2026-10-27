@@ -6,6 +6,7 @@ import 'package:flutter/foundation.dart' show compute;
 import 'package:flutter/material.dart';
 
 import '../core/audio/audio_engine.dart';
+import '../core/artwork/music_artwork.dart';
 import '../core/catalog/catalog_identity.dart';
 import '../core/catalog/artist_directory.dart';
 import '../core/catalog/musicbrainz_catalog.dart';
@@ -26,6 +27,7 @@ class AuraController extends ChangeNotifier {
     MusicCatalog? catalog,
     this.metadataCatalog,
     this.artistDirectory,
+    this.artwork,
     this.lyricsProvider,
     this.includeDemoTracks = false,
   }) : now = now ?? DateTime.now,
@@ -43,6 +45,8 @@ class AuraController extends ChangeNotifier {
   final MusicCatalog catalog;
   final MetadataCatalog? metadataCatalog;
   final ArtistDirectory? artistDirectory;
+  final ArtworkRepository? artwork;
+  final Map<int, DirectoryArtist> favoriteArtists = {};
   final LyricsProvider? lyricsProvider;
   bool updatingCatalog = false;
   int catalogDone = 0, catalogTotal = 0;
@@ -91,7 +95,6 @@ class AuraController extends ChangeNotifier {
         (t) =>
             !t.isYoutube ||
             favorites.contains(t.id) ||
-            recent.contains(t.id) ||
             playlists.any((p) => p.trackIds.contains(t.id)),
       )
       .toList();
@@ -111,6 +114,17 @@ class AuraController extends ChangeNotifier {
       final data = await store.read();
       if (_disposed) return;
       if (data != null) {
+        for (final raw in data['favoriteArtists'] as List? ?? []) {
+          final artist = DirectoryArtist.fromJson(
+            Map<String, dynamic>.from(raw as Map),
+          );
+          favoriteArtists[artist.id] = artist;
+        }
+        if (data['artworkCache'] is Map) {
+          artwork?.restoreCache(
+            Map<String, dynamic>.from(data['artworkCache'] as Map),
+          );
+        }
         for (final j in data['onlineRecords'] as List? ?? []) {
           final t = OnlineTrack.fromJson(Map<String, dynamic>.from(j as Map));
           onlineRecords[t.id] = t;
@@ -268,6 +282,8 @@ class AuraController extends ChangeNotifier {
             .toList(),
     },
     'favorites': favorites.toList(),
+    'favoriteArtists': favoriteArtists.values.map((a) => a.toJson()).toList(),
+    'artworkCache': artwork?.exportCache() ?? {},
     'playlists': playlists.map((p) => p.toJson()).toList(),
     'recent': recent,
     'queue': queue,
@@ -417,6 +433,14 @@ class AuraController extends ChangeNotifier {
     final i = queue.indexOf(currentId);
     final t = track(queue[(i - 1 + queue.length) % queue.length]);
     if (t != null) await playTrack(t);
+  }
+
+  void toggleArtistFavorite(DirectoryArtist artist) {
+    favoriteArtists.containsKey(artist.id)
+        ? favoriteArtists.remove(artist.id)
+        : favoriteArtists[artist.id] = artist;
+    notifyListeners();
+    unawaited(save());
   }
 
   void toggleFavorite(String id) {

@@ -22,3 +22,6 @@
 - Catalogo e registrazioni riproducibili sono separati: una corrispondenza univoca di titolo, artista e durata viene scelta automaticamente; in caso di ambiguita' si sceglie la registrazione. Disponibilita' e versioni possono differire.
 - I crediti degli ospiti privi di ID canonico sono conservati come nomi con prefisso `credit:`; non viene attribuito loro l'ID dell'artista principale. L'associazione MusicBrainz manuale rimane disponibile.
 - Jam rinviata su richiesta dell'utente; nessun backend o account creato.
+
+- Foto e copertine dipendono dalla copertura e disponibilita' di TheAudioDB/Deezer. Le immagini risolte sono tenute in cache sul dispositivo; in assenza di una copertina viene provata la miniatura originale. Non e' garantita una foto per ogni artista o un'immagine per ogni edizione.
+- Artisti preferiti espliciti: i recenti non aggiungono artisti in Libreria. La Home distingue artisti seguiti da una selezione editoriale di scoperta. Non viene dichiarata una classifica in tempo reale.

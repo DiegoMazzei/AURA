@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 
 import '../../app/aura_controller.dart';
 import '../../core/design/aura_design.dart';
+import '../../core/artwork/music_image.dart';
 import '../../shared/models/music.dart';
 
 class TrackTile extends StatelessWidget {
@@ -21,11 +22,13 @@ class TrackTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) => ListTile(
     contentPadding: const EdgeInsets.symmetric(horizontal: 0, vertical: 3),
-    leading: CosmicCover(
-      color: Color(track.color),
-      imageUrl: track.artworkUrl,
+    leading: MusicImage(
+      controller: controller,
+      artist: track.catalogIdentity?.albumArtist ?? track.artist,
+      album: track.album,
+      fallbackUrl: track.artworkUrl,
       size: 50,
-      radius: 12,
+      radius: 9,
     ),
     title: Text(
       track.title,

@@ -7,6 +7,7 @@ import 'track_tile.dart';
 import '../spotify_import/import_screen.dart';
 import '../player/player_screen.dart';
 import 'library_groups.dart';
+import '../catalog/catalog_screen.dart';
 
 class LibraryScreen extends StatefulWidget {
   const LibraryScreen({super.key, required this.controller});
@@ -74,7 +75,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
           ),
         ),
         SectionTitle(
-          'Libreria',
+          'La tua raccolta',
           action: 'Crea',
           onAction: () async {
             final name = await askName(context);
@@ -109,7 +110,11 @@ class _LibraryScreenState extends State<LibraryScreen> {
                 .toList(),
           ),
         ),
-        if (c.metadataCatalog != null) ...[
+        if (c.metadataCatalog != null &&
+            library.any(
+              (t) =>
+                  !t.isAsset && !t.metadataEdited && t.catalogIdentity == null,
+            )) ...[
           Align(
             alignment: Alignment.centerLeft,
             child: TextButton.icon(
@@ -137,10 +142,16 @@ class _LibraryScreenState extends State<LibraryScreen> {
         const SizedBox(height: 15),
         if (_view == 'Brani') ...[
           if (library.isEmpty)
-            const EmptyMessage(
-              icon: Icons.search_off_rounded,
-              title: 'Nessun risultato',
-              message: 'Prova con un altro titolo, artista o album.',
+            EmptyMessage(
+              icon: _query.isEmpty
+                  ? Icons.library_music_outlined
+                  : Icons.search_off_rounded,
+              title: _query.isEmpty
+                  ? 'Nessun brano salvato'
+                  : 'Nessun risultato',
+              message: _query.isEmpty
+                  ? 'Aggiungi un brano ai preferiti o a una playlist per ritrovarlo qui.'
+                  : 'Prova con un altro titolo, artista o album.',
             ),
           if (c.importing) const LinearProgressIndicator(),
           ...library.map(
@@ -151,7 +162,24 @@ class _LibraryScreenState extends State<LibraryScreen> {
             ),
           ),
         ],
-        if (_view == 'Artisti' || _view == 'Album') ...[
+        if (_view == 'Artisti') ...[
+          if (c.favoriteArtists.isEmpty)
+            const EmptyMessage(
+              icon: Icons.person_outline,
+              title: 'I tuoi artisti, scelti da te',
+              message: 'Apri la scheda di un artista e tocca Segui artista per ritrovarlo qui.',
+            ),
+          ...c.favoriteArtists.values
+              .where((a) => a.name.toLowerCase().contains(_query.toLowerCase()))
+              .map(
+                (a) => ArtistRow(
+                  artist: a,
+                  controller: c,
+                  onTap: () => openCatalogArtist(context, c, a),
+                ),
+              ),
+        ],
+        if (_view == 'Album') ...[
           ...groups.map(
             (group) => ListTile(
               contentPadding: const EdgeInsets.symmetric(vertical: 4),
@@ -202,25 +230,22 @@ class _LibraryScreenState extends State<LibraryScreen> {
           ),
         ],
         const SizedBox(height: 20),
-        ListTile(
-          contentPadding: EdgeInsets.zero,
-          leading: const Icon(Icons.cloud_download_outlined),
-          title: const Text('Importa le tue playlist'),
-          subtitle: Text(
-            '${c.importedCollections.length} raccolte da JSON o CSV',
-          ),
-          trailing: const Icon(Icons.chevron_right),
-          onTap: () => Navigator.push(
-            context,
-            MaterialPageRoute<void>(
-              builder: (_) => ImportScreen(controller: c),
+        if (_view == 'Playlist')
+          ListTile(
+            contentPadding: EdgeInsets.zero,
+            leading: const Icon(Icons.cloud_download_outlined),
+            title: const Text('Importa le tue playlist'),
+            subtitle: Text(
+              '${c.importedCollections.length} raccolte da JSON o CSV',
+            ),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute<void>(
+                builder: (_) => ImportScreen(controller: c),
+              ),
             ),
           ),
-        ),
-        Text(
-          'La tua raccolta, ordinata per chi la crea.',
-          style: TextStyle(color: context.muted, fontSize: 12, height: 1.5),
-        ),
       ],
     );
   }

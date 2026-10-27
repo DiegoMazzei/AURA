@@ -65,3 +65,14 @@ Riferimenti esaminati: Namida e Orbit-Music. Nessun codice o asset copiato da qu
 - 49 test superati, analisi senza segnalazioni. Golden Home aggiornati. Nessuna prova acustica nuova implicita nei test widget.
 
 - Release 0.3.0 build 3 installata e avviata su iPhone di prova dopo lo sblocco. Artefatto Release AOT verificato, nessun kernel Debug. Xcode conferma app in esecuzione.
+
+## Revisione 0.4 - immagini, viola, preferiti espliciti
+
+- Applicato il nuovo riferimento fornito: dischi in caroselli, foto degli artisti, saluto compatto, pillole e palette viola.
+- Foto e copertine da TheAudioDB con riserva Deezer; URL persistenti e cache file sul dispositivo. Prova online Gemitaiz/ELSEWHERE: entrambe le immagini rispondono 200 con image/jpeg.
+- Preferiti artisti separati da canzoni e cronologia; Segui artista e rimozione persistenti. Semplice ascolto non aggiunge brani o artisti alla libreria.
+- Verificati nel simulatore foto di Gemitaiz, copertine delle canzoni, palette, azione Segui artista e stato Artista nei preferiti.
+
+- 53 test superati, inclusi salvataggio/rimozione artisti, indipendenza dalla cronologia, ripristino della cache e fallback delle immagini. Analisi senza segnalazioni. Home e schede verificate nel simulatore con immagini reali.
+
+- Release 0.4.0 build 4 installata e avviata su iPhone di prova. Verificato artefatto AOT senza kernel Debug; Xcode riporta app in esecuzione. Nessun rinnovo di conferma acustica implicito nella revisione grafica.

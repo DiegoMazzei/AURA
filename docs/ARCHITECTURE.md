@@ -44,3 +44,9 @@ Avvio di produzione vuoto; i demo si abilitano soltanto con `includeDemoTracks: 
 `ArtistDirectory` separa risultati misti, artisti, uscite e scalette. `AppleArtistDirectory` usa Search/Lookup con cache limitata e client condiviso che limita la frequenza. Non utilizza audio preview o artwork promozionale Apple.
 
 La directory e' iniettata in produzione e sostituibile nei test. Consultare il catalogo non inserisce canzoni nella libreria e non carica audio. Solo la selezione della registrazione crea la traccia riproducibile, conservando identita' e album scelti. Le risposte obsolete sono scartate; errori di catalogo non modificano il motore audio.
+
+## Immagini e raccolta esplicita - 0.4
+
+`ArtworkRepository` separa foto artista e copertine album. `MusicArtwork` interroga TheAudioDB, poi Deezer come riserva, richiede corrispondenze di nome e titolo e deduplica le richieste. Gli URL risolti sono conservati nel JSON, i file in cache su disco tramite flutter_cache_manager. Il client applica 2,1 secondi fra richieste AudioDB e 550 ms per Deezer, con Retry-After. Le immagini sono indipendenti dal caricamento audio.
+
+`favoriteArtists` conserva ID, nome e genere separatamente dai preferiti dei brani. Non viene popolato dagli ascolti. `libraryTracks` include solo file personali, brani preferiti o playlist; la cronologia rimane separata. La vista Artisti di Libreria mostra soltanto artisti seguiti esplicitamente e apre la directory completa.

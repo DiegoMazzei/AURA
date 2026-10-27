@@ -91,12 +91,12 @@ class SettingsScreen extends StatelessWidget {
             ),
             const SectionTitle('Catalogo e testi'),
             Text(
-              'Artisti e album: MusicBrainz, con Apple come catalogo di riserva. Copertine: Cover Art Archive e miniature della sorgente. Le associazioni ambigue si possono scegliere dal menu del brano.\n\nTesti sincronizzati: LRCLIB, quando disponibili. Genius si apre per la consultazione; puoi anche importare file LRC o incollare un tuo testo.',
+              'Artisti e album: MusicBrainz, con Apple come catalogo di riserva. Foto e copertine: TheAudioDB e Deezer, con cache sul dispositivo e miniature originali come riserva. Le associazioni ambigue si possono scegliere dal menu del brano.\n\nTesti sincronizzati: LRCLIB, quando disponibili. Genius si apre per la consultazione; puoi anche importare file LRC o incollare un tuo testo.',
               style: TextStyle(color: context.muted, height: 1.6),
             ),
             const SectionTitle('Privacy e accessibilità'),
             Text(
-              'La libreria rimane sul dispositivo. AURA non usa analitica propria. Le ricerche comunicano con YouTube; la catalogazione invia titolo e artista a MusicBrainz o Apple, la ricerca dei testi a LRCLIB. Genius si apre solo quando lo scegli. Le animazioni seguono il movimento ridotto del sistema.',
+              'La libreria rimane sul dispositivo. AURA non usa analitica propria. Le ricerche comunicano con YouTube; la catalogazione invia titolo e artista a MusicBrainz o Apple, la ricerca dei testi a LRCLIB. Per le immagini vengono inviati nomi di artisti e album a TheAudioDB o Deezer. Genius si apre solo quando lo scegli. Le animazioni seguono il movimento ridotto del sistema.',
               style: TextStyle(color: context.muted, height: 1.6),
             ),
             const SizedBox(height: 30),
@@ -120,7 +120,7 @@ class SettingsScreen extends StatelessWidget {
             const SizedBox(height: 9),
             Center(
               child: Text(
-                '0.3 · Sviluppo',
+                '0.4 · Sviluppo',
                 style: TextStyle(color: context.muted, fontSize: 11),
               ),
             ),

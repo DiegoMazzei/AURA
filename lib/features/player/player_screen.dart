@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 
 import '../../app/aura_controller.dart';
 import '../../core/design/aura_design.dart';
+import '../../core/artwork/music_image.dart';
 import '../karaoke/karaoke_screen.dart';
 import '../youtube/online_track.dart';
 import '../youtube/online_player_screen.dart' show openEmbeddedVideo;
@@ -332,12 +333,16 @@ class PlayerScreen extends StatelessWidget {
                         tag: 'current-art',
                         child: AnimatedSwitcher(
                           duration: const Duration(milliseconds: 500),
-                          child: CosmicCover(
+                          child: MusicImage(
                             key: ValueKey(c.currentId),
-                            color: Color(c.current.color),
-                            imageUrl: c.current.artworkUrl,
+                            controller: c,
+                            artist:
+                                c.current.catalogIdentity?.albumArtist ??
+                                c.current.artist,
+                            album: c.current.album,
+                            fallbackUrl: c.current.artworkUrl,
                             size: math.min(constraints.maxWidth - 56, 390),
-                            radius: 12,
+                            radius: 16,
                           ),
                         ),
                       ),

@@ -41,3 +41,7 @@ Fonti tecniche: [MusicBrainz](https://musicbrainz.org/doc/MusicBrainz_API), [App
 28. Rimossi Esplora e contenuti ridondanti. Tre tab coerenti fra Flutter e UIKit: Ascolta, Cerca, Libreria.
 29. Collaborazioni basate sui crediti del catalogo, senza dichiararle esaustive. Le uscite di altri artisti non entrano nella discografia soltanto perche' il nome cercato appare nel titolo.
 30. Jam rinviata su istruzione esplicita dell'utente. Nessun backend implementato o pubblicato.
+
+31. Direzione 0.4 derivata dal nuovo screenshot dell'utente: Home fotografica e accento viola. Le proposte editoriali non sono presentate come classifiche o preferiti personali.
+32. Foto artista e copertine: TheAudioDB con riserva Deezer e miniature originali. Gli omonimi non sono selezionati solo per posizione nei risultati; confronto esatto dei nomi, ranking per pubblico nella riserva e nomi completi per album. URL e immagini hanno cache separate.
+33. Seguire un artista e salvare un brano sono azioni distinte; ascoltare non salva automaticamente nessuno dei due. I vecchi recenti rimangono nella cronologia.

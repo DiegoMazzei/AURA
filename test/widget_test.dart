@@ -109,6 +109,9 @@ void main() {
       await tester.tap(find.text('Libreria'));
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 400));
+      await tester.ensureVisible(find.text('Playlist'));
+      await tester.tap(find.text('Playlist'));
+      await tester.pumpAndSettle();
       await tester.ensureVisible(find.text('Importa le tue playlist'));
       await tester.pump();
       await tester.tap(find.text('Importa le tue playlist'));

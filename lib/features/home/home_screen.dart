@@ -1,12 +1,21 @@
 import 'package:flutter/material.dart';
 
 import '../../app/aura_controller.dart';
+import '../../core/artwork/music_image.dart';
+import '../../core/catalog/artist_directory.dart';
 import '../../core/design/aura_design.dart';
 import '../../shared/models/music.dart';
-import '../library/track_tile.dart';
+import '../catalog/catalog_screen.dart';
 import '../player/player_screen.dart';
 
-class HomeScreen extends StatelessWidget {
+const discoveryArtists = [
+  DirectoryArtist(id: 441911933, name: 'Gemitaiz', genre: 'Hip-Hop/Rap'),
+  DirectoryArtist(id: 479756766, name: 'The Weeknd', genre: 'R&B/Soul'),
+  DirectoryArtist(id: 159260351, name: 'Taylor Swift', genre: 'Pop'),
+  DirectoryArtist(id: 271256, name: 'Drake', genre: 'Hip-Hop/Rap'),
+];
+
+class HomeScreen extends StatefulWidget {
   const HomeScreen({
     super.key,
     required this.controller,
@@ -19,146 +28,311 @@ class HomeScreen extends StatelessWidget {
   final AuraController controller;
   final VoidCallback onSearch, onExplore, onLibrary, onKaraoke, onSettings;
   @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  int _filter = 0;
+  late final Future<DirectoryResults> _suggestions =
+      widget.controller.artistDirectory?.search('Gemitaiz') ??
+      Future.value(const DirectoryResults());
+  @override
   Widget build(BuildContext context) {
-    final recent = controller.recent
-        .map(controller.track)
-        .whereType<Track>()
-        .toList();
-    final collection = controller.libraryTracks;
+    final c = widget.controller;
+    final recent = c.recent.map(c.track).whereType<Track>().toList();
+    final artists = c.favoriteArtists.isNotEmpty
+        ? c.favoriteArtists.values.toList()
+        : discoveryArtists;
+    final hour = c.now().hour;
+    final greeting = hour < 12
+        ? 'Buongiorno,'
+        : hour < 18
+        ? 'Buon pomeriggio,'
+        : 'Buonasera,';
     return ListView(
-      padding: const EdgeInsets.fromLTRB(24, 18, 24, 172),
+      padding: const EdgeInsets.fromLTRB(22, 22, 22, 172),
       children: [
         Row(
           children: [
-            const Expanded(
-              child: Text(
-                'Ascolta',
-                style: TextStyle(
-                  fontSize: 35,
-                  fontWeight: FontWeight.w700,
-                  letterSpacing: -1.2,
+            Container(
+              width: 43,
+              height: 43,
+              decoration: const BoxDecoration(
+                shape: BoxShape.circle,
+                gradient: LinearGradient(
+                  colors: [Color(0xffcfafff), Color(0xff8a43e3)],
                 ),
+              ),
+              child: const Center(
+                child: Text(
+                  'A',
+                  style: TextStyle(
+                    fontSize: 25,
+                    color: Colors.white,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    greeting,
+                    style: TextStyle(fontSize: 18, color: context.muted),
+                  ),
+                  const Text(
+                    'Utente',
+                    style: TextStyle(
+                      fontSize: 23,
+                      height: 1.15,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ],
               ),
             ),
             GlassIcon(
               icon: Icons.tune_rounded,
               label: 'Impostazioni',
-              onPressed: onSettings,
+              onPressed: widget.onSettings,
             ),
           ],
         ),
-        const SizedBox(height: 26),
-        if (collection.isEmpty) ...[
-          const SizedBox(height: 30),
-          const Text(
-            'La tua musica,\nda qui.',
-            style: TextStyle(
-              fontSize: 40,
-              height: 1.08,
-              fontWeight: FontWeight.w600,
-              letterSpacing: -1.5,
+        const SizedBox(height: 27),
+        SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: Row(
+            children: [
+              for (var i = 0; i < 3; i++)
+                Padding(
+                  padding: const EdgeInsets.only(right: 10),
+                  child: ChoiceChip(
+                    label: Text(['Tutto', 'Musica', 'Artisti'][i]),
+                    selected: _filter == i,
+                    selectedColor: const Color(0xff8342cd),
+                    showCheckmark: false,
+                    labelStyle: TextStyle(
+                      color: _filter == i ? Colors.white : context.ink,
+                      fontSize: 15,
+                    ),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 13,
+                      vertical: 8,
+                    ),
+                    onSelected: (_) => setState(() => _filter = i),
+                  ),
+                ),
+            ],
+          ),
+        ),
+        if (_filter != 2)
+          FutureBuilder<DirectoryResults>(
+            future: _suggestions,
+            builder: (context, snapshot) {
+              final albums =
+                  snapshot.data?.albums.take(8).toList() ?? <DirectoryAlbum>[];
+              if (recent.isEmpty && albums.isEmpty) {
+                if (c.artistDirectory != null && !snapshot.hasError) {
+                  return const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 28),
+                    child: LinearProgressIndicator(minHeight: 2),
+                  );
+                }
+                return const SizedBox.shrink();
+              }
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SectionTitle(
+                    'Da ascoltare',
+                    action: 'Cerca',
+                    onAction: widget.onSearch,
+                  ),
+                  SizedBox(
+                    height: 224,
+                    child: ListView.separated(
+                      scrollDirection: Axis.horizontal,
+                      itemCount: recent.take(6).length + albums.length,
+                      separatorBuilder: (_, _) => const SizedBox(width: 15),
+                      itemBuilder: (context, i) {
+                        final count = recent.take(6).length;
+                        final t = i < count ? recent[i] : null;
+                        final a = i >= count ? albums[i - count] : null;
+                        return SizedBox(
+                          width: 154,
+                          child: InkWell(
+                            borderRadius: BorderRadius.circular(14),
+                            onTap: () {
+                              if (t != null) {
+                                c.playTrack(t, contextTracks: recent);
+                                openPlayer(context, c);
+                              } else {
+                                openCatalogAlbum(context, c, a!);
+                              }
+                            },
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                MusicImage(
+                                  controller: c,
+                                  artist:
+                                      t?.catalogIdentity?.albumArtist ??
+                                      t?.artist ??
+                                      a!.artist,
+                                  album: t?.album ?? a!.title,
+                                  fallbackUrl: t?.artworkUrl,
+                                  size: 154,
+                                  radius: 14,
+                                ),
+                                const SizedBox(height: 10),
+                                Text(
+                                  t?.title ?? a!.title,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                                const SizedBox(height: 3),
+                                Text(
+                                  t?.artist ?? a!.artist,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: TextStyle(
+                                    fontSize: 13,
+                                    color: context.muted,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ],
+              );
+            },
+          ),
+        if (_filter != 1 && c.artistDirectory != null) ...[
+          SectionTitle(
+            c.favoriteArtists.isEmpty ? 'Scopri artisti' : 'Artisti preferiti',
+            action: 'Cerca',
+            onAction: widget.onSearch,
+          ),
+          SizedBox(
+            height: 134,
+            child: ListView.separated(
+              scrollDirection: Axis.horizontal,
+              itemCount: artists.length,
+              separatorBuilder: (_, _) => const SizedBox(width: 18),
+              itemBuilder: (context, i) {
+                final a = artists[i];
+                return SizedBox(
+                  width: 88,
+                  child: InkWell(
+                    borderRadius: BorderRadius.circular(44),
+                    onTap: () => openCatalogArtist(context, c, a),
+                    child: Column(
+                      children: [
+                        MusicImage(
+                          controller: c,
+                          artist: a.name,
+                          portrait: true,
+                          size: 88,
+                          radius: 44,
+                        ),
+                        const SizedBox(height: 10),
+                        Text(
+                          a.name,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              },
             ),
           ),
-          const SizedBox(height: 16),
-          Text(
-            'Un artista. I suoi dischi.\nLe canzoni che cerchi.',
-            style: TextStyle(fontSize: 18, height: 1.5, color: context.muted),
+        ],
+        if (_filter != 2 && recent.isNotEmpty) ...[
+          const SectionTitle('Riprendi da qui'),
+          ...recent
+              .take(4)
+              .map(
+                (t) => ListTile(
+                  contentPadding: EdgeInsets.zero,
+                  leading: MusicImage(
+                    controller: c,
+                    artist: t.catalogIdentity?.albumArtist ?? t.artist,
+                    album: t.album,
+                    fallbackUrl: t.artworkUrl,
+                    size: 48,
+                    radius: 9,
+                  ),
+                  title: Text(
+                    t.title,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  subtitle: Text(
+                    t.artist,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  trailing: const Icon(Icons.play_arrow_rounded),
+                  onTap: () {
+                    c.playTrack(t, contextTracks: recent);
+                    openPlayer(context, c);
+                  },
+                ),
+              ),
+        ] else if (_filter != 2 && c.artistDirectory != null)
+          FutureBuilder<DirectoryResults>(
+            future: _suggestions,
+            builder: (context, snapshot) {
+              if (!snapshot.hasData) return const SizedBox.shrink();
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const SectionTitle('Dal catalogo'),
+                  ...snapshot.data!.songs
+                      .take(5)
+                      .map(
+                        (s) => SongRow(
+                          song: s,
+                          controller: c,
+                          onTap: () => openCatalogSong(context, c, s),
+                        ),
+                      ),
+                ],
+              );
+            },
           ),
-          const SizedBox(height: 28),
+        if (c.artistDirectory == null && recent.isEmpty) ...[
+          const SizedBox(height: 26),
+          const Text(
+            'La tua prossima canzone\nti aspetta.',
+            style: TextStyle(fontSize: 28, fontWeight: FontWeight.w600),
+          ),
+          const SizedBox(height: 20),
           Align(
             alignment: Alignment.centerLeft,
             child: FilledButton.icon(
-              onPressed: onSearch,
+              onPressed: widget.onSearch,
               icon: const Icon(Icons.search),
               label: const Text('Cerca musica'),
             ),
           ),
-        ] else ...[
-          if (recent.isNotEmpty) ...[
-            const SectionTitle('Ascoltati di recente'),
-            SizedBox(
-              height: 224,
-              child: ListView.separated(
-                scrollDirection: Axis.horizontal,
-                itemCount: recent.take(12).length,
-                separatorBuilder: (_, _) => const SizedBox(width: 16),
-                itemBuilder: (context, i) {
-                  final t = recent[i];
-                  return SizedBox(
-                    width: 154,
-                    child: InkWell(
-                      borderRadius: BorderRadius.circular(10),
-                      onTap: () {
-                        controller.playTrack(t, contextTracks: recent);
-                        openPlayer(context, controller);
-                      },
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          CosmicCover(
-                            size: 154,
-                            color: Color(t.color),
-                            imageUrl: t.artworkUrl,
-                            radius: 10,
-                          ),
-                          const SizedBox(height: 10),
-                          Text(
-                            t.title,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(
-                              fontSize: 17,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                          const SizedBox(height: 3),
-                          Text(
-                            t.artist,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: TextStyle(
-                              color: context.muted,
-                              fontSize: 14,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  );
-                },
-              ),
-            ),
-            const SizedBox(height: 10),
-          ],
-          ListTile(
-            contentPadding: EdgeInsets.zero,
-            leading: const Icon(Icons.favorite_rounded),
-            title: const Text(
-              'Brani del cuore',
-              style: TextStyle(fontSize: 19, fontWeight: FontWeight.w600),
-            ),
-            subtitle: Text('${controller.favorites.length} preferiti'),
-            trailing: const Icon(Icons.chevron_right),
-            onTap: onLibrary,
-          ),
-          const SizedBox(height: 12),
-          SectionTitle(
-            'Nella tua libreria',
-            action: 'Tutti',
-            onAction: onLibrary,
-          ),
-          ...collection
-              .take(8)
-              .map(
-                (t) => TrackTile(
-                  track: t,
-                  controller: controller,
-                  onTap: () {
-                    controller.playTrack(t, contextTracks: collection);
-                    openPlayer(context, controller);
-                  },
-                ),
-              ),
         ],
       ],
     );

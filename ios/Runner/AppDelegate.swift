@@ -149,7 +149,7 @@ final class AuraControlView: UIView {
   func update(_ data: [String: Any]) {
     config = data
     overrideUserInterfaceStyle = data["dark"] as? Bool == true ? .dark : .light
-    let accent = UIColor(red: 0.65, green: 0.69, blue: 0.98, alpha: 1)
+    let accent = UIColor(red: 0.70, green: 0.45, blue: 0.98, alpha: 1)
     if kind == "button" {
       var style: UIButton.Configuration
       if #available(iOS 26.0, *) { style = .glass() } else { style = .plain() }

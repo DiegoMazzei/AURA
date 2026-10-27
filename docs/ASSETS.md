@@ -26,3 +26,11 @@ Roboto distribuito con la licenza Apache in `assets/fonts/LICENSE.txt`, provenie
 ## Riferimento
 
 `docs/reference/approved-mockup.png` è il mockup fornito dall’utente; viene conservato come riferimento progettuale e non usato come schermata dell’app. La UI è composta da widget Flutter reali.
+
+## Immagini musicali 0.4
+
+Foto e copertine sono recuperate a runtime da TheAudioDB e, come riserva, Deezer. Non vengono incluse nel repository come asset originali AURA. Cache locale per ridurre ricaricamenti e mantenere le immagini gia' viste. Le miniature del contenuto riprodotto restano una riserva. Crediti delle fonti nelle impostazioni.
+
+Riferimento UI fornito dall'utente: `docs/reference/ui-purple-direction.png`, conservato per la direzione grafica; non usato come screenshot simulato del prodotto.
+
+Documentazione: https://www.theaudiodb.com/free_music_api

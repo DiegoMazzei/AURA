@@ -219,6 +219,11 @@ void main() {
       await tester.tap(find.byType(ArtistRow).first);
       await tester.pumpAndSettle();
       expect(find.byType(ArtistScreen), findsOneWidget);
+      await tester.ensureVisible(find.text('Segui artista'));
+      await tester.tap(find.text('Segui artista'));
+      await tester.pumpAndSettle();
+      expect(c.favoriteArtists.containsKey(artist.id), isTrue);
+      expect(find.text('Artista nei preferiti'), findsOneWidget);
       await tester.tap(find.text('Feat.'));
       await tester.pumpAndSettle();
       expect(find.text(feat.title), findsOneWidget);

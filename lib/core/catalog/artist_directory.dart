@@ -10,6 +10,12 @@ class DirectoryArtist {
   });
   final int id;
   final String name, genre;
+  Map<String, dynamic> toJson() => {'id': id, 'name': name, 'genre': genre};
+  factory DirectoryArtist.fromJson(Map<String, dynamic> j) => DirectoryArtist(
+    id: (j['id'] as num).toInt(),
+    name: j['name'] as String,
+    genre: j['genre'] as String? ?? '',
+  );
 }
 
 class DirectoryAlbum {

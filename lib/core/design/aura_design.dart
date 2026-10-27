@@ -3,17 +3,17 @@ import 'package:flutter/material.dart';
 
 import 'native_materials.dart';
 
-const auraBlue = Color(0xffa8b5ff);
-const auraViolet = Color(0xffb5a6e8);
+const auraBlue = Color(0xffb486ff);
+const auraViolet = Color(0xffac72fa);
 const auraPink = Color(0xffe09bb9);
 
 ThemeData auraTheme(Brightness brightness) {
   final dark = brightness == Brightness.dark;
   final scheme = ColorScheme.fromSeed(
-    seedColor: const Color(0xff8290d8),
+    seedColor: const Color(0xff9750e8),
     brightness: brightness,
-    surface: dark ? const Color(0xff0b0c10) : const Color(0xfffafafa),
-    primary: dark ? auraBlue : const Color(0xff515fa1),
+    surface: dark ? const Color(0xff100b18) : const Color(0xfffaf7ff),
+    primary: dark ? auraBlue : const Color(0xff7435bc),
   );
   final family = defaultTargetPlatform == TargetPlatform.iOS
       ? '.SF Pro Text'
@@ -50,7 +50,7 @@ ThemeData auraTheme(Brightness brightness) {
       backgroundColor: scheme.onSurface.withValues(alpha: .04),
       selectedColor: scheme.onSurface.withValues(alpha: .10),
       side: BorderSide.none,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(9)),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(22)),
       showCheckmark: false,
     ),
     inputDecorationTheme: InputDecorationTheme(
@@ -103,7 +103,7 @@ class AuraGlassSurface extends StatelessWidget {
   Widget build(BuildContext context) => Material(
     color:
         tint?.withValues(alpha: .08) ??
-        (context.isDark ? const Color(0xff191a20) : const Color(0xffeeeeef)),
+        (context.isDark ? const Color(0xff21162f) : const Color(0xffeee6f8)),
     borderRadius: BorderRadius.circular(radius),
     clipBehavior: Clip.antiAlias,
     child: Padding(padding: padding, child: child),

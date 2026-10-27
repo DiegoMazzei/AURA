@@ -8,6 +8,7 @@ import '../../core/catalog/musicbrainz_catalog.dart';
 import '../../shared/models/music.dart';
 import '../player/player_screen.dart' show MiniPlayer;
 import '../../core/design/aura_design.dart';
+import '../../core/artwork/music_image.dart';
 import '../youtube/online_search_screen.dart';
 import '../youtube/online_track.dart';
 import '../youtube/online_player_screen.dart' show openOnlinePlayer;
@@ -312,6 +313,7 @@ class _CatalogSearchScreenState extends State<CatalogSearchScreen> {
             ...(_tab == 0 ? r.artists.take(3) : r.artists).map(
               (a) => ArtistRow(
                 artist: a,
+                controller: c,
                 onTap: () => openCatalogArtist(context, c, a),
               ),
             ),
@@ -319,8 +321,11 @@ class _CatalogSearchScreenState extends State<CatalogSearchScreen> {
           if ((_tab == 0 || _tab == 1) && r.songs.isNotEmpty) ...[
             const SectionTitle('Brani'),
             ...(_tab == 0 ? r.songs.take(6) : r.songs).map(
-              (s) =>
-                  SongRow(song: s, onTap: () => openCatalogSong(context, c, s)),
+              (s) => SongRow(
+                song: s,
+                controller: c,
+                onTap: () => openCatalogSong(context, c, s),
+              ),
             ),
             if (_tab == 0 && r.songs.length > 6)
               TextButton(
@@ -333,6 +338,7 @@ class _CatalogSearchScreenState extends State<CatalogSearchScreen> {
             ...(_tab == 0 ? r.albums.take(5) : r.albums).map(
               (a) => AlbumRow(
                 album: a,
+                controller: c,
                 onTap: () => openCatalogAlbum(context, c, a),
               ),
             ),
@@ -396,7 +402,16 @@ class _ArtistScreenState extends State<ArtistScreen> {
     body: ListView(
       padding: const EdgeInsets.fromLTRB(24, 8, 24, 40),
       children: [
-        const SizedBox(height: 16),
+        Center(
+          child: MusicImage(
+            controller: widget.controller,
+            artist: widget.artist.name,
+            portrait: true,
+            size: 168,
+            radius: 84,
+          ),
+        ),
+        const SizedBox(height: 24),
         Text(
           widget.artist.name,
           style: const TextStyle(
@@ -411,7 +426,27 @@ class _ArtistScreenState extends State<ArtistScreen> {
           widget.artist.genre.isEmpty ? 'Artista' : widget.artist.genre,
           style: TextStyle(color: context.muted, fontSize: 17),
         ),
-        const SizedBox(height: 32),
+        const SizedBox(height: 18),
+        ListenableBuilder(
+          listenable: widget.controller,
+          builder: (_, _) {
+            final followed = widget.controller.favoriteArtists.containsKey(
+              widget.artist.id,
+            );
+            return Align(
+              alignment: Alignment.centerLeft,
+              child: FilledButton.icon(
+                onPressed: () =>
+                    widget.controller.toggleArtistFavorite(widget.artist),
+                icon: Icon(followed ? Icons.favorite : Icons.favorite_border),
+                label: Text(
+                  followed ? 'Artista nei preferiti' : 'Segui artista',
+                ),
+              ),
+            );
+          },
+        ),
+        const SizedBox(height: 28),
         _Categories(
           labels: const ['Brani', 'Album', 'Feat.'],
           selected: _tab,
@@ -447,6 +482,7 @@ class _ArtistScreenState extends State<ArtistScreen> {
                   ...albums.map(
                     (a) => AlbumRow(
                       album: a,
+                      controller: widget.controller,
                       onTap: () =>
                           openCatalogAlbum(context, widget.controller, a),
                     ),
@@ -494,6 +530,7 @@ class _ArtistScreenState extends State<ArtistScreen> {
                   ...songs.map(
                     (s) => SongRow(
                       song: s,
+                      controller: widget.controller,
                       onTap: () =>
                           openCatalogSong(context, widget.controller, s),
                     ),
@@ -550,6 +587,16 @@ class _AlbumScreenState extends State<AlbumScreen> {
     body: ListView(
       padding: const EdgeInsets.fromLTRB(24, 12, 24, 40),
       children: [
+        Center(
+          child: MusicImage(
+            controller: widget.controller,
+            artist: widget.album.artist,
+            album: widget.album.title,
+            size: 240,
+            radius: 18,
+          ),
+        ),
+        const SizedBox(height: 24),
         Text(
           widget.album.title,
           style: const TextStyle(
@@ -589,6 +636,7 @@ class _AlbumScreenState extends State<AlbumScreen> {
                   (s) => SongRow(
                     song: s,
                     numbered: true,
+                    controller: widget.controller,
                     onTap: () => openCatalogSong(context, widget.controller, s),
                   ),
                 ),
@@ -602,21 +650,35 @@ class _AlbumScreenState extends State<AlbumScreen> {
 }
 
 class ArtistRow extends StatelessWidget {
-  const ArtistRow({super.key, required this.artist, required this.onTap});
+  const ArtistRow({
+    super.key,
+    required this.artist,
+    required this.onTap,
+    this.controller,
+  });
   final DirectoryArtist artist;
+  final AuraController? controller;
   final VoidCallback onTap;
   @override
   Widget build(BuildContext context) => ListTile(
     contentPadding: const EdgeInsets.symmetric(vertical: 8),
-    leading: CircleAvatar(
-      radius: 27,
-      backgroundColor: context.ink.withValues(alpha: .06),
-      foregroundColor: context.ink,
-      child: Text(
-        artist.name.isEmpty ? '♪' : artist.name.characters.first,
-        style: const TextStyle(fontSize: 23, fontWeight: FontWeight.w600),
-      ),
-    ),
+    leading: controller != null
+        ? MusicImage(
+            controller: controller!,
+            artist: artist.name,
+            portrait: true,
+            size: 54,
+            radius: 27,
+          )
+        : CircleAvatar(
+            radius: 27,
+            backgroundColor: context.ink.withValues(alpha: .06),
+            foregroundColor: context.ink,
+            child: Text(
+              artist.name.isEmpty ? '♪' : artist.name.characters.first,
+              style: const TextStyle(fontSize: 23, fontWeight: FontWeight.w600),
+            ),
+          ),
     title: Text(
       artist.name,
       style: const TextStyle(fontSize: 19, fontWeight: FontWeight.w600),
@@ -628,21 +690,35 @@ class ArtistRow extends StatelessWidget {
 }
 
 class AlbumRow extends StatelessWidget {
-  const AlbumRow({super.key, required this.album, required this.onTap});
+  const AlbumRow({
+    super.key,
+    required this.album,
+    required this.onTap,
+    this.controller,
+  });
   final DirectoryAlbum album;
+  final AuraController? controller;
   final VoidCallback onTap;
   @override
   Widget build(BuildContext context) => ListTile(
     contentPadding: const EdgeInsets.symmetric(vertical: 8),
-    leading: Container(
-      width: 54,
-      height: 54,
-      decoration: BoxDecoration(
-        color: context.ink.withValues(alpha: .05),
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Icon(Icons.album_outlined, color: context.muted, size: 30),
-    ),
+    leading: controller != null
+        ? MusicImage(
+            controller: controller!,
+            artist: album.artist,
+            album: album.title,
+            size: 54,
+            radius: 9,
+          )
+        : Container(
+            width: 54,
+            height: 54,
+            decoration: BoxDecoration(
+              color: context.ink.withValues(alpha: .05),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Icon(Icons.album_outlined, color: context.muted, size: 30),
+          ),
     title: Text(
       album.title,
       style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w500),
@@ -661,21 +737,31 @@ class SongRow extends StatelessWidget {
     required this.song,
     required this.onTap,
     this.numbered = false,
+    this.controller,
   });
   final DirectorySong song;
+  final AuraController? controller;
   final VoidCallback onTap;
   final bool numbered;
   @override
   Widget build(BuildContext context) => ListTile(
     contentPadding: const EdgeInsets.symmetric(vertical: 3),
-    leading: SizedBox(
-      width: 28,
-      child: Text(
-        numbered ? '${song.number}' : '♪',
-        style: TextStyle(color: context.muted, fontSize: 17),
-        textAlign: TextAlign.center,
-      ),
-    ),
+    leading: !numbered && controller != null
+        ? MusicImage(
+            controller: controller!,
+            artist: song.identity.artists.first.name,
+            album: song.album,
+            size: 48,
+            radius: 8,
+          )
+        : SizedBox(
+            width: 28,
+            child: Text(
+              numbered ? '${song.number}' : '♪',
+              style: TextStyle(color: context.muted, fontSize: 17),
+              textAlign: TextAlign.center,
+            ),
+          ),
     title: Text(
       song.title,
       style: const TextStyle(fontSize: 17),
