@@ -17,3 +17,8 @@
 
 - Catalogazione: MusicBrainz e riserva Apple possono essere indisponibili o non avere una versione corretta. Gli abbinamenti automatici richiedono titolo/artista/durata compatibili e non sovrascrivono modifiche manuali. Identità provenienti da fornitori diversi rimangono distinte; è possibile scegliere un’associazione coerente dal menu del brano.
 - Liquid Glass Apple disponibile soltanto su iOS 26+. Il materiale è UIKit; Android e iOS precedenti usano superfici standard.
+
+- Ricerca a cataloghi: metadati Apple Search/Lookup per il territorio IT, massimo 100 risultati musicali nella ricerca e 200 uscite/scaletta per lookup. La scheda artista non dipende dagli ascolti. Brani in evidenza e collaborazioni derivano dai crediti restituiti, non sono un censimento completo di ogni partecipazione. Gli album con artista principale diverso vengono esclusi dalla discografia, salvo credito condiviso esplicito.
+- Catalogo e registrazioni riproducibili sono separati: una corrispondenza univoca di titolo, artista e durata viene scelta automaticamente; in caso di ambiguita' si sceglie la registrazione. Disponibilita' e versioni possono differire.
+- I crediti degli ospiti privi di ID canonico sono conservati come nomi con prefisso `credit:`; non viene attribuito loro l'ID dell'artista principale. L'associazione MusicBrainz manuale rimane disponibile.
+- Jam rinviata su richiesta dell'utente; nessun backend o account creato.

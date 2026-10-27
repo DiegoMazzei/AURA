@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 
 import '../core/audio/audio_engine.dart';
 import '../core/catalog/catalog_identity.dart';
+import '../core/catalog/artist_directory.dart';
 import '../core/catalog/musicbrainz_catalog.dart';
 import '../core/lyrics/lyrics_provider.dart';
 import '../core/storage/library_store.dart';
@@ -24,6 +25,7 @@ class AuraController extends ChangeNotifier {
     DateTime Function()? now,
     MusicCatalog? catalog,
     this.metadataCatalog,
+    this.artistDirectory,
     this.lyricsProvider,
     this.includeDemoTracks = false,
   }) : now = now ?? DateTime.now,
@@ -40,6 +42,7 @@ class AuraController extends ChangeNotifier {
   final DateTime Function() now;
   final MusicCatalog catalog;
   final MetadataCatalog? metadataCatalog;
+  final ArtistDirectory? artistDirectory;
   final LyricsProvider? lyricsProvider;
   bool updatingCatalog = false;
   int catalogDone = 0, catalogTotal = 0;

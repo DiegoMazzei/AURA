@@ -38,3 +38,9 @@ Questa prima versione usa un repository JSON per una libreria personale di picco
 `PublicMusicJsonClient` limita host, dimensione, timeout e frequenza; rispetta Retry-After e serializza richieste. Nessuna chiave o credenziale viene inclusa.
 
 Avvio di produzione vuoto; i demo si abilitano soltanto con `includeDemoTracks: true` nelle fixture dei test. La migrazione rimuove i riferimenti ai demo dalla raccolta senza toccare i file personali.
+
+## Directory remota indipendente dalla libreria - 0.3
+
+`ArtistDirectory` separa risultati misti, artisti, uscite e scalette. `AppleArtistDirectory` usa Search/Lookup con cache limitata e client condiviso che limita la frequenza. Non utilizza audio preview o artwork promozionale Apple.
+
+La directory e' iniettata in produzione e sostituibile nei test. Consultare il catalogo non inserisce canzoni nella libreria e non carica audio. Solo la selezione della registrazione crea la traccia riproducibile, conservando identita' e album scelti. Le risposte obsolete sono scartate; errori di catalogo non modificano il motore audio.

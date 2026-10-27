@@ -53,3 +53,15 @@ Riferimenti esaminati: Namida e Orbit-Music. Nessun codice o asset copiato da qu
 - Copertine online preservate dopo associazione catalogo; verificata visibilità nel simulatore iPhone 18 Pro iOS 27 insieme a dock, navigazione e icone del player.
 - 44 test automatici superati; analisi senza segnalazioni. Golden aggiornati e ispezionati; i golden usano fixture e non validano il materiale UIKit.
 - Schema AURA iPhone Release eseguito su iPhone di prova; Xcode riporta applicazione in esecuzione. La verifica acustica della nuova release resta una prova d’uso sul telefono, distinta dai test automatici.
+
+## Revisione 0.3 - cataloghi e gerarchia
+
+- Jam rinviata dall'utente. Attivita' concentrata su UI e ricerca a cataloghi.
+- Navigazione ridotta a Ascolta/Cerca/Libreria; Home senza slogan o schede duplicate.
+- Ricerca remota Tutto/Brani/Artisti/Album indipendente dalla libreria. Schede artista con Brani, Album e Feat.; scalette per ID album ordinate per disco e traccia.
+- Risoluzione automatica solo per registrazione univoca compatibile con titolo, artista e durata; scelta esplicita negli altri casi. Metadati canonici conservati in libreria e media session.
+- Crediti separati: gli ospiti non ereditano l'ID del principale. Discografia filtrata per titolarita' e credito condiviso.
+- Prova online Gemitaiz: 29 uscite proprie/condivise, 100 risultati musicali nella ricerca, 17 tracce per ELSEWHERE. Verificato nel simulatore il percorso Cerca -> Gemitaiz -> Album -> ELSEWHERE e la visibilita' del miniplayer.
+- 49 test superati, analisi senza segnalazioni. Golden Home aggiornati. Nessuna prova acustica nuova implicita nei test widget.
+
+- Release 0.3.0 build 3 installata e avviata su iPhone di prova dopo lo sblocco. Artefatto Release AOT verificato, nessun kernel Debug. Xcode conferma app in esecuzione.

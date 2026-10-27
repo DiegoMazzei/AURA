@@ -55,7 +55,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
         ),
         const SizedBox(height: 9),
         Text(
-          'Tutta la tua musica. Un solo posto.',
+          'La musica che hai scelto.',
           style: TextStyle(color: context.muted),
         ),
         const SizedBox(height: 22),

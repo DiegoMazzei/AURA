@@ -28,3 +28,9 @@ Nessun brano stock nella libreria di produzione. Avvio vuoto con invito alla ric
 Applicati i principi del file `apple-design` consegnato dall’utente e della guida Liquid Glass incollata in chat: gerarchia, contenuto, materiali sul solo strato funzionale, leggibilità e controlli riconoscibili. Il file allegato non include la cartella `references/`; non vengono attribuite citazioni a quei file mancanti. I token CSS sono un riferimento visivo per Flutter, non l’implementazione del materiale Apple.
 
 Le anteprime in `docs/previews` sono render Flutter con fixture e controlli portabili. La verifica dei componenti UIKit avviene nel simulatore iOS; non va dedotta dai golden.
+
+## Gerarchia 0.3
+
+Tre destinazioni: Ascolta, Cerca, Libreria. Eliminati Esplora duplicato, grande billboard con slogan e schede ridondanti. Copertine recenti, preferiti e raccolta sono i soli contenuti di Ascolta; l'avvio vuoto invita alla ricerca.
+
+Cerca: un campo e quattro filtri - Tutto, Brani, Artisti, Album. Artisti prioritari nella vista mista. Schede artista con titolo, genere e tre sezioni Brani/Album/Feat.; schede album con scaletta ordinata per disco e traccia. Miniplayer accessibile nei dettagli. I segnaposto del catalogo non rappresentano copertine reali; le copertine disponibili dei brani riprodotti rimangono visibili.

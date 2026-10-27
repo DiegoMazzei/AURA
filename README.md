@@ -4,9 +4,9 @@
 
 App musicale Flutter iOS/Android in sviluppo. Cartella di lavoro: `/path/to/Aura`.
 
-## Versione 0.2
+## Versione 0.3
 
-Ricerca musicale unificata, libreria personale senza brani stock, preferiti e playlist persistenti. Interfaccia sobria con copertine in primo piano; vero Liquid Glass UIKit per dock e comandi su iOS 26+, controlli standard sulle altre piattaforme.
+Ricerca a cataloghi con filtri Tutto, Brani, Artisti e Album. Ogni artista apre brani, discografia e collaborazioni; ogni album apre la scaletta. I risultati non dipendono dagli ascolti o dalla libreria. Navigazione semplificata in Ascolta, Cerca e Libreria, senza sezioni duplicate. Preferiti e playlist persistenti. Interfaccia sobria con copertine in primo piano; vero Liquid Glass UIKit per dock e comandi su iOS 26+, controlli standard sulle altre piattaforme.
 
 Riproduzione nativa con play/pausa, seek, coda, casuale e ripeti. L’utente ha confermato ascolto sull’iPhone anche cambiando schermata e a schermo bloccato nella release precedente. La ricerca utilizza YouTube senza selettori di sorgente nell’interfaccia principale; il servizio è indicato nelle informazioni e resta soggetto a cambiamenti.
 

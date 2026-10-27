@@ -110,9 +110,9 @@ final class AuraControlView: UIView {
       play.addAction(UIAction { [weak self] _ in self?.send?("play", nil) }, for: .touchUpInside)
       skipButton.addAction(UIAction { [weak self] _ in self?.send?("next", nil) }, for: .touchUpInside)
       skipButton.accessibilityLabel = "Brano successivo"
-      let symbols = ["house", "magnifyingglass", "sparkles", "square.stack"]
-      let labels = ["Home", "Cerca", "Esplora", "Libreria"]
-      for index in 0..<4 {
+      let symbols = ["play.square", "magnifyingglass", "square.stack"]
+      let labels = ["Ascolta", "Cerca", "Libreria"]
+      for index in 0..<3 {
         let button = UIButton(type: .system)
         var configuration = UIButton.Configuration.plain()
         configuration.image = UIImage(systemName: symbols[index])
@@ -120,7 +120,7 @@ final class AuraControlView: UIView {
         configuration.imagePlacement = .top; configuration.imagePadding = 4
         configuration.preferredSymbolConfigurationForImage = UIImage.SymbolConfiguration(pointSize: 20, weight: .regular)
         configuration.titleTextAttributesTransformer = UIConfigurationTextAttributesTransformer { incoming in
-          var attributes = incoming; attributes.font = UIFont.systemFont(ofSize: 10, weight: .medium); return attributes
+          var attributes = incoming; attributes.font = UIFont.systemFont(ofSize: 11, weight: .medium); return attributes
         }
         button.configuration = configuration
         button.accessibilityLabel = labels[index]
@@ -143,7 +143,7 @@ final class AuraControlView: UIView {
     play.frame = CGRect(x: width - 98, y: 4, width: 46, height: 48)
     skipButton.frame = CGRect(x: width - 52, y: 4, width: 46, height: 48)
     progress.frame = CGRect(x: 20, y: 54, width: max(0, width - 40), height: 2)
-    let tabWidth = (width - 12) / 4
+    let tabWidth = (width - 12) / 3
     for (i, button) in tabs.enumerated() { button.frame = CGRect(x: 6 + CGFloat(i) * tabWidth, y: 5, width: tabWidth, height: 56) }
   }
   func update(_ data: [String: Any]) {

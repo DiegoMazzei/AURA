@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import '../../app/aura_controller.dart';
 import '../../core/design/aura_design.dart';
 import 'online_track.dart';
+import '../../core/catalog/artist_directory.dart';
 import 'online_player_screen.dart';
 
 class OnlineSearchScreen extends StatefulWidget {
@@ -14,11 +15,13 @@ class OnlineSearchScreen extends StatefulWidget {
     this.onLocal,
     this.initialQuery = '',
     this.showLocalLink = true,
+    this.directorySong,
   });
   final AuraController controller;
   final VoidCallback? onLocal;
   final String initialQuery;
   final bool showLocalLink;
+  final DirectorySong? directorySong;
   @override
   State<OnlineSearchScreen> createState() => _OnlineSearchScreenState();
 }
@@ -100,8 +103,8 @@ class _OnlineSearchScreenState extends State<OnlineSearchScreen> {
   Widget build(BuildContext context) => ListView(
     padding: const EdgeInsets.fromLTRB(24, 16, 24, 184),
     children: [
-      const Text(
-        'Cerca',
+      Text(
+        widget.directorySong == null ? 'Cerca' : widget.directorySong!.title,
         style: TextStyle(
           fontSize: 32,
           fontWeight: FontWeight.w600,
@@ -136,7 +139,9 @@ class _OnlineSearchScreenState extends State<OnlineSearchScreen> {
       ),
       const SizedBox(height: 15),
       Text(
-        'Trova il tuo prossimo ascolto.',
+        widget.directorySong == null
+            ? 'Trova il tuo prossimo ascolto.'
+            : 'Scegli la registrazione da ascoltare.',
         style: TextStyle(color: context.muted, fontSize: 13),
       ),
       if (_loading)
@@ -193,8 +198,21 @@ class _OnlineSearchScreenState extends State<OnlineSearchScreen> {
             overflow: TextOverflow.ellipsis,
             style: TextStyle(fontSize: 12, color: context.muted),
           ),
-          onTap: () =>
-              openOnlinePlayer(context, widget.controller, t, tracks: _results),
+          onTap: () {
+            final song = widget.directorySong;
+            if (song != null) {
+              widget.controller.applyCatalogIdentity(
+                widget.controller.nativeTrackFor(t),
+                song.identity,
+              );
+            }
+            openOnlinePlayer(
+              context,
+              widget.controller,
+              t,
+              tracks: song == null ? _results : null,
+            );
+          },
           trailing: IconButton(
             tooltip: widget.controller.onlineFavorites.contains(t.id)
                 ? 'Rimuovi dai preferiti'

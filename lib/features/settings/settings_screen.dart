@@ -120,7 +120,7 @@ class SettingsScreen extends StatelessWidget {
             const SizedBox(height: 9),
             Center(
               child: Text(
-                '0.2 · Sviluppo',
+                '0.3 · Sviluppo',
                 style: TextStyle(color: context.muted, fontSize: 11),
               ),
             ),

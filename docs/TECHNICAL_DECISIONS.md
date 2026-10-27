@@ -36,3 +36,8 @@
 26. Route del player opaca: evita perdita di compositing Flutter quando si sovrappongono platform view native del dock e del player. SF Symbols mappati esplicitamente per testi, microfono, coda e playlist.
 
 Fonti tecniche: [MusicBrainz](https://musicbrainz.org/doc/MusicBrainz_API), [Apple Search](https://performance-partners.apple.com/search-api), [LRCLIB](https://lrclib.net/docs), [Genius](https://docs.genius.com/), [UIKit UIGlassEffect](https://developer.apple.com/documentation/uikit/uiglasseffect).
+
+27. Versione 0.3: directory remota prima dell'ascolto. Search multi-entita' distingue artisti/album/brani; lookup per ID restituisce discografia e scalette. La discografia non deriva dalla raccolta locale.
+28. Rimossi Esplora e contenuti ridondanti. Tre tab coerenti fra Flutter e UIKit: Ascolta, Cerca, Libreria.
+29. Collaborazioni basate sui crediti del catalogo, senza dichiararle esaustive. Le uscite di altri artisti non entrano nella discografia soltanto perche' il nome cercato appare nel titolo.
+30. Jam rinviata su istruzione esplicita dell'utente. Nessun backend implementato o pubblicato.

@@ -39,7 +39,7 @@ Le licenze richiedono lettura/accettazione dell’utente. Il file atteso dopo un
 
 ## Prima prova dell’app
 
-1. Aprire Cerca e cercare un artista o una canzone: non vengono aggiunti brani demo.
+1. Aprire Cerca e usare Brani, Artisti o Album. Ogni artista apre discografia, brani e Feat.; ogni album apre la scaletta. Non serve ascoltare prima e non vengono aggiunti demo.
 2. Avviare un risultato, aprire il miniplayer e provare pausa, seek e coda.
 3. Aggiungere il brano ai preferiti e ritrovarlo in Libreria → Brani del cuore.
 4. In Libreria usare Artisti e Album; “Completa artisti e album” avvia l’associazione del catalogo. Per scegliere una versione precisa usare il menu del brano → Associa artista e album.

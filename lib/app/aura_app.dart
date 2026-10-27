@@ -95,8 +95,8 @@ class _AuraShellState extends State<AuraShell> with WidgetsBindingObserver {
         HomeScreen(
           controller: c,
           onSearch: () => _select(1),
-          onExplore: () => _select(2),
-          onLibrary: () => _select(3),
+          onExplore: () => _select(1),
+          onLibrary: () => _select(2),
           onKaraoke: () => Navigator.push(
             context,
             MaterialPageRoute<void>(
@@ -111,7 +111,6 @@ class _AuraShellState extends State<AuraShell> with WidgetsBindingObserver {
           ),
         ),
         SearchScreen(controller: c),
-        SearchScreen(controller: c, explore: true),
         LibraryScreen(controller: c),
       ];
       return AnnotatedRegion<SystemUiOverlayStyle>(
@@ -197,7 +196,7 @@ class _AuraShellState extends State<AuraShell> with WidgetsBindingObserver {
                                       if (method == 'tab' &&
                                           args is int &&
                                           args >= 0 &&
-                                          args < 4) {
+                                          args < 3) {
                                         _select(args);
                                       }
                                       if (method == 'open') {
@@ -251,12 +250,11 @@ class _PortableDock extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 5),
           child: Row(
-            children: List.generate(4, (i) {
-              const labels = ['Home', 'Cerca', 'Esplora', 'Libreria'];
+            children: List.generate(3, (i) {
+              const labels = ['Ascolta', 'Cerca', 'Libreria'];
               const icons = [
                 Icons.home_outlined,
                 Icons.search_rounded,
-                Icons.auto_awesome_outlined,
                 Icons.library_music_outlined,
               ];
               return Expanded(
