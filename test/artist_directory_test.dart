@@ -423,7 +423,7 @@ void main() {
     c.dispose();
   });
   testWidgets(
-    'catalog playback resolves one exact version and keeps canonical identity without adding search candidates',
+    'one tap plays automatically with multiple matching uploads and no recording picker',
     (tester) async {
       final catalog = FakeMusicCatalog()
         ..results = const [
@@ -432,6 +432,12 @@ void main() {
             title: 'Una canzone',
             artist: 'Gemitaiz',
             durationSeconds: 180,
+          ),
+          OnlineTrack(
+            id: 'secondUpload',
+            title: 'Gemitaiz - Una canzone (Official Audio)',
+            artist: 'GemitaizVEVO',
+            durationSeconds: 181,
           ),
           OnlineTrack(
             id: 'lmnopqrstuv',
@@ -460,6 +466,8 @@ void main() {
       );
       await tester.tap(find.text('Ascolta fixture'));
       await tester.pumpAndSettle();
+      expect(find.byType(BottomSheet), findsNothing);
+      expect(find.textContaining('Scegli la registrazione'), findsNothing);
       expect(c.current.catalogIdentity?.recordingId, 'apple:3');
       expect(c.current.album, 'Disco di prova');
       expect(c.audio.playing, isTrue);

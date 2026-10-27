@@ -61,3 +61,9 @@ La ricerca prova crediti completi, artista principale/titolo e titolo/album. I c
 Riprodotto con ricerca pubblica: Ernia BU! restituisce `_eSCaOsaboc`, titolo «Ernia - BU! (Visual)», autore Ernia, durata 205 secondi. Il matcher conservava il suffisso Visual e il filtro finale nascondeva la registrazione. Le etichette di presentazione Visual, Visual Video, Lyric Video, Video Lyrics e Testo tra parentesi vengono normalizzate; Live, Remix e altre versioni musicali rimangono significative.
 
 Separati i criteri di scoperta da quelli di riproduzione automatica: i risultati non verificati rimangono disponibili nel selettore esplicito, con titolo e autore visibili. La coda automatica continua a usare solo corrispondenze verificate. Verificata dal vivo l’associazione del risultato Ernia dopo la correzione; non è una prova acustica della sorgente sul dispositivo.
+
+## 2026-10-27 · Riproduzione diretta · 0.4.4
+
+Su richiesta dell’utente, eliminato il selettore di registrazioni dal tap su un brano del catalogo. La stessa procedura automatica serve ricerca, scheda artista e album: il player si apre subito, il controller cerca e ordina le sorgenti e prova quelle compatibili senza domande. L’album conserva la scaletta; fuori da un album il brano avvia una coda singola.
+
+Nessuna regola dipende dal nome dell’artista. Normalizzazione generale di etichette di presentazione, featuring, produzione, apostrofi, prefissi artista e canali VEVO/Topic. Il punteggio privilegia crediti e durata vicina, con margine limitato per intro/outro dei video. Live/remix/cover o brani estranei non vengono scelti come sostituti. Errori senza sorgenti compatibili restano nel player, senza rimandare a una scelta manuale.

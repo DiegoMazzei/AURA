@@ -446,7 +446,7 @@ class AuraController extends ChangeNotifier {
     } catch (_) {
       if (!_disposed) {
         error = current.id.startsWith('catalog:')
-            ? 'Registrazione non disponibile per “${current.title}”. Apri il brano nell’album per scegliere un’altra versione. La scaletta è conservata.'
+            ? 'Registrazione non disponibile per “${current.title}”. Riprova tra poco. La scaletta è conservata.'
             : current.isYoutube
             ? 'Questo brano non è disponibile. Riprova o scegli un altro risultato.'
             : 'Audio non disponibile. Controlla il file e riprova.';

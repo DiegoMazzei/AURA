@@ -58,3 +58,7 @@ Code di richieste separate per host, mantenendo intervalli e Retry-After. TheAud
 ## Coda album · 0.4.2
 
 Avviando una riga nella scheda album, il controller sostituisce la coda con la scaletta ordinata per disco e numero. Le voci usano ID catalogo stabili e possono non avere ancora una sorgente: la risoluzione avviene quando sono riprodotte, senza cercare tutto l’album in anticipo. Solo gli ID dei video sono persistenti, mai URL media temporanei. Coda, posizione selezionata e associazioni risolte sopravvivono al riavvio; gli ascolti non aggiungono la discografia alla libreria.
+
+## Avvio diretto del catalogo · 0.4.4
+
+openCatalogSong apre direttamente il player e delega al controller la ricerca della registrazione. Non esiste più un selettore intermedio. recordingScore ordina le sorgenti con criteri indipendenti dall’artista; la stessa selezione vale per avvio, successiva, precedente e tentativi alternativi. I risultati di ricerca estranei non vengono promossi a sorgenti riproducibili.

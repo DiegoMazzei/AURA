@@ -100,3 +100,11 @@ Riferimenti esaminati: Namida e Orbit-Music. Nessun codice o asset copiato da qu
 - 65 test superati, analisi senza segnalazioni. Nuovi test su BU! (Visual), ordine dei risultati, conservazione della scelta manuale e rifiuto automatico di versioni diverse. Verifica pubblica del risultato reale e del matcher completata.
 - Verificata anche la sorgente di BU! con lo stesso resolver dell’app: risposta HTTP 206 video/mp4 e primo blocco ricevuto. Questa verifica di trasporto non equivale a un ascolto completo sul telefono.
 - Release 0.4.3 build 7 installata e avviata su iPhone di prova; Xcode conferma app in esecuzione. Artefatto Release AOT senza kernel Debug verificato. La prima build si è fermata nello script Flutter; il riavvio ha completato compilazione e installazione.
+
+## Revisione 0.4.4 - un tap per ascoltare
+
+- Rimosso completamente RecordingPicker: da ricerca, artista e album il tap apre subito il player e avvia la risoluzione automatica. Più upload compatibili non interrompono più il flusso. Coda album e tentativi di sorgenti alternative conservati.
+- Criteri generali su presentazione, featuring, produzione, punteggiatura, prefisso artista, canali VEVO/Topic e durata; nessuna eccezione per artista. Testati Ernia, Travis Scott, Dua Lipa, The Weeknd, Adele, Gemitaiz e a-ha.
+- Prova su ricerca pubblica reale: trovate sorgenti compatibili per Don’t Start Now (Dua Lipa), Blinding Lights (The Weeknd) e FE!N (Travis Scott). Questa verifica riguarda scoperta e ranking, non equivale a un ascolto completo.
+- 71 test superati e analisi senza segnalazioni. Test widget con più upload corrispondenti verifica avvio automatico e assenza di BottomSheet; regressioni della coda ancora superate.
+- Release 0.4.4 build 8 installata e avviata su iPhone di prova, confermata da Xcode. Artefatto Release AOT senza kernel Debug verificato.

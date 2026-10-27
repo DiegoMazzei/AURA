@@ -4,15 +4,11 @@ import 'package:flutter/material.dart';
 
 import '../../app/aura_controller.dart';
 import '../../core/catalog/artist_directory.dart';
-import '../../core/catalog/recording_search.dart';
 import '../../core/catalog/musicbrainz_catalog.dart' show normalizeMusicText;
-import '../../shared/models/music.dart';
 import '../player/player_screen.dart' show MiniPlayer, openPlayer;
 import '../../core/design/aura_design.dart';
 import '../../core/artwork/music_image.dart';
 import '../youtube/online_search_screen.dart';
-import '../youtube/online_track.dart';
-import '../youtube/online_player_screen.dart' show openOnlinePlayer;
 
 void openCatalogArtist(
   BuildContext context,
@@ -40,154 +36,10 @@ Future<void> openCatalogSong(
   DirectorySong song, {
   List<DirectorySong>? albumSongs,
 }) async {
-  final selected = await showModalBottomSheet<OnlineTrack>(
-    context: context,
-    isScrollControlled: true,
-    showDragHandle: true,
-    builder: (_) => _RecordingPicker(controller: c, song: song),
-  );
-  if (selected == null || !context.mounted) return;
-  if (albumSongs != null) {
-    final loading = c.playAlbumSong(song, albumSongs, selected: selected);
-    if (context.mounted) openPlayer(context, c);
-    await loading;
-    return;
-  }
-  final native = c.nativeTrackFor(selected);
-  c.applyCatalogIdentity(native, song.identity);
-  await openOnlinePlayer(context, c, selected);
-}
-
-class _RecordingPicker extends StatefulWidget {
-  const _RecordingPicker({required this.controller, required this.song});
-  final AuraController controller;
-  final DirectorySong song;
-  @override
-  State<_RecordingPicker> createState() => _RecordingPickerState();
-}
-
-class _RecordingPickerState extends State<_RecordingPicker> {
-  late Future<List<OnlineTrack>> _results = _load();
-  Future<List<OnlineTrack>> _load() async {
-    final song = widget.song;
-    final seed = Track(
-      id: 'catalog:${song.id}',
-      title: song.title,
-      artist: song.artist,
-      album: song.album,
-      source: '',
-      isYoutube: true,
-      catalogIdentity: song.identity,
-      durationSeconds: song.seconds,
-    );
-    final results = await findRecordings(widget.controller.catalog, seed);
-    final exact = results.where((t) => matchesRecording(seed, t)).toList();
-    // Do not silently pick between distinct equally plausible recordings.
-    if (exact.length == 1 && mounted) {
-      Navigator.pop(context, exact.single);
-    }
-    return results;
-  }
-
-  @override
-  Widget build(BuildContext context) => SafeArea(
-    child: SizedBox(
-      height: MediaQuery.sizeOf(context).height * .70,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Padding(
-            padding: const EdgeInsets.fromLTRB(24, 0, 12, 12),
-            child: Row(
-              children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        widget.song.title,
-                        style: const TextStyle(
-                          fontSize: 24,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      Text(
-                        widget.song.artist,
-                        style: TextStyle(color: context.muted),
-                      ),
-                    ],
-                  ),
-                ),
-                IconButton(
-                  onPressed: () => Navigator.pop(context),
-                  tooltip: 'Chiudi',
-                  icon: const Icon(Icons.close),
-                ),
-              ],
-            ),
-          ),
-          Expanded(
-            child: FutureBuilder<List<OnlineTrack>>(
-              future: _results,
-              builder: (context, snap) {
-                if (snap.hasError) {
-                  return _Failure(
-                    message: 'Registrazioni non disponibili.',
-                    onRetry: () => setState(() => _results = _load()),
-                  );
-                }
-                if (!snap.hasData) {
-                  return const Center(child: CircularProgressIndicator());
-                }
-                if (snap.data!.isEmpty) {
-                  return const Center(
-                    child: Text(
-                      'Nessuna registrazione disponibile per questo brano. Il catalogo può mostrare anche uscite non ancora pubblicate.',
-                    ),
-                  );
-                }
-                return ListView(
-                  children: [
-                    const Padding(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: 24,
-                        vertical: 12,
-                      ),
-                      child: Text('Scegli la registrazione: controlla titolo e artista.'),
-                    ),
-                    ...snap.data!.map(
-                      (t) => ListTile(
-                        leading: ClipRRect(
-                          borderRadius: BorderRadius.circular(8),
-                          child: Image.network(
-                            t.thumbnail,
-                            width: 48,
-                            height: 48,
-                            fit: BoxFit.cover,
-                            errorBuilder: (_, _, _) => const SizedBox(
-                              width: 48,
-                              child: Icon(Icons.music_note),
-                            ),
-                          ),
-                        ),
-                        title: Text(
-                          t.title,
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        subtitle: Text(t.artist),
-                        onTap: () => Navigator.pop(context, t),
-                      ),
-                    ),
-                  ],
-                );
-              },
-            ),
-          ),
-        ],
-      ),
-    ),
-  );
+  if (c.busy || !c.ready) return;
+  final loading = c.playAlbumSong(song, albumSongs ?? [song]);
+  if (context.mounted) openPlayer(context, c);
+  await loading;
 }
 
 class CatalogSearchScreen extends StatefulWidget {

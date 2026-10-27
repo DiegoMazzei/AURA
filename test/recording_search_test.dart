@@ -26,6 +26,71 @@ const visual = OnlineTrack(
   durationSeconds: 205,
 );
 void main() {
+  final cases = [
+    (
+      'Travis Scott',
+      'FE!N (feat. Playboi Carti)',
+      'Travis Scott - FE!N (Official Music Video) ft. Playboi Carti',
+      'TravisScottVEVO',
+      194,
+      199,
+    ),
+    (
+      'Dua Lipa',
+      "Don't Start Now",
+      'Dua Lipa – Don’t Start Now (Official Music Video)',
+      'Dua Lipa',
+      183,
+      198,
+    ),
+    (
+      'The Weeknd',
+      'Blinding Lights',
+      'Blinding Lights (Official Audio)',
+      'TheWeekndVEVO',
+      200,
+      200,
+    ),
+    ('Adele', 'Hello', 'Adele:Hello [Lyrics]', 'Label', 295, 296),
+    (
+      'Gemitaiz',
+      'Senza di me (feat. Venerus & Franco126)',
+      'Gemitaiz - Senza di me ft. Venerus & Franco126',
+      'GemitaizVEVO',
+      194,
+      195,
+    ),
+    ('a-ha', 'Take On Me', 'a-ha-Take On Me (Video)', 'a-ha', 225, 229),
+  ];
+  for (final c in cases) {
+    test('general automatic recognition: ${c.$1} / ${c.$2}', () {
+      final seed = Track(
+        id: 'seed',
+        title: c.$2,
+        artist: c.$1,
+        source: '',
+        durationSeconds: c.$5,
+        catalogIdentity: CatalogIdentity(
+          recordingId: 'recording',
+          title: c.$2,
+          artists: [CatalogArtist(id: 'artist', name: c.$1)],
+        ),
+      );
+      expect(
+        matchesRecording(
+          seed,
+          OnlineTrack(
+            id: 'source',
+            title: c.$3,
+            artist: c.$4,
+            durationSeconds: c.$6,
+          ),
+        ),
+        isTrue,
+      );
+    });
+  }
+
   test('real Ernia BU Visual result is recognized and ranked before unrelated songs', () async {
     final c = FakeMusicCatalog()
       ..results = const [
@@ -42,7 +107,7 @@ void main() {
     expect(matchesRecording(bu, visual), isTrue);
     expect(c.requests, ['Ernia BU!']);
   });
-  test('uncertain results remain available for explicit choice but never auto match', () async {
+  test('unrelated or different musical versions never auto match', () async {
     const other = OnlineTrack(
       id: 'other',
       title: 'Ernia - BU! (Live)',
