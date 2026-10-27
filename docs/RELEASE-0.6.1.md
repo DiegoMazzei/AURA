@@ -44,5 +44,6 @@ La disponibilità di metadati, immagini, riproduzione e testi dipende dai provid
 La Home personalizzata ancora in lavorazione e la Jam non sono incluse.
 Non è una distribuzione App Store/Play Store né una build sottoposta a un audit completo.
 
-La cronologia GitHub parte da uno snapshot ripulito; il changelog riepiloga
-il percorso precedente senza importare la vecchia cronologia personale.
+Lo storico originale di sviluppo è ora incluso dalla 0.1.0, con dati personali
+rimossi dai vecchi file. Autori, date e messaggi conservati; gli hash cambiano
+per la ripulitura. Vedi [storia e problemi](https://github.com/DiegoMazzei/aura/blob/main/docs/STORIA.md).

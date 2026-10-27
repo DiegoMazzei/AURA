@@ -21,11 +21,10 @@
 - Audio in background e controlli di sistema su iPhone.
 - Superfici native iOS e navigazione semplificata.
 
-## Cronologia del repository
+## Cronologia completa
 
-Questa sintesi descrive le tappe del progetto originale. Il repository GitHub
-parte da uno snapshot ripulito della 0.6.1: la vecchia cronologia non è stata
-importata perché conteneva riferimenti personali. I commit successivi registrano
-le modifiche effettive alla vetrina, alla documentazione e alla release.
+Lo storico originale di sviluppo è ora incluso, dalla prima 0.1.0 alla 0.6.1,
+con autori, date e messaggi conservati e dati personali rimossi dai file.
+[Consulta tutte le tappe, i problemi e le correzioni](docs/STORIA.md).
 
 La Home personalizzata ancora in sviluppo non è inclusa nella 0.6.1.

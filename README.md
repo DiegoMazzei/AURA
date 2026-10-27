@@ -108,6 +108,14 @@ Il codice AURA non ha ancora una licenza di redistribuzione assegnata.
 Le licenze dei componenti di terze parti, del font Roboto e della copia modificata
 di `just_audio` sono conservate. [Sicurezza](SECURITY.md) · [Storia del progetto](CHANGELOG.md).
 
+## Dalla prima versione
+
+La cronologia comprende tutti i **16 commit originali di sviluppo**, dalla
+0.1.0 alla 0.6.1, seguiti dal lavoro di pubblicazione. Il diario documenta
+problemi, diagnosi, correzioni e verifiche, con collegamenti ai commit.
+
+[Storia completa](docs/STORIA.md) · [Tutti i commit](https://github.com/DiegoMazzei/aura/commits/main/)
+
 ## Partecipa
 
 Hai trovato un problema o hai un’idea? [Apri una segnalazione](https://github.com/DiegoMazzei/aura/issues/new/choose)

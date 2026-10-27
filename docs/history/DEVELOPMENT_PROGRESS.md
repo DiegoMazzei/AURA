@@ -1,0 +1,138 @@
+> Documento storico della fase di sviluppo: descrive lo stato e le verifiche di allora. Alcune limitazioni sono state superate; per installazione e stato attuale consulta il README e le note della release. Riferimenti personali e firma sono stati rimossi.
+
+# Avanzamento — 27 ottobre 2026
+
+Cartella autorevole: `/path/to/Aura`.
+
+## Completato e verificato
+
+- Progetto Flutter iOS/Android, interfaccia cosmica, temi, mini player, player, coda, testi LRC e import locale.
+- Preferiti unificati e persistenti, playlist, gruppi Artisti/Album e modifica informazioni; migrazione delle precedenti raccolte YouTube.
+- `flutter analyze`: nessun problema. `flutter test`: 33 test superati, inclusi persistenza, migrazione preferiti, raggruppamenti, import, navigazione e golden.
+- Ricerca YouTube reale: 20 risultati; risoluzione manifest: due sorgenti audio compatibili per video di prova. Questi controlli non provano da soli la riproduzione.
+- Precedente prova nativa su simulatore: decodifica delle due basi locali, avanzamento, pausa, seek e persistenza file superati.
+
+## Correzione del caricamento YouTube
+
+- Diagnosi HTTP sul simulatore: gli stream adattivi audio-only accettano i primi byte, ma restituiscono 403 su richieste aperte e su alcune richieste successive. Il precedente controllo di soli 1024 byte era insufficiente.
+- Selezione aggiornata: MP4 progressivo compatibile, scegliendo il bitrate complessivo più basso disponibile per contenere il traffico; il motore nativo riproduce la componente audio. In mancanza di una sorgente progressiva resta il tentativo MP4 audio-only. Non si usano WebView per il percorso principale, proxy esterni, credenziali o download offline.
+- Test iOS reale sul simulatore: entrambe le prove di integrazione superate, inclusa sorgente YouTube, avanzamento, pausa e seek a 90 secondi con ulteriore avanzamento. Nessuna eccezione nel test finale. Il conteggio Xcode include anche tearDownAll.
+- Prova nell’app: Senza Di Me (Gemitaiz) caricato nel player nativo, titolo/artista arricchiti; navigazione dal player alla libreria senza interrompere lo stato di riproduzione.
+- Prova di blocco: la posizione avanza da circa 0:05 a 0:54 durante blocco/sblocco; questo non basta a confermare uscita audio e controlli OS. Il player di sistema non compare sul simulatore. L’utente riferisce che l’ascolto non funziona nel simulatore: verifica su iPhone reale ancora necessaria, nessuna dichiarazione di funzionamento completo.
+- Test automatici: 33 superati; analisi senza problemi. SDK di verifica temporaneo in work/ per tenere le scritture di cache nel progetto senza cambiare l’installazione globale.
+
+## Bloccato dall’ambiente o rimandato
+
+- Android SDK assente: build APK non disponibile.
+- Spotify OAuth, EQ reale, Live Activity personalizzata e verifiche Bluetooth/AirPlay non completati.
+- Terminale limitato su SwiftPM/CoreSimulator: build e avvio iOS eseguiti dalla GUI Xcode.
+
+Riferimenti esaminati: Namida e Orbit-Music. Nessun codice o asset copiato da questi progetti.
+
+## Installazione sul telefono
+
+- Xcode vede “iPhone di prova” ed è selezionato come destinazione; firma automatica e Personal Team già configurati.
+- Tentativo di build su telefono bloccato da “Your session has expired. Please log in” e assenza del profilo di sviluppo per app.aura.personal. L’utente deve rinnovare la sessione Apple in Xcode Settings → Accounts; nessuna credenziale raccolta o modificata.
+- Aggiunto controllo diagnostico di avvio della media session (AURA_MEDIA_SESSION_READY / FAILED) per la prova sul dispositivo. I comandi sulla schermata di blocco non sono ancora verificati.
+- Retry dopo un errore del motore ricarica la sorgente, anziché riusare l’URL precedente. Regressione inclusa nei 33 test.
+
+- Dopo il rinnovo dell’accesso Apple, app.aura.personal risulta non registrabile al team. Aggiornato il bundle iOS a org.example.aura e il relativo origin del fallback IFrame; Android invariato. Avviato nuovo tentativo di firma su “iPhone di prova”.
+
+- Nuovo identificativo registrato: Xcode ora mostra un profilo gestito e un certificato Apple Development, senza l’errore di bundle occupato. Avvio su iPhone in corso; audio e controlli OS non ancora confermati dall’utente.
+
+- Prima build Debug avviata su “iPhone di prova”; log AURA_MEDIA_SESSION_READY confermato. L’utente ha poi aperto l’icona dalla Home e ricevuto la limitazione JIT di Flutter Debug. Preparato schema condiviso “AURA iPhone”, Run in Release senza debugger, lasciando Runner in Debug. In corso sostituzione dell’app sullo stesso bundle (nessuna disinstallazione o cancellazione dati).
+
+- Build Release completata e avviata su “iPhone di prova” con schema AURA iPhone, confermato da Xcode Running e AURA_MEDIA_SESSION_READY. Prodotto Release-iphoneos presente con il nuovo bundle e framework AOT; richiesta all’utente la prova di chiusura/riapertura dalla Home e ascolto reale in background/schermo bloccato. In attesa dell’esito, requisito audio non dichiarato completato.
+
+## Revisione 0.2 · 27 ottobre 2026
+
+- L’utente ha confermato funzionamento dell’ascolto su iPhone, incluse navigazione e schermata bloccata, nella release precedente.
+- Ricerca principale unificata, senza selettore YouTube/locali; sorgenti dichiarate nelle informazioni.
+- MusicBrainz con riserva di metadati Apple; raggruppamento per identità degli artisti e release group, ospiti inclusi, associazione manuale e protezione delle correzioni personali.
+- LRCLIB per testi sincronizzati e semplici, importazione LRC/testo, Genius esterno. Prova online riuscita: 15 registrazioni con release group e 20 candidati sincronizzati per il brano di controllo.
+- Interfaccia semplificata, vero materiale UIKit da iOS 26, SF Symbols per testi/karaoke/coda. Risolto un difetto di compositing rendendo opaca la route del player.
+- Rimossi demo dalla produzione e gestito avvio vuoto senza miniplayer. Migrazione conserva canzoni e preferiti personali.
+- Copertine online preservate dopo associazione catalogo; verificata visibilità nel simulatore iPhone 18 Pro iOS 27 insieme a dock, navigazione e icone del player.
+- 44 test automatici superati; analisi senza segnalazioni. Golden aggiornati e ispezionati; i golden usano fixture e non validano il materiale UIKit.
+- Schema AURA iPhone Release eseguito su iPhone di prova; Xcode riporta applicazione in esecuzione. La verifica acustica della nuova release resta una prova d’uso sul telefono, distinta dai test automatici.
+
+## Revisione 0.3 - cataloghi e gerarchia
+
+- Jam rinviata dall'utente. Attivita' concentrata su UI e ricerca a cataloghi.
+- Navigazione ridotta a Ascolta/Cerca/Libreria; Home senza slogan o schede duplicate.
+- Ricerca remota Tutto/Brani/Artisti/Album indipendente dalla libreria. Schede artista con Brani, Album e Feat.; scalette per ID album ordinate per disco e traccia.
+- Risoluzione automatica solo per registrazione univoca compatibile con titolo, artista e durata; scelta esplicita negli altri casi. Metadati canonici conservati in libreria e media session.
+- Crediti separati: gli ospiti non ereditano l'ID del principale. Discografia filtrata per titolarita' e credito condiviso.
+- Prova online Gemitaiz: 29 uscite proprie/condivise, 100 risultati musicali nella ricerca, 17 tracce per ELSEWHERE. Verificato nel simulatore il percorso Cerca -> Gemitaiz -> Album -> ELSEWHERE e la visibilita' del miniplayer.
+- 49 test superati, analisi senza segnalazioni. Golden Home aggiornati. Nessuna prova acustica nuova implicita nei test widget.
+
+- Release 0.3.0 build 3 installata e avviata su iPhone di prova dopo lo sblocco. Artefatto Release AOT verificato, nessun kernel Debug. Xcode conferma app in esecuzione.
+
+## Revisione 0.4 - immagini, viola, preferiti espliciti
+
+- Applicato il nuovo riferimento fornito: dischi in caroselli, foto degli artisti, saluto compatto, pillole e palette viola.
+- Foto e copertine da TheAudioDB con riserva Deezer; URL persistenti e cache file sul dispositivo. Prova online Gemitaiz/ELSEWHERE: entrambe le immagini rispondono 200 con image/jpeg.
+- Preferiti artisti separati da canzoni e cronologia; Segui artista e rimozione persistenti. Semplice ascolto non aggiunge brani o artisti alla libreria.
+- Verificati nel simulatore foto di Gemitaiz, copertine delle canzoni, palette, azione Segui artista e stato Artista nei preferiti.
+
+- 53 test superati, inclusi salvataggio/rimozione artisti, indipendenza dalla cronologia, ripristino della cache e fallback delle immagini. Analisi senza segnalazioni. Home e schede verificate nel simulatore con immagini reali.
+
+- Release 0.4.0 build 4 installata e avviata su iPhone di prova. Verificato artefatto AOT senza kernel Debug; Xcode riporta app in esecuzione. Nessun rinnovo di conferma acustica implicito nella revisione grafica.
+
+## Revisione 0.4.1 - dock di sistema e velocità immagini
+
+- Dock iOS 26+ con UITabBarController e miniplayer UITabAccessory; materiale, selezione e forma gestiti dal sistema. Verificati nel simulatore cambio scheda e apertura player dal miniplayer.
+- Code separate per host e fonti artwork concorrenti con corrispondenza verificata. Miniature già note dei brani caricate direttamente dalla cache file, senza attendere metadati alternativi.
+- Scheda artista con liste lazy: la discografia non istanzia tutte le immagini fuori schermo. Immagini Deezer medium per contenere download. Nessun cambiamento al percorso audio.
+- 55 test superati, compresi fonte lenta e discografia da 200 album. Analisi senza segnalazioni. Tempi di rete non misurati sul dispositivo e non garantiti.
+- Release 0.4.1 build 5 installata e avviata su iPhone di prova; Xcode conferma app in esecuzione. Verificato artefatto AOT senza kernel Debug.
+
+## Revisione 0.4.2 - scaletta album e brani non disponibili
+
+- Avvio da album con coda completa ordinata e risoluzione delle sorgenti al bisogno; non viene più riutilizzata la vecchia coda. Shuffle inizialmente disattivato per rispettare la scaletta.
+- Ricerca con query alternative e controlli su titolo, interpreti e durata; una sorgente non disponibile non viene sostituita con una canzone estranea. Errori mantengono la scaletta e permettono il passaggio manuale alla traccia successiva.
+- Avviso con data di uscita per album annunciati; Seven Tears risulta in uscita il 27 novembre 2026 nel catalogo Apple. Crediti delle tracce distinti dai crediti collaborativi dell’album.
+- 63 test superati, analisi senza segnalazioni. Coperti ordine da traccia intermedia, precedente/successiva automatica, fine album, riavvio, sorgente alternativa, assenza di sorgenti, avvio dalla riga UI, data futura e crediti collaborativi.
+
+- Release 0.4.2 build 6 installata e avviata su iPhone di prova. Xcode riporta app in esecuzione; artefatto AOT senza kernel Debug verificato. I test della coda non sostituiscono una prova acustica sul telefono.
+
+## Revisione 0.4.3 - risultati Visual e scelta manuale
+
+- Riprodotto il caso BU! di Ernia: risultato reale presente ma escluso dal suffisso (Visual). Normalizzazione corretta e risultati incerti disponibili per scelta esplicita; nessun allargamento della selezione automatica a Live, Remix o interpreti diversi.
+- 65 test superati, analisi senza segnalazioni. Nuovi test su BU! (Visual), ordine dei risultati, conservazione della scelta manuale e rifiuto automatico di versioni diverse. Verifica pubblica del risultato reale e del matcher completata.
+- Verificata anche la sorgente di BU! con lo stesso resolver dell’app: risposta HTTP 206 video/mp4 e primo blocco ricevuto. Questa verifica di trasporto non equivale a un ascolto completo sul telefono.
+- Release 0.4.3 build 7 installata e avviata su iPhone di prova; Xcode conferma app in esecuzione. Artefatto Release AOT senza kernel Debug verificato. La prima build si è fermata nello script Flutter; il riavvio ha completato compilazione e installazione.
+
+## Revisione 0.4.4 - un tap per ascoltare
+
+- Rimosso completamente RecordingPicker: da ricerca, artista e album il tap apre subito il player e avvia la risoluzione automatica. Più upload compatibili non interrompono più il flusso. Coda album e tentativi di sorgenti alternative conservati.
+- Criteri generali su presentazione, featuring, produzione, punteggiatura, prefisso artista, canali VEVO/Topic e durata; nessuna eccezione per artista. Testati Ernia, Travis Scott, Dua Lipa, The Weeknd, Adele, Gemitaiz e a-ha.
+- Prova su ricerca pubblica reale: trovate sorgenti compatibili per Don’t Start Now (Dua Lipa), Blinding Lights (The Weeknd) e FE!N (Travis Scott). Questa verifica riguarda scoperta e ranking, non equivale a un ascolto completo.
+- 71 test superati e analisi senza segnalazioni. Test widget con più upload corrispondenti verifica avvio automatico e assenza di BottomSheet; regressioni della coda ancora superate.
+- Release 0.4.4 build 8 installata e avviata su iPhone di prova, confermata da Xcode. Artefatto Release AOT senza kernel Debug verificato.
+
+## 0.5.2 — catalogo, profilo e dashboard
+
+- Pubblicazioni dello stesso artista/titolo raccolte in una scheda, conservando le scalette come versioni selezionabili. Caso reale: Ernia, PER SOLDI E PER AMORE, 12/13/14 tracce tra 2025 e 2026. Live e remaster con titolo diverso restano distinti.
+- Home con pannelli ampi, copertine orizzontali e ritratti circolari. Materiale UIKit UIGlassEffect su iOS 26, superficie semplice sugli altri sistemi; dock di sistema conservato.
+- Nome profilo persistente e crediti artista apribili dal player.
+- Ricerca testi LRCLIB normalizzata e automatica; timing incompatibile mostrato solo come testo semplice.
+- Equalizzatore iOS a cinque bande con MTAudioProcessingTap; verifica DSP con segnale e XCTest su campioni realmente decodificati da AVPlayer. Android usa AndroidEqualizer.
+- Importazione Spotify PKCE preparata: richiede configurazione Client ID dell’utente, non verificata con un account reale. Istruzioni in SPOTIFY_SETUP.md.
+
+## 0.6.0 — personalizzazione e prima build Android
+
+- Otto colori predefiniti e selettore libero con tonalità, saturazione, luminosità e codice HEX nelle impostazioni. Accento salvato nella libreria locale, ripristinato al riavvio e applicato alle schermate già aperte.
+- Accenti condivisi tra tema Material, sfondo ambientale, home, navigazione, karaoke e controlli UIKit. Modalità chiara/scura/automatica indipendente dal colore.
+- Test di cambio colore su una route aperta, persistenza e validazione del codice personalizzato.
+- Preparazione SDK Android e JDK Temurin verificati tramite SHA-256; cache di compilazione in work/.
+
+Validazione: 86 test Flutter superati, analisi senza problemi, APK release universale generato; firma APK v2 e integrità ZIP verificate. Android API minima 24. Prova su telefono Android ancora da effettuare dall’utente.
+
+## 0.6.1 — scoperta degli artisti simili
+
+- Home → Artisti → Esplora apre una griglia di ritratti; la selezione di un artista carica i correlati e conserva gli ultimi otto passaggi. Le pagine artista hanno anche «Scopri artisti simili».
+- Suggerimenti da Deezer Related Artists, risoluzione del nome esatto con preferenza per la voce più seguita in caso di omonimia, risultati deduplicati e cache limitata. Nessun seguito o preferito aggiunto automaticamente.
+- Apertura della scheda artista nel catalogo e mini player persistente. Le risposte obsolete non sostituiscono la selezione più recente; errori e assenza di suggerimenti hanno recupero esplicito.
+- Le immagini restituite dal catalogo vengono usate direttamente con cache su disco, evitando una ricerca separata per ogni ritratto.
+- Verifica live Gemitaiz → Ernia → correlati riuscita. Suite preesistente e nuovi test funzionali superati; anteprima mobile controllata in docs/previews/discovery-dark.png. Analisi senza problemi.
