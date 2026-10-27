@@ -4,7 +4,24 @@
 
 App musicale Flutter iOS/Android in sviluppo. Cartella di lavoro: `/path/to/Aura`.
 
-## Versione 0.4
+## Dove trovare i file
+
+| Cartella | Contenuto |
+| --- | --- |
+| `App Android/` | APK Android funzionante da installare e istruzioni |
+| `lib/` | Codice dell’app Flutter condiviso da iOS e Android |
+| `android/` | Progetto nativo Android e configurazione della build |
+| `ios/` | Progetto Xcode per iPhone |
+| `assets/` | Immagini, font e altre risorse |
+| `docs/` | Documentazione, riferimenti e anteprime |
+| `test/`, `integration_test/` | Controlli automatici |
+| `tool/` | Strumenti del progetto |
+| `build/` | File generati dalle compilazioni |
+| `work/` | Cache, strumenti locali e log di lavoro |
+
+**App Android pronta:** `App Android/AURA-0.6.1-Android.apk`.
+
+## App disponibile: 0.6.1
 
 Ricerca a cataloghi con filtri Tutto, Brani, Artisti e Album. Ogni artista apre brani, discografia e collaborazioni; ogni album apre la scaletta. I risultati non dipendono dagli ascolti o dalla libreria. Navigazione semplificata in Ascolta, Cerca e Libreria, senza sezioni duplicate. Preferiti e playlist persistenti. Home ispirata al nuovo riferimento: dischi in orizzontale, foto degli artisti, sfondo scuro e accento viola. Artisti preferiti espliciti e persistenti, separati dalla cronologia. Immagini da TheAudioDB/Deezer con cache su disco e miniature originali di riserva; vero Liquid Glass UIKit per dock e comandi su iOS 26+, controlli standard sulle altre piattaforme.
 
@@ -12,7 +29,7 @@ Riproduzione nativa con play/pausa, seek, coda, casuale e ripeti. L’utente ha 
 
 Artisti e album associabili a MusicBrainz, con metadati Apple come riserva, identificativi persistenti e selezione manuale quando l’abbinamento è ambiguo. Testi sincronizzati da LRCLIB quando disponibili, importazione LRC/testo e collegamento esterno a Genius. Nessun testo non sincronizzato viene fatto passare per karaoke.
 
-Spotify OAuth ed equalizzazione non sono attivi. Android non è ancora verificato su dispositivo. Consultare le limitazioni per stato e vincoli dei fornitori.
+Colori personalizzabili e scoperta degli artisti simili sono disponibili. Equalizzatore a cinque bande su iOS e Android; importazione Spotify predisposta, con Client ID da configurare. Consultare le limitazioni per stato e vincoli dei fornitori. La nuova Home personalizzata è in lavorazione nei sorgenti e non è inclusa nell’APK 0.6.1.
 
 ## Sviluppo
 

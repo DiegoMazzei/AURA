@@ -55,3 +55,7 @@ test/failures/
 
 # Android Gradle configuration diagnostics
 /android/build/
+
+# Local installable packages and compiler cache
+/App Android/*.apk
+/android/.kotlin/
