@@ -140,8 +140,8 @@ di `just_audio` sono conservate. [Sicurezza](SECURITY.md) · [Storia del progett
 
 ## Dalla prima versione
 
-La cronologia comprende tutti i **16 commit originali di sviluppo**, dalla
-0.1.0 alla 0.6.1, seguiti dal lavoro di pubblicazione. Il diario documenta
+La cronologia comprende tutti i ** commit originali di sviluppo**, dalla
+0.1.0 alla 0.7.0, seguiti dal lavoro di pubblicazione. Il diario documenta
 problemi, diagnosi, correzioni e verifiche, con collegamenti ai commit.
 
 [Storia completa](docs/STORIA.md) · [Tutti i commit](https://github.com/DiegoMazzei/AURA/commits/main/)
