@@ -1,6 +1,6 @@
-# AURA 0.6.1 · Private Preview
+# AURA 0.6.1 · Public Preview
 
-La prima release scaricabile del repository privato: Android e iOS, con una
+La prima release scaricabile di AURA: Android e iOS, con una
 vetrina aggiornata e schermate reali dell’app.
 
 ## In questa versione

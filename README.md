@@ -1,14 +1,22 @@
 <div align="center">
 
+<img src="assets/icons/aura-icon.png" width="112" height="112" alt="Icona AURA" />
+
+# AURA
+
+### Your music. Your universe.
+
+Un progetto di [Diego Mazzei](https://github.com/DiegoMazzei).
+
 ![AURA — Your music. Your universe.](docs/showcase/aura-banner.svg)
 
-**Un’esperienza musicale personale, tra scoperta e ascolto.**
+**Segui un artista. Scopri un mondo. Fallo tuo.**
 
 [Scarica la release](https://github.com/DiegoMazzei/aura/releases/tag/v0.6.1) · [Installazione](docs/INSTALLAZIONE.md) · [Novità](CHANGELOG.md) · [Sicurezza](SECURITY.md)
 
 ![Versione](https://img.shields.io/badge/versione-0.6.1-b89be8?style=flat-square)
 ![Piattaforme](https://img.shields.io/badge/piattaforme-iOS%20%7C%20Android-35303f?style=flat-square)
-![Stato](https://img.shields.io/badge/stato-private%20preview-35303f?style=flat-square)
+![Stato](https://img.shields.io/badge/stato-public%20preview-35303f?style=flat-square)
 
 </div>
 
@@ -32,7 +40,7 @@ un’interfaccia dai colori personalizzabili.
 | **iOS** | [Scarica IPA da firmare](https://github.com/DiegoMazzei/aura/releases/download/v0.6.1/AURA-0.6.1-iOS-unsigned.ipa) | Richiede firma e provisioning; non è installabile direttamente dal download |
 | **Integrità** | [SHA256](https://github.com/DiegoMazzei/aura/releases/download/v0.6.1/SHA256SUMS.txt) | Verifica i file scaricati |
 
-Il repository e i download sono **privati**: serve un account GitHub autorizzato.
+Sorgenti e pacchetti sono disponibili pubblicamente. Questa è una **versione di anteprima**.
 Per iOS non è ancora disponibile una distribuzione TestFlight.
 [Leggi le istruzioni complete](docs/INSTALLAZIONE.md).
 
@@ -91,11 +99,29 @@ ricevono le richieste di ricerca e rete. I token Spotify vengono usati in memori
 per l’importazione. I dati locali non hanno una cifratura aggiuntiva dell’app;
 Android mantiene il comportamento di backup predefinito del sistema.
 
-Questo repository nasce da una copia ripulita dei sorgenti: non include la
-vecchia cronologia, librerie dei dispositivi, chiavi, certificati o profili Apple.
+Il repository contiene i sorgenti della versione 0.6.1. Librerie dei dispositivi,
+chiavi, certificati e profili Apple personali sono esclusi.
 L’APK di prova già compilato conserva gli identificatori dello sviluppatore,
 come spiegato nella guida. Non è stato eseguito un audit di sicurezza completo.
 
 Il codice AURA non ha ancora una licenza di redistribuzione assegnata.
 Le licenze dei componenti di terze parti, del font Roboto e della copia modificata
 di `just_audio` sono conservate. [Sicurezza](SECURITY.md) · [Storia del progetto](CHANGELOG.md).
+
+## Partecipa
+
+Hai trovato un problema o hai un’idea? [Apri una segnalazione](https://github.com/DiegoMazzei/aura/issues/new/choose)
+con i passaggi per riprodurlo oppure racconta il miglioramento che vorresti.
+Non allegare token, credenziali o librerie personali.
+
+[Come contribuire](CONTRIBUTING.md) · [Privacy](PRIVACY.md) · [Segnalare una vulnerabilità](SECURITY.md)
+
+---
+
+<div align="center">
+
+**AURA — uno spazio per la tua musica.**
+
+Realizzata e mantenuta da [Diego Mazzei](https://github.com/DiegoMazzei).
+
+</div>

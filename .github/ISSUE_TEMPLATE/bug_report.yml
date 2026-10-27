@@ -1,0 +1,33 @@
+name: Segnala un problema
+description: Aiutaci a riprodurre un comportamento inatteso.
+title: "[Bug] "
+body:
+  - type: markdown
+    attributes:
+      value: "Non allegare password, token, cookie, file della libreria o dati personali. Per vulnerabilità usa Security → Report a vulnerability."
+  - type: input
+    id: version
+    attributes:
+      label: Versione di AURA
+      placeholder: "0.6.1"
+    validations:
+      required: true
+  - type: input
+    id: device
+    attributes:
+      label: Dispositivo e sistema operativo
+      placeholder: "Modello, Android/iOS e versione"
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Come riprodurlo
+      description: "Passaggi, risultato atteso e risultato ottenuto. Per il catalogo indica artista, album e brano."
+    validations:
+      required: true
+  - type: textarea
+    id: media
+    attributes:
+      label: Screenshot o dettagli aggiuntivi
+      description: "Rimuovi prima tutte le informazioni personali."

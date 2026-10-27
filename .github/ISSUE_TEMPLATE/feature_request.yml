@@ -1,0 +1,16 @@
+name: Proponi un miglioramento
+description: Racconta come vorresti usare AURA.
+title: "[Idea] "
+body:
+  - type: textarea
+    id: need
+    attributes:
+      label: Quale esigenza vuoi risolvere?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Come immagini il miglioramento?
+    validations:
+      required: true

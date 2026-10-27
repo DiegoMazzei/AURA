@@ -2,7 +2,7 @@
 
 ## Android · APK di prova
 
-Scarica `AURA-0.6.1-Android.apk` dalla release privata e aprilo sul telefono.
+Scarica `AURA-0.6.1-Android.apk` dalla release e aprilo sul telefono.
 Consenti l’installazione da quella sorgente quando Android lo richiede.
 Richiede Android 7 o successivo; include ARM64, ARMv7 e x86_64.
 La build usa una firma di sviluppo: è destinata a prove, non al Play Store.
@@ -33,4 +33,4 @@ La release include `SHA256SUMS.txt`. Su macOS/Linux esegui nella cartella dei fi
 shasum -a 256 -c SHA256SUMS.txt
 ```
 
-I download del repository privato richiedono un account GitHub autorizzato.
+I download sono disponibili dalla pagina pubblica delle release GitHub.
