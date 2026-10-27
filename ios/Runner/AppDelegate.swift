@@ -398,7 +398,7 @@ final class AuraSpotifyAuth: NSObject, FlutterPlugin, ASWebAuthenticationPresent
       result(FlutterMethodNotImplemented); return
     }
     guard session == nil else { result(FlutterError(code:"busy",message:"Accesso già in corso",details:nil)); return }
-    session = ASWebAuthenticationSession(url: url, callbackURLScheme: "it.diegomazzei.aura.spotify") { [weak self] callback, error in
+    session = ASWebAuthenticationSession(url: url, callbackURLScheme: "org.example.aura.spotify") { [weak self] callback, error in
       DispatchQueue.main.async {
         self?.session = nil
         if let callback { result(callback.absoluteString) }

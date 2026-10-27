@@ -72,7 +72,7 @@ class PublicMusicJsonClient implements MusicJsonClient {
       final request = await client.getUrl(uri);
       request.headers.set(
         'User-Agent',
-        'AURA/0.2 (https://github.com/DiegoMazzei)',
+        'AURA/0.2 (https://example.org/aura)',
       );
       request.headers.set('Accept', 'application/json');
       final response = await request.close().timeout(

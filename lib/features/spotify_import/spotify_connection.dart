@@ -7,7 +7,7 @@ import 'package:flutter/services.dart';
 
 import 'metadata_import.dart';
 
-const spotifyRedirect = 'it.diegomazzei.aura.spotify://callback';
+const spotifyRedirect = 'org.example.aura.spotify://callback';
 String _random() => base64Url
     .encode(List.generate(48, (_) => Random.secure().nextInt(256)))
     .replaceAll('=', '');
@@ -29,7 +29,7 @@ class SpotifyLogin {
   });
   String callbackCode(String raw) {
     final uri = Uri.parse(raw);
-    if (uri.scheme != 'it.diegomazzei.aura.spotify' ||
+    if (uri.scheme != 'org.example.aura.spotify' ||
         uri.host != 'callback' ||
         uri.queryParameters['state'] != state) {
       throw const FormatException('Risposta Spotify non valida');

@@ -1,6 +1,6 @@
 # Architettura AURA
 
-Cartella autorevole: `/path/to/Aura`.
+Cartella autorevole: `<project-directory>`.
 Riferimenti: `DEVELOPMENT_DIRECTIVES.md`, nuova direzione Apple Music richiesta dall’utente e `docs/DESIGN_SYSTEM.md`. Il mockup cosmico è conservato come riferimento storico.
 
 ## Struttura

@@ -28,7 +28,7 @@
                 <action android:name="android.intent.action.VIEW"/>
                 <category android:name="android.intent.category.DEFAULT"/>
                 <category android:name="android.intent.category.BROWSABLE"/>
-                <data android:scheme="it.diegomazzei.aura.spotify" android:host="callback"/>
+                <data android:scheme="org.example.aura.spotify" android:host="callback"/>
             </intent-filter>
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>

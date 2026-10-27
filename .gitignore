@@ -59,3 +59,20 @@ test/failures/
 # Local installable packages and compiler cache
 /App Android/*.apk
 /android/.kotlin/
+
+# Credentials, signing and personal local data
+.env
+.env.*
+!.env.example
+*.jks
+*.keystore
+*.p12
+*.p8
+*.mobileprovision
+**/key.properties
+**/local.properties
+**/library.json
+**/library.pending.json
+**/xcuserdata/
+*.apk
+*.ipa

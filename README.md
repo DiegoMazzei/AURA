@@ -1,37 +1,13 @@
 # AURA
 
-**Your Music. Your Universe.**
+Flutter music application for iOS and Android. Source snapshot: 0.6.1.
+Includes catalog search, artist discographies, related-artist discovery,
+local playlists and favorites, synchronized lyrics when available,
+background audio and customizable colors.
 
-App musicale Flutter iOS/Android in sviluppo. Cartella di lavoro: `/path/to/Aura`.
+## Run
 
-## Dove trovare i file
-
-| Cartella | Contenuto |
-| --- | --- |
-| `App Android/` | APK Android funzionante da installare e istruzioni |
-| `lib/` | Codice dell’app Flutter condiviso da iOS e Android |
-| `android/` | Progetto nativo Android e configurazione della build |
-| `ios/` | Progetto Xcode per iPhone |
-| `assets/` | Immagini, font e altre risorse |
-| `docs/` | Documentazione, riferimenti e anteprime |
-| `test/`, `integration_test/` | Controlli automatici |
-| `tool/` | Strumenti del progetto |
-| `build/` | File generati dalle compilazioni |
-| `work/` | Cache, strumenti locali e log di lavoro |
-
-**App Android pronta:** `App Android/AURA-0.6.1-Android.apk`.
-
-## App disponibile: 0.6.1
-
-Ricerca a cataloghi con filtri Tutto, Brani, Artisti e Album. Ogni artista apre brani, discografia e collaborazioni; ogni album apre la scaletta. I risultati non dipendono dagli ascolti o dalla libreria. Navigazione semplificata in Ascolta, Cerca e Libreria, senza sezioni duplicate. Preferiti e playlist persistenti. Home ispirata al nuovo riferimento: dischi in orizzontale, foto degli artisti, sfondo scuro e accento viola. Artisti preferiti espliciti e persistenti, separati dalla cronologia. Immagini da TheAudioDB/Deezer con cache su disco e miniature originali di riserva; vero Liquid Glass UIKit per dock e comandi su iOS 26+, controlli standard sulle altre piattaforme.
-
-Riproduzione nativa con play/pausa, seek, coda, casuale e ripeti. L’utente ha confermato ascolto sull’iPhone anche cambiando schermata e a schermo bloccato nella release precedente. La ricerca utilizza YouTube senza selettori di sorgente nell’interfaccia principale; il servizio è indicato nelle informazioni e resta soggetto a cambiamenti.
-
-Artisti e album associabili a MusicBrainz, con metadati Apple come riserva, identificativi persistenti e selezione manuale quando l’abbinamento è ambiguo. Testi sincronizzati da LRCLIB quando disponibili, importazione LRC/testo e collegamento esterno a Genius. Nessun testo non sincronizzato viene fatto passare per karaoke.
-
-Colori personalizzabili e scoperta degli artisti simili sono disponibili. Equalizzatore a cinque bande su iOS e Android; importazione Spotify predisposta, con Client ID da configurare. Consultare le limitazioni per stato e vincoli dei fornitori. La nuova Home personalizzata è in lavorazione nei sorgenti e non è inclusa nell’APK 0.6.1.
-
-## Sviluppo
+Install Flutter and the platform SDK, then run:
 
 ```sh
 flutter pub get
@@ -40,17 +16,31 @@ flutter test
 flutter run
 ```
 
-Aprire `ios/Runner.xcworkspace` in Xcode per la build iOS. Android richiede SDK/JDK configurati. Identificativi privati: iOS `org.example.aura`; Android `app.aura.personal`.
+For Android: `flutter build apk --release`. The development signing setup
+is for local testing; configure your own release signing before distribution.
+For iOS: open `ios/Runner.xcworkspace`, configure your own development team
+and a unique bundle identifier. This export uses `org.example.aura`.
 
-## Documentazione
+Spotify import requires your own public Client ID and the registered callback
+`org.example.aura.spotify://callback`. No Client Secret is needed. Keep the
+native callback definitions and Dart configuration consistent if changing it.
+Configure the metadata client's User-Agent contact URL for your own project.
 
-- [Avanzamento](docs/DEVELOPMENT_PROGRESS.md)
-- [Architettura](docs/ARCHITECTURE.md)
-- [Design system](docs/DESIGN_SYSTEM.md)
-- [Decisioni](docs/TECHNICAL_DECISIONS.md)
-- [Limitazioni](docs/KNOWN_LIMITATIONS.md)
-- [Installazione e test](docs/INSTALLATION.md)
-- [Asset e prompt](docs/ASSETS.md)
-- [Direttive fornite](DEVELOPMENT_DIRECTIVES.md)
+## Privacy and scope
 
-Anteprime dei widget in `docs/previews`; riferimento approvato in `docs/reference/approved-mockup.png`.
+This is a source-only export with no Git history, device library, credentials,
+Apple signing team, certificates, APKs, local tools, or development logs.
+The application stores profile name, favorites and recent plays on-device.
+Public music providers receive search terms and network requests.
+Spotify tokens are used in memory for a single import.
+
+The application has not undergone a comprehensive security audit.
+Android's current build configuration uses development signing and default
+OS backup behavior. Review privacy, signing and third-party service usage
+before distributing it broadly.
+
+The personalized Home currently under development is not included in this
+stable 0.6.1 snapshot. Third-party reference mockups and private development
+instructions have been excluded. Dependency notices, the Roboto font license
+and the vendored just_audio MIT license are retained. Choose a license for
+your own AURA code before presenting this as an open-source project.

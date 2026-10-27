@@ -22,6 +22,6 @@ class MainActivity : AudioServiceActivity() {
  override fun onNewIntent(intent:Intent){
   super.onNewIntent(intent)
   val uri=intent.data ?: return
-  if(uri.scheme=="it.diegomazzei.aura.spotify"&&uri.host=="callback"){authResult?.success(uri.toString());authResult=null}
+  if(uri.scheme=="org.example.aura.spotify"&&uri.host=="callback"){authResult?.success(uri.toString());authResult=null}
  }
 }

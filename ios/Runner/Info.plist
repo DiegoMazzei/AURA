@@ -77,7 +77,7 @@
 			<string>AURA Spotify</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>it.diegomazzei.aura.spotify</string>
+				<string>org.example.aura.spotify</string>
 			</array>
 		</dict>
 	</array>

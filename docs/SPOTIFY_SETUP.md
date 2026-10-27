@@ -1,7 +1,7 @@
 # Importazione Spotify
 
 Creare un’app nel pannello Spotify Developer e registrare esattamente il redirect:
-`it.diegomazzei.aura.spotify://callback`
+`org.example.aura.spotify://callback`
 
 Inserire il Client ID pubblico in AURA → Impostazioni → Spotify. Non serve un
 Client Secret. In modalità sviluppo Spotify richiede Premium al proprietario
