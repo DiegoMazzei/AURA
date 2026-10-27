@@ -1,10 +1,12 @@
 <div align="center">
 
-[![AURA — Apri la vetrina animata](docs/showcase/aura-banner.svg)](https://diegomazzei.github.io/AURA/)
+[![AURA in movimento — telefoni, tema chiaro e scuro e tutti gli otto colori](docs/showcase/aura-themes.gif)](https://diegomazzei.github.io/AURA/)
 
 [![Apri la vetrina animata](docs/showcase/open-site.svg)](https://diegomazzei.github.io/AURA/)
 
 **Dispositivi animati · Tema chiaro e scuro · Tutti gli otto colori**
+
+Schermate reali dell’app, in un ciclo di 16 secondi. [Anteprima statica](docs/showcase/aura-banner.svg).
 
 
 <img src="assets/icons/aura-icon.png" width="112" height="112" alt="Icona AURA" />
