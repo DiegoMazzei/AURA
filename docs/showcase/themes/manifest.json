@@ -1,0 +1,98 @@
+[
+  {
+    "file": "dark-viola.jpg",
+    "mode": "dark",
+    "color": "viola",
+    "capture": "iPhone simulator, AURA 0.6.1; theme and accent changed inside the app"
+  },
+  {
+    "file": "dark-blu.jpg",
+    "mode": "dark",
+    "color": "blu",
+    "capture": "iPhone simulator, AURA 0.6.1; theme and accent changed inside the app"
+  },
+  {
+    "file": "dark-turchese.jpg",
+    "mode": "dark",
+    "color": "turchese",
+    "capture": "iPhone simulator, AURA 0.6.1; theme and accent changed inside the app"
+  },
+  {
+    "file": "dark-verde.jpg",
+    "mode": "dark",
+    "color": "verde",
+    "capture": "iPhone simulator, AURA 0.6.1; theme and accent changed inside the app"
+  },
+  {
+    "file": "dark-rosa.jpg",
+    "mode": "dark",
+    "color": "rosa",
+    "capture": "iPhone simulator, AURA 0.6.1; theme and accent changed inside the app"
+  },
+  {
+    "file": "dark-corallo.jpg",
+    "mode": "dark",
+    "color": "corallo",
+    "capture": "iPhone simulator, AURA 0.6.1; theme and accent changed inside the app"
+  },
+  {
+    "file": "dark-ambra.jpg",
+    "mode": "dark",
+    "color": "ambra",
+    "capture": "iPhone simulator, AURA 0.6.1; theme and accent changed inside the app"
+  },
+  {
+    "file": "dark-grafite.jpg",
+    "mode": "dark",
+    "color": "grafite",
+    "capture": "iPhone simulator, AURA 0.6.1; theme and accent changed inside the app"
+  },
+  {
+    "file": "light-viola.jpg",
+    "mode": "light",
+    "color": "viola",
+    "capture": "iPhone simulator, AURA 0.6.1; theme and accent changed inside the app"
+  },
+  {
+    "file": "light-blu.jpg",
+    "mode": "light",
+    "color": "blu",
+    "capture": "iPhone simulator, AURA 0.6.1; theme and accent changed inside the app"
+  },
+  {
+    "file": "light-turchese.jpg",
+    "mode": "light",
+    "color": "turchese",
+    "capture": "iPhone simulator, AURA 0.6.1; theme and accent changed inside the app"
+  },
+  {
+    "file": "light-verde.jpg",
+    "mode": "light",
+    "color": "verde",
+    "capture": "iPhone simulator, AURA 0.6.1; theme and accent changed inside the app"
+  },
+  {
+    "file": "light-rosa.jpg",
+    "mode": "light",
+    "color": "rosa",
+    "capture": "iPhone simulator, AURA 0.6.1; theme and accent changed inside the app"
+  },
+  {
+    "file": "light-corallo.jpg",
+    "mode": "light",
+    "color": "corallo",
+    "capture": "iPhone simulator, AURA 0.6.1; theme and accent changed inside the app"
+  },
+  {
+    "file": "light-ambra.jpg",
+    "mode": "light",
+    "color": "ambra",
+    "capture": "iPhone simulator, AURA 0.6.1; theme and accent changed inside the app"
+  },
+  {
+    "file": "light-grafite.jpg",
+    "mode": "light",
+    "color": "grafite",
+    "capture": "iPhone simulator, AURA 0.6.1; theme and accent changed inside the app"
+  }
+]

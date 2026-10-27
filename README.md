@@ -12,7 +12,7 @@ Un progetto di [Diego Mazzei](https://github.com/DiegoMazzei).
 
 **Segui un artista. Scopri un mondo. Fallo tuo.**
 
-[Scarica la release](https://github.com/DiegoMazzei/aura/releases/tag/v0.6.1) · [Installazione](docs/INSTALLAZIONE.md) · [Novità](CHANGELOG.md) · [Sicurezza](SECURITY.md)
+[Vetrina animata](https://diegomazzei.github.io/aura/) · [Scarica la release](https://github.com/DiegoMazzei/aura/releases/tag/v0.6.1) · [Installazione](docs/INSTALLAZIONE.md) · [Novità](CHANGELOG.md) · [Sicurezza](SECURITY.md)
 
 ![Versione](https://img.shields.io/badge/versione-0.6.1-b89be8?style=flat-square)
 ![Piattaforme](https://img.shields.io/badge/piattaforme-iOS%20%7C%20Android-35303f?style=flat-square)
@@ -43,6 +43,18 @@ un’interfaccia dai colori personalizzabili.
 Sorgenti e pacchetti sono disponibili pubblicamente. Questa è una **versione di anteprima**.
 Per iOS non è ancora disponibile una distribuzione TestFlight.
 [Leggi le istruzioni complete](docs/INSTALLAZIONE.md).
+
+## Chiara o scura. Sempre tua.
+
+**Otto colori, sedici catture reali.** Esplora viola, blu, turchese, verde,
+rosa, corallo, ambra e grafite nei due temi. Il sito mostra i dispositivi
+in movimento e permette di cambiare la schermata visualizzata.
+
+[Vetrina interattiva](https://diegomazzei.github.io/aura/#aspetto) · [Galleria completa](docs/GALLERIA.md)
+
+| Tema scuro · Viola | Tema chiaro · Blu |
+| :---: | :---: |
+| <img src="docs/showcase/themes/dark-viola.jpg" width="260" alt="AURA scura viola"> | <img src="docs/showcase/themes/light-blu.jpg" width="260" alt="AURA chiara blu"> |
 
 ## Dentro l’interfaccia
 

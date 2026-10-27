@@ -18,7 +18,8 @@ vetrina aggiornata e schermate reali dell’app.
 | `AURA-0.6.1-Android.apk` | Android 7+, ARM64/ARMv7/x86_64, installazione manuale |
 | `AURA-0.6.1-iOS-unsigned.ipa` | iOS 15+, dispositivi ARM64, da firmare prima dell’installazione |
 | `AURA-0.6.1-Screenshots.zip` | Sei schermate reali dal simulatore iPhone |
-| `SHA256SUMS.txt` | Verifica dell’integrità dei tre pacchetti |
+| `AURA-0.6.1-Temi.zip` | Sedici schermate: otto colori, tema chiaro e scuro |
+| `SHA256SUMS.txt` | Verifica dell’integrità dei pacchetti |
 
 **iOS:** il download non equivale all’installazione. L’IPA non include firma,
 certificati o profili Apple personali. Occorre firmarla con un account e un
@@ -47,3 +48,7 @@ Non è una distribuzione App Store/Play Store né una build sottoposta a un audi
 Lo storico originale di sviluppo è ora incluso dalla 0.1.0, con dati personali
 rimossi dai vecchi file. Autori, date e messaggi conservati; gli hash cambiano
 per la ripulitura. Vedi [storia e problemi](https://github.com/DiegoMazzei/aura/blob/main/docs/STORIA.md).
+
+## Vetrina e storico
+
+[Vetrina animata](https://diegomazzei.github.io/aura/) · [Galleria dei temi](https://github.com/DiegoMazzei/aura/blob/main/docs/GALLERIA.md) · [Storia dalla 0.1.0](https://github.com/DiegoMazzei/aura/blob/main/docs/STORIA.md).
