@@ -12,7 +12,7 @@ ThemeData auraTheme(Brightness brightness) {
   final scheme = ColorScheme.fromSeed(
     seedColor: const Color(0xff9750e8),
     brightness: brightness,
-    surface: dark ? const Color(0xff100b18) : const Color(0xfffaf7ff),
+    surface: dark ? const Color(0xff19171f) : const Color(0xfff5f1f0),
     primary: dark ? auraBlue : const Color(0xff7435bc),
   );
   final family = defaultTargetPlatform == TargetPlatform.iOS
@@ -110,6 +110,35 @@ class AuraGlassSurface extends StatelessWidget {
   );
 }
 
+class AuraDashboardPanel extends StatelessWidget {
+  const AuraDashboardPanel({super.key, required this.child});
+  final Widget child;
+  @override
+  Widget build(BuildContext context) => ClipRRect(
+    borderRadius: BorderRadius.circular(30),
+    child: Stack(
+      children: [
+        Positioned.fill(
+          child: NativeMaterials.available
+              ? IgnorePointer(
+                  child: NativeGlassControl(
+                    kind: 'panel',
+                    config: {'dark': context.isDark},
+                    onEvent: (_, _) {},
+                  ),
+                )
+              : ColoredBox(
+                  color: context.isDark
+                      ? const Color(0xff292631)
+                      : const Color(0xffeeeaf1),
+                ),
+        ),
+        Padding(padding: const EdgeInsets.all(18), child: child),
+      ],
+    ),
+  );
+}
+
 String _symbol(IconData icon) {
   if (icon == Icons.search_rounded || icon == Icons.search) {
     return 'magnifyingglass';
@@ -196,11 +225,11 @@ class AuraBackground extends StatelessWidget {
     decoration: BoxDecoration(
       color: Theme.of(context).scaffoldBackgroundColor,
       gradient: RadialGradient(
-        center: const Alignment(.9, -1),
-        radius: 1.6,
+        center: const Alignment(.7, -.8),
+        radius: 1.8,
         colors: [
           Color.alphaBlend(
-            color.withValues(alpha: context.isDark ? .055 : .035),
+            color.withValues(alpha: context.isDark ? .24 : .17),
             Theme.of(context).scaffoldBackgroundColor,
           ),
           Theme.of(context).scaffoldBackgroundColor,

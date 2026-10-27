@@ -108,3 +108,12 @@ Riferimenti esaminati: Namida e Orbit-Music. Nessun codice o asset copiato da qu
 - Prova su ricerca pubblica reale: trovate sorgenti compatibili per Don’t Start Now (Dua Lipa), Blinding Lights (The Weeknd) e FE!N (Travis Scott). Questa verifica riguarda scoperta e ranking, non equivale a un ascolto completo.
 - 71 test superati e analisi senza segnalazioni. Test widget con più upload corrispondenti verifica avvio automatico e assenza di BottomSheet; regressioni della coda ancora superate.
 - Release 0.4.4 build 8 installata e avviata su iPhone di prova, confermata da Xcode. Artefatto Release AOT senza kernel Debug verificato.
+
+## 0.5.2 — catalogo, profilo e dashboard
+
+- Pubblicazioni dello stesso artista/titolo raccolte in una scheda, conservando le scalette come versioni selezionabili. Caso reale: Ernia, PER SOLDI E PER AMORE, 12/13/14 tracce tra 2025 e 2026. Live e remaster con titolo diverso restano distinti.
+- Home con pannelli ampi, copertine orizzontali e ritratti circolari. Materiale UIKit UIGlassEffect su iOS 26, superficie semplice sugli altri sistemi; dock di sistema conservato.
+- Nome profilo persistente e crediti artista apribili dal player.
+- Ricerca testi LRCLIB normalizzata e automatica; timing incompatibile mostrato solo come testo semplice.
+- Equalizzatore iOS a cinque bande con MTAudioProcessingTap; verifica DSP con segnale e XCTest su campioni realmente decodificati da AVPlayer. Android usa AndroidEqualizer.
+- Importazione Spotify PKCE preparata: richiede configurazione Client ID dell’utente, non verificata con un account reale. Istruzioni in SPOTIFY_SETUP.md.

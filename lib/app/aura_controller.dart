@@ -68,6 +68,50 @@ class AuraController extends ChangeNotifier {
   List<String> recent = [];
   List<String> queue = [];
   String currentId = '';
+  String displayName = '';
+  String spotifyClientId = '';
+  bool equalizerEnabled = false;
+  List<double> equalizerGains = List.filled(5, 0);
+  Future<void> setEqualizer({
+    bool? enabled,
+    int? band,
+    double? gain,
+    List<double>? preset,
+  }) async {
+    final next = preset != null
+        ? List<double>.of(preset)
+        : List<double>.of(equalizerGains);
+    if (band != null && gain != null) next[band] = gain.clamp(-12, 12);
+    final active = enabled ?? equalizerEnabled;
+    try {
+      await audio.configureEqualizer(active, next);
+      equalizerEnabled = active;
+      equalizerGains = next;
+      notifyListeners();
+      unawaited(save());
+    } catch (_) {
+      error = 'Impossibile applicare il filtro audio.';
+      notifyListeners();
+    }
+  }
+
+  void setDisplayName(String value) {
+    displayName = value
+        .trim()
+        .replaceAll(RegExp(r'\s+'), ' ')
+        .characters
+        .take(40)
+        .toString();
+    notifyListeners();
+    unawaited(save());
+  }
+
+  void setSpotifyClientId(String value) {
+    spotifyClientId = value.trim();
+    notifyListeners();
+    unawaited(save());
+  }
+
   ThemeMode themeMode = ThemeMode.system;
   RepeatSetting repeat = RepeatSetting.off;
   bool shuffle = false, ready = false, busy = false, importing = false;
@@ -115,6 +159,14 @@ class AuraController extends ChangeNotifier {
       final data = await store.read();
       if (_disposed) return;
       if (data != null) {
+        displayName = data['displayName'] as String? ?? '';
+        spotifyClientId = data['spotifyClientId'] as String? ?? '';
+        equalizerEnabled = data['equalizerEnabled'] == true;
+        final gains = (data['equalizerGains'] as List? ?? [])
+            .whereType<num>()
+            .map((v) => v.toDouble().clamp(-12.0, 12.0))
+            .toList();
+        if (gains.length == 5) equalizerGains = gains;
         for (final raw in data['favoriteArtists'] as List? ?? []) {
           final artist = DirectoryArtist.fromJson(
             Map<String, dynamic>.from(raw as Map),
@@ -256,6 +308,11 @@ class AuraController extends ChangeNotifier {
     if (track(currentId) == null && tracks.isNotEmpty) {
       currentId = tracks.first.id;
     }
+    try {
+      await audio.configureEqualizer(equalizerEnabled, equalizerGains);
+    } catch (_) {
+      equalizerEnabled = false;
+    }
     ready = true;
     _positionSave = Timer.periodic(const Duration(seconds: 5), (_) {
       if (audio.playing) unawaited(save());
@@ -265,6 +322,10 @@ class AuraController extends ChangeNotifier {
 
   Map<String, dynamic> snapshot() => {
     'version': 1,
+    'displayName': displayName,
+    'spotifyClientId': spotifyClientId,
+    'equalizerEnabled': equalizerEnabled,
+    'equalizerGains': equalizerGains,
     'onlineLibraryMigrated': true,
     'onlineRecords': onlineRecords.values.map((t) => t.toJson()).toList(),
     'onlineFavorites': onlineFavorites.toList(),
@@ -442,6 +503,7 @@ class AuraController extends ChangeNotifier {
       audio.play();
       recent = [t.id, ...recent.where((id) => id != t.id)].take(30).toList();
       unawaited(enrichTrackMetadata(track(t.id) ?? t));
+      unawaited(fetchLyrics(track(t.id) ?? t));
       unawaited(save());
     } catch (_) {
       if (!_disposed) {
@@ -806,6 +868,43 @@ class AuraController extends ChangeNotifier {
     notifyListeners();
   }
 
+  final Set<String> _lyricsLoading = {};
+  Future<void> fetchLyrics(Track seed) async {
+    if (lyricsProvider == null ||
+        seed.lyrics.isNotEmpty ||
+        seed.plainLyrics.isNotEmpty ||
+        !_lyricsLoading.add(seed.id)) {
+      return;
+    }
+    try {
+      final found = await lyricsProvider!.search(seed);
+      final compatible = found
+          .where((r) => lyricsMatch(seed, r, requireTiming: false))
+          .toList();
+      final latest = track(seed.id);
+      if (!_disposed &&
+          latest != null &&
+          latest.lyrics.isEmpty &&
+          latest.plainLyrics.isEmpty &&
+          compatible.isNotEmpty) {
+        final r = compatible.first;
+        attachLyrics(
+          latest,
+          lines: lyricsMatch(seed, r) ? parseLrc(r.synced) : [],
+          plain: r.plain.isNotEmpty
+              ? r.plain
+              : parseLrc(r.synced).map((l) => l.text).join("\n"),
+          source: 'LRCLIB',
+          sourceUrl: r.sourceUrl,
+        );
+      }
+    } catch (_) {
+      /* Playback does not depend on lyric availability. */
+    } finally {
+      _lyricsLoading.remove(seed.id);
+    }
+  }
+
   void attachLyrics(
     Track seed, {
     required List<LyricLine> lines,
@@ -832,6 +931,55 @@ class AuraController extends ChangeNotifier {
     onlinePlaylists.remove(p);
     notifyListeners();
     unawaited(save());
+  }
+
+  Future<void> importSpotifyCollections(
+    List<ImportedCollection> collections,
+  ) async {
+    for (final collection in collections) {
+      final ids = <String>[];
+      for (final song in collection.songs) {
+        final sourceId = song.uri.startsWith('spotify:track:')
+            ? song.uri.substring(14)
+            : Uri.encodeComponent(song.identity);
+        final id = 'catalog:spotify:$sourceId';
+        if (track(id) == null) {
+          tracks.add(
+            Track(
+              id: id,
+              title: song.title,
+              artist: song.artist,
+              album: song.album,
+              source: '',
+              isYoutube: true,
+              durationSeconds: song.durationSeconds,
+              catalogIdentity: CatalogIdentity(
+                provider: 'Spotify',
+                recordingId: 'spotify:$sourceId',
+                title: song.title,
+                album: song.album,
+                artists: song.artist
+                    .split(', ')
+                    .map((a) => CatalogArtist(id: 'name:$a', name: a))
+                    .toList(),
+              ),
+            ),
+          );
+        }
+        ids.add(id);
+      }
+      if (collection.sourceId == 'saved') {
+        favorites.addAll(ids);
+      } else {
+        final id = 'spotify:${collection.sourceId}';
+        playlists.removeWhere((p) => p.id == id);
+        playlists.add(
+          AuraPlaylist(id: id, name: collection.name, trackIds: ids),
+        );
+      }
+    }
+    notifyListeners();
+    await save();
   }
 
   Future<int?> importMusicMetadata() async {

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../app/aura_controller.dart';
 import '../../core/design/aura_design.dart';
 import '../spotify_import/import_screen.dart';
+import '../spotify_import/spotify_connect_screen.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key, required this.controller});
@@ -16,6 +17,46 @@ class SettingsScreen extends StatelessWidget {
         child: ListView(
           padding: const EdgeInsets.all(24),
           children: [
+            const SectionTitle('Profilo'),
+            ListTile(
+              leading: const Icon(Icons.person_outline),
+              title: Text(
+                controller.displayName.isEmpty
+                    ? 'Come ti chiami?'
+                    : controller.displayName,
+              ),
+              subtitle: const Text('Il nome che AURA usa per salutarti'),
+              trailing: const Icon(Icons.edit_outlined),
+              onTap: () async {
+                final field = TextEditingController(
+                  text: controller.displayName,
+                );
+                final name = await showDialog<String>(
+                  context: context,
+                  builder: (ctx) => AlertDialog(
+                    title: const Text('Il tuo nome'),
+                    content: TextField(
+                      controller: field,
+                      autofocus: true,
+                      maxLength: 40,
+                      textCapitalization: TextCapitalization.words,
+                      decoration: const InputDecoration(labelText: 'Nome'),
+                    ),
+                    actions: [
+                      TextButton(
+                        onPressed: () => Navigator.pop(ctx),
+                        child: const Text('Annulla'),
+                      ),
+                      FilledButton(
+                        onPressed: () => Navigator.pop(ctx, field.text),
+                        child: const Text('Salva'),
+                      ),
+                    ],
+                  ),
+                );
+                if (name != null) controller.setDisplayName(name);
+              },
+            ),
             const SectionTitle('Aspetto'),
             AuraGlassSurface(
               padding: const EdgeInsets.all(10),
@@ -62,31 +103,16 @@ class SettingsScreen extends StatelessWidget {
                 ),
               ),
             ),
-            AuraGlassSurface(
-              padding: const EdgeInsets.all(20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    'Spotify → AURA',
-                    style: TextStyle(fontSize: 23, fontWeight: FontWeight.w600),
-                  ),
-                  const SizedBox(height: 10),
-                  Text(
-                    'Playlist, artisti e brani salvati. L’importazione Spotify richiede una configurazione OAuth e la tua autorizzazione; non è ancora attiva.',
-                    style: TextStyle(color: context.muted, height: 1.5),
-                  ),
-                  const SizedBox(height: 18),
-                  const Text(
-                    'YouTube',
-                    style: TextStyle(fontSize: 19, fontWeight: FontWeight.w600),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    'Il catalogo di ricerca e la riproduzione online utilizzano YouTube. La disponibilità dei contenuti dipende dal servizio.',
-                    style: TextStyle(color: context.muted, height: 1.5),
-                  ),
-                ],
+            ListTile(
+              leading: const Icon(Icons.link),
+              title: const Text('Collega Spotify'),
+              subtitle: const Text('Importa playlist e brani preferiti'),
+              trailing: const Icon(Icons.chevron_right),
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute<void>(
+                  builder: (_) => SpotifyConnectScreen(controller: controller),
+                ),
               ),
             ),
             const SectionTitle('Catalogo e testi'),
@@ -120,7 +146,7 @@ class SettingsScreen extends StatelessWidget {
             const SizedBox(height: 9),
             Center(
               child: Text(
-                '0.4 · Sviluppo',
+                '0.5.1 · Sviluppo',
                 style: TextStyle(color: context.muted, fontSize: 11),
               ),
             ),

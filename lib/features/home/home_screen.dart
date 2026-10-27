@@ -50,7 +50,7 @@ class _HomeScreenState extends State<HomeScreen> {
         ? 'Buon pomeriggio,'
         : 'Buonasera,';
     return ListView(
-      padding: const EdgeInsets.fromLTRB(22, 22, 22, 172),
+      padding: const EdgeInsets.fromLTRB(18, 24, 18, 172),
       children: [
         Row(
           children: [
@@ -60,12 +60,14 @@ class _HomeScreenState extends State<HomeScreen> {
               decoration: const BoxDecoration(
                 shape: BoxShape.circle,
                 gradient: LinearGradient(
-                  colors: [Color(0xffcfafff), Color(0xff8a43e3)],
+                  colors: [Color(0xffb6a2ce), Color(0xff6b547f)],
                 ),
               ),
-              child: const Center(
+              child: Center(
                 child: Text(
-                  'A',
+                  c.displayName.isEmpty
+                      ? 'A'
+                      : c.displayName.characters.first.toUpperCase(),
                   style: TextStyle(
                     fontSize: 25,
                     color: Colors.white,
@@ -80,12 +82,12 @@ class _HomeScreenState extends State<HomeScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    greeting,
+                    c.displayName.isEmpty ? 'Benvenuto' : greeting,
                     style: TextStyle(fontSize: 18, color: context.muted),
                   ),
-                  const Text(
-                    'Utente',
-                    style: TextStyle(
+                  Text(
+                    c.displayName.isEmpty ? 'La tua musica' : c.displayName,
+                    style: const TextStyle(
                       fontSize: 23,
                       height: 1.15,
                       fontWeight: FontWeight.w700,
@@ -101,7 +103,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ],
         ),
-        const SizedBox(height: 27),
+        const SizedBox(height: 24),
         SingleChildScrollView(
           scrollDirection: Axis.horizontal,
           child: Row(
@@ -112,7 +114,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   child: ChoiceChip(
                     label: Text(['Tutto', 'Musica', 'Artisti'][i]),
                     selected: _filter == i,
-                    selectedColor: const Color(0xff8342cd),
+                    selectedColor: const Color(0xff78618e),
                     showCheckmark: false,
                     labelStyle: TextStyle(
                       color: _filter == i ? Colors.white : context.ink,
@@ -143,68 +145,130 @@ class _HomeScreenState extends State<HomeScreen> {
                 }
                 return const SizedBox.shrink();
               }
-              return Column(
+              return Padding(
+                padding: const EdgeInsets.only(top: 26),
+                child: AuraDashboardPanel(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _HomeHeading(
+                        'In primo piano',
+                        action: 'Cerca',
+                        onAction: widget.onSearch,
+                      ),
+                      SizedBox(
+                        height: 216,
+                        child: ListView.separated(
+                          scrollDirection: Axis.horizontal,
+                          itemCount: recent.take(6).length + albums.length,
+                          separatorBuilder: (_, _) => const SizedBox(width: 16),
+                          itemBuilder: (context, i) {
+                            final count = recent.take(6).length;
+                            final t = i < count ? recent[i] : null;
+                            final a = i >= count ? albums[i - count] : null;
+                            return SizedBox(
+                              width: 150,
+                              child: InkWell(
+                                borderRadius: BorderRadius.circular(14),
+                                onTap: () {
+                                  if (t != null) {
+                                    c.playTrack(t, contextTracks: recent);
+                                    openPlayer(context, c);
+                                  } else {
+                                    openCatalogAlbum(context, c, a!);
+                                  }
+                                },
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    MusicImage(
+                                      controller: c,
+                                      artist:
+                                          t?.catalogIdentity?.albumArtist ??
+                                          t?.artist ??
+                                          a!.artist,
+                                      album: t?.album ?? a!.title,
+                                      fallbackUrl: t?.artworkUrl,
+                                      size: 150,
+                                      radius: 12,
+                                    ),
+                                    const SizedBox(height: 10),
+                                    Text(
+                                      t?.title ?? a!.title,
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: const TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 3),
+                                    Text(
+                                      t?.artist ?? a!.artist,
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: TextStyle(
+                                        fontSize: 13,
+                                        color: context.muted,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            },
+          ),
+        if (_filter != 1 && c.artistDirectory != null)
+          Padding(
+            padding: const EdgeInsets.only(top: 18),
+            child: AuraDashboardPanel(
+              child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  SectionTitle(
-                    'Da ascoltare',
+                  _HomeHeading(
+                    c.favoriteArtists.isEmpty
+                        ? 'Scopri artisti'
+                        : 'Artisti preferiti',
                     action: 'Cerca',
                     onAction: widget.onSearch,
                   ),
                   SizedBox(
-                    height: 224,
+                    height: 134,
                     child: ListView.separated(
                       scrollDirection: Axis.horizontal,
-                      itemCount: recent.take(6).length + albums.length,
-                      separatorBuilder: (_, _) => const SizedBox(width: 15),
+                      itemCount: artists.length,
+                      separatorBuilder: (_, _) => const SizedBox(width: 18),
                       itemBuilder: (context, i) {
-                        final count = recent.take(6).length;
-                        final t = i < count ? recent[i] : null;
-                        final a = i >= count ? albums[i - count] : null;
+                        final a = artists[i];
                         return SizedBox(
-                          width: 154,
+                          width: 88,
                           child: InkWell(
-                            borderRadius: BorderRadius.circular(14),
-                            onTap: () {
-                              if (t != null) {
-                                c.playTrack(t, contextTracks: recent);
-                                openPlayer(context, c);
-                              } else {
-                                openCatalogAlbum(context, c, a!);
-                              }
-                            },
+                            borderRadius: BorderRadius.circular(44),
+                            onTap: () => openCatalogArtist(context, c, a),
                             child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 MusicImage(
                                   controller: c,
-                                  artist:
-                                      t?.catalogIdentity?.albumArtist ??
-                                      t?.artist ??
-                                      a!.artist,
-                                  album: t?.album ?? a!.title,
-                                  fallbackUrl: t?.artworkUrl,
-                                  size: 154,
-                                  radius: 14,
+                                  artist: a.name,
+                                  portrait: true,
+                                  size: 88,
+                                  radius: 44,
                                 ),
                                 const SizedBox(height: 10),
                                 Text(
-                                  t?.title ?? a!.title,
+                                  a.name,
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
                                   style: const TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                                const SizedBox(height: 3),
-                                Text(
-                                  t?.artist ?? a!.artist,
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: TextStyle(
                                     fontSize: 13,
-                                    color: context.muted,
+                                    fontWeight: FontWeight.w600,
                                   ),
                                 ),
                               ],
@@ -215,57 +279,11 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ),
                 ],
-              );
-            },
-          ),
-        if (_filter != 1 && c.artistDirectory != null) ...[
-          SectionTitle(
-            c.favoriteArtists.isEmpty ? 'Scopri artisti' : 'Artisti preferiti',
-            action: 'Cerca',
-            onAction: widget.onSearch,
-          ),
-          SizedBox(
-            height: 134,
-            child: ListView.separated(
-              scrollDirection: Axis.horizontal,
-              itemCount: artists.length,
-              separatorBuilder: (_, _) => const SizedBox(width: 18),
-              itemBuilder: (context, i) {
-                final a = artists[i];
-                return SizedBox(
-                  width: 88,
-                  child: InkWell(
-                    borderRadius: BorderRadius.circular(44),
-                    onTap: () => openCatalogArtist(context, c, a),
-                    child: Column(
-                      children: [
-                        MusicImage(
-                          controller: c,
-                          artist: a.name,
-                          portrait: true,
-                          size: 88,
-                          radius: 44,
-                        ),
-                        const SizedBox(height: 10),
-                        Text(
-                          a.name,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(
-                            fontSize: 13,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                );
-              },
+              ),
             ),
           ),
-        ],
         if (_filter != 2 && recent.isNotEmpty) ...[
-          const SectionTitle('Riprendi da qui'),
+          const _HomeHeading('Continua ad ascoltare'),
           ...recent
               .take(4)
               .map(
@@ -304,7 +322,7 @@ class _HomeScreenState extends State<HomeScreen> {
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const SectionTitle('Dal catalogo'),
+                  const _HomeHeading('Dal catalogo'),
                   ...snapshot.data!.songs
                       .take(5)
                       .map(
@@ -337,4 +355,31 @@ class _HomeScreenState extends State<HomeScreen> {
       ],
     );
   }
+}
+
+class _HomeHeading extends StatelessWidget {
+  const _HomeHeading(this.title, {this.action, this.onAction});
+  final String title;
+  final String? action;
+  final VoidCallback? onAction;
+  @override
+  Widget build(BuildContext context) => Padding(
+    padding: const EdgeInsets.only(bottom: 14),
+    child: Row(
+      children: [
+        Expanded(
+          child: Text(
+            title,
+            style: const TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.w500,
+              letterSpacing: -.4,
+            ),
+          ),
+        ),
+        if (action != null)
+          TextButton(onPressed: onAction, child: Text(action!)),
+      ],
+    ),
+  );
 }

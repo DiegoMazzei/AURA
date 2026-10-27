@@ -3,6 +3,7 @@ import UIKit
 
 @main
 @objc class AppDelegate: FlutterAppDelegate, FlutterImplicitEngineDelegate {
+  static func equalizerDiagnostics() -> [AnyHashable: Any] { AuraAudioEffects.processingStatus() }
   override func application(
     _ application: UIApplication,
     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
@@ -12,6 +13,8 @@ import UIKit
 
   func didInitializeImplicitFlutterEngine(_ engineBridge: FlutterImplicitEngineBridge) {
     GeneratedPluginRegistrant.register(with: engineBridge.pluginRegistry)
+    if let registrar = engineBridge.pluginRegistry.registrar(forPlugin: "AuraSpotifyAuth") { AuraSpotifyAuth.register(with: registrar) }
+    if let registrar = engineBridge.pluginRegistry.registrar(forPlugin: "AuraAudioEffects") { AuraAudioEffects.register(with: registrar) }
     if let registrar = engineBridge.pluginRegistry.registrar(forPlugin: "AuraNativeUI") {
       AuraNativeUI.register(with: registrar)
     }
@@ -31,6 +34,7 @@ final class AuraNativeUI: NSObject, FlutterPlugin {
     }
     registrar.register(AuraControlFactory(messenger: registrar.messenger(), kind: "dock"), withId: "aura/native_dock")
     registrar.register(AuraControlFactory(messenger: registrar.messenger(), kind: "button"), withId: "aura/native_button")
+    registrar.register(AuraControlFactory(messenger: registrar.messenger(), kind: "panel"), withId: "aura/native_panel")
   }
 }
 
@@ -95,7 +99,12 @@ final class AuraControlView: UIView {
     super.init(frame: frame)
     backgroundColor = .clear
     isOpaque = false
-    if kind == "button" {
+    if kind == "panel" {
+      addSubview(mini)
+      mini.layer.cornerRadius = 30
+      mini.clipsToBounds = true
+      isUserInteractionEnabled = false
+    } else if kind == "button" {
       addSubview(single)
       single.addAction(UIAction { [weak self] _ in self?.send?("pressed", nil) }, for: .touchUpInside)
     } else {
@@ -135,6 +144,7 @@ final class AuraControlView: UIView {
   required init?(coder: NSCoder) { fatalError("init(coder:) is not supported") }
   override func layoutSubviews() {
     super.layoutSubviews()
+    if kind == "panel" { mini.frame = bounds; return }
     if kind == "button" { single.frame = bounds; return }
     let width = bounds.width
     mini.frame = CGRect(x: 0, y: 0, width: width, height: 56)
@@ -152,6 +162,7 @@ final class AuraControlView: UIView {
   func update(_ data: [String: Any]) {
     config = data
     overrideUserInterfaceStyle = data["dark"] as? Bool == true ? .dark : .light
+    if kind == "panel" { setNeedsLayout(); return }
     let accent = UIColor(red: 0.70, green: 0.45, blue: 0.98, alpha: 1)
     if kind == "button" {
       var style: UIButton.Configuration
@@ -366,4 +377,33 @@ final class AuraAccessoryContent: UIView {
     }
   }
   deinit { imageTask?.cancel() }
+}
+
+// System browser session. Passwords stay with Spotify; AURA receives only the
+// short-lived authorization callback and exchanges it with PKCE in Dart.
+import AuthenticationServices
+final class AuraSpotifyAuth: NSObject, FlutterPlugin, ASWebAuthenticationPresentationContextProviding {
+  private var session: ASWebAuthenticationSession?
+  static func register(with registrar: FlutterPluginRegistrar) {
+    let instance = AuraSpotifyAuth()
+    registrar.addMethodCallDelegate(instance, channel: FlutterMethodChannel(name: "aura/spotify_auth", binaryMessenger: registrar.messenger()))
+  }
+  func presentationAnchor(for session: ASWebAuthenticationSession) -> ASPresentationAnchor {
+    UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }.flatMap { $0.windows }.first { $0.isKeyWindow } ?? ASPresentationAnchor()
+  }
+  func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
+    guard call.method == "authorize", let args = call.arguments as? [String: String], let raw = args["url"], let url = URL(string: raw), url.scheme == "https", url.host == "accounts.spotify.com" else {
+      result(FlutterMethodNotImplemented); return
+    }
+    guard session == nil else { result(FlutterError(code:"busy",message:"Accesso già in corso",details:nil)); return }
+    session = ASWebAuthenticationSession(url: url, callbackURLScheme: "it.diegomazzei.aura.spotify") { [weak self] callback, error in
+      DispatchQueue.main.async {
+        self?.session = nil
+        if let callback { result(callback.absoluteString) }
+        else { result(FlutterError(code:"cancelled",message:"Accesso annullato",details:nil)) }
+      }
+    }
+    session?.presentationContextProvider = self
+    if session?.start() != true { session = nil; result(FlutterError(code:"auth",message:"Impossibile avviare Spotify",details:nil)) }
+  }
 }

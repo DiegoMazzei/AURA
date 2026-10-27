@@ -49,3 +49,6 @@ app.*.map.json
 
 # Local reference downloads and scratch files
 /work/
+
+# Generated golden comparison artifacts
+test/failures/

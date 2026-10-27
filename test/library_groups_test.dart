@@ -1,3 +1,4 @@
+import 'package:aura/core/catalog/catalog_identity.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:aura/shared/models/music.dart';
 import 'package:aura/features/library/library_groups.dart';
@@ -8,6 +9,31 @@ import 'package:aura/core/storage/library_store.dart';
 import 'fakes.dart';
 
 void main() {
+  test('equivalent Apple album IDs do not split the saved library', () {
+    Track song(String id, String albumId) => Track(
+      id: id,
+      title: id,
+      artist: 'Artista',
+      album: 'Disco',
+      source: 'file',
+      catalogIdentity: CatalogIdentity(
+        provider: 'Apple',
+        recordingId: id,
+        album: 'Disco',
+        albumArtist: 'Artista',
+        releaseGroupId: albumId,
+        artists: [const CatalogArtist(id: 'a', name: 'Artista')],
+      ),
+    );
+    expect(
+      groupByAlbum([song('one', 'apple:1'), song('two', 'apple:2')])
+          .single
+          .tracks
+          .length,
+      2,
+    );
+  });
+
   test('artist grouping normalizes whitespace and case', () {
     final groups = groupByArtist([
       const Track(id: 'a', title: 'One', artist: 'Daft Punk', source: 'a'),

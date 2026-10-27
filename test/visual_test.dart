@@ -8,6 +8,8 @@ import 'package:aura/features/karaoke/karaoke_screen.dart';
 
 import 'fakes.dart';
 
+import 'package:aura/core/catalog/artist_directory.dart';
+
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
   setUpAll(() async {
@@ -25,6 +27,7 @@ void main() {
       tester.platformDispatcher.accessibilityFeaturesTestValue =
           const FakeAccessibilityFeatures(disableAnimations: true);
       final c = AuraController(
+        artistDirectory: _PreviewDirectory(),
         includeDemoTracks: true,
         audio: FakeAudioEngine(),
         store: MemoryLibraryStore(),
@@ -99,4 +102,35 @@ void main() {
     tester.view.resetDevicePixelRatio();
     tester.platformDispatcher.clearAccessibilityFeaturesTestValue();
   });
+}
+
+// Deterministic catalog fixture so home previews exercise populated sections.
+class _PreviewDirectory implements ArtistDirectory {
+  @override
+  Future<DirectoryResults> search(String q) async => const DirectoryResults(
+    albums: [
+      DirectoryAlbum(
+        id: 1,
+        artistId: 1,
+        title: 'Per soldi e per amore',
+        artist: 'Ernia',
+        year: 2025,
+        trackCount: 12,
+      ),
+      DirectoryAlbum(
+        id: 2,
+        artistId: 2,
+        title: 'Eclissi',
+        artist: 'Gemitaiz',
+        year: 2022,
+        trackCount: 13,
+      ),
+    ],
+  );
+  @override
+  Future<List<DirectoryArtist>> searchArtists(String q) async => [];
+  @override
+  Future<List<DirectoryAlbum>> albums(DirectoryArtist a) async => [];
+  @override
+  Future<List<DirectorySong>> songs(DirectoryAlbum a) async => [];
 }

@@ -27,10 +27,16 @@ class DirectoryAlbum {
     required this.year,
     required this.trackCount,
     this.releaseDate,
+    this.explicitness = '',
+    this.alternateIds = const [],
+    this.editions = const [],
   });
   final int id, artistId, year, trackCount;
   final String title, artist;
   final DateTime? releaseDate;
+  final String explicitness;
+  final List<int> alternateIds;
+  final List<DirectoryAlbum> editions;
 }
 
 class DirectorySong {
@@ -137,6 +143,7 @@ class AppleArtistDirectory implements ArtistDirectory {
           artist: name,
           year: DateTime.tryParse(j['releaseDate'] as String? ?? '')?.year ?? 0,
           releaseDate: DateTime.tryParse(j['releaseDate'] as String? ?? ''),
+          explicitness: j['collectionExplicitness'] as String? ?? '',
           trackCount: (j['trackCount'] as num?)?.toInt() ?? 0,
         );
       }
@@ -160,7 +167,7 @@ class AppleArtistDirectory implements ArtistDirectory {
     }
     return DirectoryResults(
       artists: artists.values.toList(),
-      albums: albums.values.toList(),
+      albums: deduplicateAlbums(albums.values),
       songs: songs.values.toList(),
     );
   }
@@ -201,34 +208,39 @@ class AppleArtistDirectory implements ArtistDirectory {
         artist: j['artistName'] as String? ?? artist.name,
         year: DateTime.tryParse(j['releaseDate'] as String? ?? '')?.year ?? 0,
         releaseDate: DateTime.tryParse(j['releaseDate'] as String? ?? ''),
+        explicitness: j['collectionExplicitness'] as String? ?? '',
         trackCount: (j['trackCount'] as num?)?.toInt() ?? 0,
       );
     }
-    return unique.values
-        .where(
-          (a) =>
-              a.artistId == artist.id ||
-              (' ${normalizeMusicText(a.artist)} ').contains(
-                ' ${normalizeMusicText(artist.name)} ',
-              ),
-        )
-        .toList()
-      ..sort((a, b) => b.year.compareTo(a.year));
+    return deduplicateAlbums(
+      unique.values.where(
+        (a) =>
+            a.artistId == artist.id ||
+            (' ${normalizeMusicText(a.artist)} ').contains(
+              ' ${normalizeMusicText(artist.name)} ',
+            ),
+      ),
+    )..sort((a, b) => b.year.compareTo(a.year));
   }
 
   @override
   Future<List<DirectorySong>> songs(DirectoryAlbum album) async {
     final result = <DirectorySong>[];
-    for (final j in _rows(
-      await _get('/lookup', {
-        'id': '${album.id}',
-        'entity': 'song',
-        'limit': '200',
-      }),
-    )) {
+    var selectedId = album.id;
+    List<Map> rows = [];
+    for (final id in [album.id, ...album.alternateIds]) {
+      rows = _rows(
+        await _get('/lookup', {'id': '$id', 'entity': 'song', 'limit': '200'}),
+      );
+      if (rows.any((r) => r['kind'] == 'song' && r['collectionId'] == id)) {
+        selectedId = id;
+        break;
+      }
+    }
+    for (final j in rows) {
       if (j['kind'] != 'song' ||
           j['trackId'] is! num ||
-          j['collectionId'] != album.id) {
+          j['collectionId'] != selectedId) {
         continue;
       }
       result.add(
@@ -238,7 +250,7 @@ class AppleArtistDirectory implements ArtistDirectory {
           artist: j['artistName'] as String? ?? album.artist,
           album: album.title,
           artistId: (j['artistId'] as num?)?.toInt() ?? album.artistId,
-          albumId: album.id,
+          albumId: selectedId,
           number: (j['trackNumber'] as num?)?.toInt() ?? 0,
           disc: (j['discNumber'] as num?)?.toInt() ?? 1,
           seconds: ((j['trackTimeMillis'] as num? ?? 0) / 1000).round(),
@@ -299,4 +311,104 @@ List<CatalogArtist> _credits(Map row, Map<int, String> known) {
     );
   }
   return unique.values.toList();
+}
+
+/// Collapse duplicate catalog listings, preserving distinct musical editions.
+/// Publication years share a family; distinct track lists remain selectable.
+/// Unknown track counts and live/remastered titles are kept separate.
+List<DirectoryAlbum> deduplicateAlbums(Iterable<DirectoryAlbum> albums) {
+  final groups = <String, DirectoryAlbum>{};
+  for (final album in albums) {
+    final title = normalizeMusicText(album.title).replaceAllMapped(
+      RegExp(r'\b(deluxe|expanded|anniversary) (edition|version)\b'),
+      (m) => m[1]!,
+    );
+    final key =
+        '${album.artistId}:$title:${album.year}:${album.trackCount > 0 ? 'n${album.trackCount}' : 'unknown${album.id}'}';
+    final old = groups[key];
+    if (old == null) {
+      groups[key] = album;
+      continue;
+    }
+    final preferred =
+        album.explicitness == 'explicit' && old.explicitness != 'explicit'
+        ? album
+        : old;
+    final ids = {old.id, album.id, ...old.alternateIds, ...album.alternateIds}
+      ..remove(preferred.id);
+    groups[key] = DirectoryAlbum(
+      id: preferred.id,
+      artistId: preferred.artistId,
+      title: preferred.title,
+      artist: preferred.artist,
+      year: preferred.year,
+      trackCount: preferred.trackCount,
+      releaseDate: preferred.releaseDate,
+      explicitness: preferred.explicitness,
+      alternateIds: ids.toList(),
+    );
+  }
+  String baseTitle(DirectoryAlbum album) {
+    final base = album.title
+        .replaceAll(
+          RegExp(
+            r'[\[(](?:deluxe|expanded)(?:[^\])]*?)[\])]',
+            caseSensitive: false,
+          ),
+          '',
+        )
+        .replaceAll(
+          RegExp(
+            r'\s+(?:deluxe|expanded)(?:\s+(?:edition|version))?$',
+            caseSensitive: false,
+          ),
+          '',
+        )
+        .trim();
+    return normalizeMusicText(base.isEmpty ? album.title : base);
+  }
+
+  bool variant(DirectoryAlbum album) =>
+      baseTitle(album) != normalizeMusicText(album.title);
+  final families = <String, List<DirectoryAlbum>>{};
+  final ordered = groups.values.toList().asMap().entries.toList()
+    ..sort((a, b) {
+      final edition = (variant(a.value) ? 1 : 0).compareTo(
+        variant(b.value) ? 1 : 0,
+      );
+      return edition != 0 ? edition : a.key.compareTo(b.key);
+    });
+  for (final entry in ordered) {
+    final album = entry.value;
+    // A release date identifies a publication, not a different album.
+    // Keep every track list as an edition within one artist/title family.
+    final key =
+        '${album.artistId}:${baseTitle(album)}${album.trackCount <= 0 ? ':unknown${album.id}' : ''}';
+    families.putIfAbsent(key, () => []).add(album);
+  }
+  return families.values.map((versions) {
+    if (versions.length == 1) return versions.single;
+    // A plain title is preferred as the main entry; every edition is retained.
+    versions.sort((a, b) {
+      int variant(DirectoryAlbum a) =>
+          RegExp(r'deluxe|expanded', caseSensitive: false).hasMatch(a.title)
+          ? 1
+          : 0;
+      final type = variant(a).compareTo(variant(b));
+      return type != 0 ? type : a.trackCount.compareTo(b.trackCount);
+    });
+    final primary = versions.first;
+    return DirectoryAlbum(
+      id: primary.id,
+      artistId: primary.artistId,
+      title: primary.title,
+      artist: primary.artist,
+      year: primary.year,
+      trackCount: primary.trackCount,
+      releaseDate: primary.releaseDate,
+      explicitness: primary.explicitness,
+      alternateIds: primary.alternateIds,
+      editions: versions,
+    );
+  }).toList();
 }

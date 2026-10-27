@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:audio_service/audio_service.dart';
 
@@ -19,6 +20,8 @@ abstract class AudioEngine extends ChangeNotifier {
     backgroundConfigured: false,
     remoteControlsConfigured: false,
   );
+  Future<void> configureEqualizer(bool enabled, List<double> gains) async {}
+  Future<bool> equalizerProcessing() async => false;
   Track? get resolvedMetadata => null;
   void updateMetadata(Track track) {}
   Duration get position;
@@ -34,10 +37,70 @@ abstract class AudioEngine extends ChangeNotifier {
 }
 
 class LocalAudioEngine extends AudioEngine {
-  final AudioPlayer _player = AudioPlayer(
-    userAgent: 'AURA/0.1 (Flutter; native audio)',
+  final AndroidEqualizer _androidEq = AndroidEqualizer();
+  late final AudioPlayer _player = AudioPlayer(
+    userAgent: 'AURA/0.5 (Flutter; native audio)',
     useProxyForRequestHeaders: false,
+    audioPipeline: AudioPipeline(
+      androidAudioEffects: defaultTargetPlatform == TargetPlatform.android
+          ? [_androidEq]
+          : [],
+    ),
   );
+  static const _eqChannel = MethodChannel('aura/equalizer');
+  bool _eqSupported = false;
+  Future<void> _initEqualizer() async {
+    try {
+      if (defaultTargetPlatform == TargetPlatform.iOS) {
+        final state = await _eqChannel.invokeMapMethod<String, dynamic>(
+          'status',
+        );
+        _eqSupported = state?['supported'] == true;
+      } else if (defaultTargetPlatform == TargetPlatform.android) {
+        _eqSupported = true;
+      }
+      notifyListeners();
+    } catch (_) {
+      _eqSupported = false;
+    }
+  }
+
+  @override
+  Future<void> configureEqualizer(bool enabled, List<double> gains) async {
+    if (defaultTargetPlatform == TargetPlatform.iOS) {
+      await _eqChannel.invokeMethod<void>('configure', {
+        'enabled': enabled,
+        'gains': gains,
+      });
+    } else if (defaultTargetPlatform == TargetPlatform.android) {
+      await _androidEq.setEnabled(enabled);
+      if (!enabled) return;
+      final params = await _androidEq.parameters;
+      const frequencies = [60, 230, 910, 3600, 14000];
+      for (final band in params.bands) {
+        var closest = 0;
+        for (var i = 1; i < 5; i++) {
+          if ((frequencies[i] - band.centerFrequency).abs() <
+              (frequencies[closest] - band.centerFrequency).abs()) {
+            closest = i;
+          }
+        }
+        await band.setGain(
+          gains[closest].clamp(params.minDecibels, params.maxDecibels),
+        );
+      }
+    } else {
+      throw UnsupportedError('Equalizzatore non disponibile');
+    }
+  }
+
+  @override
+  Future<bool> equalizerProcessing() async {
+    if (defaultTargetPlatform == TargetPlatform.android) return _eqSupported;
+    final status = await _eqChannel.invokeMapMethod<String, dynamic>('status');
+    return status?['attached'] == true && (status?['frames'] as num? ?? 0) > 0;
+  }
+
   final List<StreamSubscription<dynamic>> _subscriptions = [];
   String? _error;
   Track? _resolvedMetadata;
@@ -46,6 +109,7 @@ class LocalAudioEngine extends AudioEngine {
   Track? get resolvedMetadata => _resolvedMetadata;
   final AuraAudioHandler? mediaHandler;
   LocalAudioEngine({this.mediaHandler}) {
+    unawaited(_initEqualizer());
     _subscriptions.add(
       _player.playbackEventStream.listen((event) {
         mediaHandler?.playbackState.add(
@@ -96,6 +160,7 @@ class LocalAudioEngine extends AudioEngine {
     audioOnly: true,
     backgroundConfigured: mediaHandler != null,
     remoteControlsConfigured: mediaHandler != null,
+    equalization: _eqSupported,
   );
   @override
   Duration get position => _player.position;

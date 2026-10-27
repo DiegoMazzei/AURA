@@ -1,3 +1,5 @@
+import '../catalog/catalog_screen.dart' show openTrackArtist;
+
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
@@ -365,12 +367,75 @@ class PlayerScreen extends StatelessWidget {
                                     ),
                                   ),
                                   const SizedBox(height: 4),
-                                  Text(
-                                    c.current.artist,
-                                    style: TextStyle(
-                                      color: context.muted,
-                                      fontSize: 17,
-                                    ),
+                                  Wrap(
+                                    spacing: 8,
+                                    children: [
+                                      if (c
+                                              .current
+                                              .catalogIdentity
+                                              ?.artists
+                                              .isNotEmpty ==
+                                          true)
+                                        for (final artist
+                                            in c
+                                                .current
+                                                .catalogIdentity!
+                                                .artists)
+                                          InkWell(
+                                            onTap: () => openTrackArtist(
+                                              context,
+                                              c,
+                                              c.current,
+                                              creditedArtist: artist,
+                                            ),
+                                            child: Padding(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                    vertical: 6,
+                                                  ),
+                                              child: Text(
+                                                artist.name,
+                                                style: TextStyle(
+                                                  color: context.muted,
+                                                  fontSize: 17,
+                                                  decoration:
+                                                      TextDecoration.underline,
+                                                  decorationColor: context.muted
+                                                      .withValues(alpha: .4),
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                      if (c
+                                              .current
+                                              .catalogIdentity
+                                              ?.artists
+                                              .isNotEmpty !=
+                                          true)
+                                        InkWell(
+                                          onTap: () => openTrackArtist(
+                                            context,
+                                            c,
+                                            c.current,
+                                          ),
+                                          child: Padding(
+                                            padding: const EdgeInsets.symmetric(
+                                              vertical: 6,
+                                            ),
+                                            child: Text(
+                                              c.current.artist,
+                                              style: TextStyle(
+                                                color: context.muted,
+                                                fontSize: 17,
+                                                decoration:
+                                                    TextDecoration.underline,
+                                                decorationColor: context.muted
+                                                    .withValues(alpha: .4),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                    ],
                                   ),
                                 ],
                               ),
@@ -602,54 +667,112 @@ void showAudioSettings(BuildContext context, AuraController c) =>
     showModalBottomSheet<void>(
       context: context,
       showDragHandle: true,
+      isScrollControlled: true,
       builder: (_) => ListenableBuilder(
         listenable: c,
         builder: (context, _) => SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.all(24),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  'Il tuo suono',
-                  style: TextStyle(fontSize: 26, fontWeight: FontWeight.w600),
-                ),
-                const SizedBox(height: 24),
-                const Text('Volume di AURA'),
-                Row(
-                  children: [
-                    const Icon(Icons.volume_down_outlined),
-                    Expanded(
-                      child: Slider(value: c.volume, onChanged: c.setVolume),
-                    ),
-                    const Icon(Icons.volume_up_outlined),
-                  ],
-                ),
-                const SizedBox(height: 18),
-                AuraGlassSurface(
-                  padding: const EdgeInsets.all(18),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+          child: SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.all(24),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Il tuo suono',
+                    style: TextStyle(fontSize: 26, fontWeight: FontWeight.w600),
+                  ),
+                  const SizedBox(height: 24),
+                  const Text('Volume di AURA'),
+                  Row(
                     children: [
-                      const Text(
-                        'Equalizzatore',
-                        style: TextStyle(fontWeight: FontWeight.w600),
+                      const Icon(Icons.volume_down_outlined),
+                      Expanded(
+                        child: Slider(value: c.volume, onChanged: c.setVolume),
                       ),
-                      const SizedBox(height: 8),
-                      Text(
-                        'Non ancora disponibile per questo motore. Nessun filtro viene applicato all’audio.',
-                        style: TextStyle(color: context.muted, height: 1.4),
-                      ),
+                      const Icon(Icons.volume_up_outlined),
                     ],
                   ),
-                ),
-                const SizedBox(height: 12),
-                Text(
-                  'L’uscita audio si sceglie dai controlli di sistema.',
-                  style: TextStyle(color: context.muted, fontSize: 12),
-                ),
-              ],
+                  const SizedBox(height: 18),
+                  SwitchListTile(
+                    contentPadding: EdgeInsets.zero,
+                    title: const Text('Equalizzatore'),
+                    value: c.equalizerEnabled,
+                    onChanged: c.audio.capabilities.equalization
+                        ? (v) => c.setEqualizer(enabled: v)
+                        : null,
+                  ),
+                  if (c.audio.capabilities.equalization) ...[
+                    Wrap(
+                      spacing: 8,
+                      children: [
+                        ActionChip(
+                          label: const Text('Neutro'),
+                          onPressed: () =>
+                              c.setEqualizer(preset: [0, 0, 0, 0, 0]),
+                        ),
+                        ActionChip(
+                          label: const Text('Bassi'),
+                          onPressed: () => c.setEqualizer(
+                            enabled: true,
+                            preset: [6, 3, 0, -1, 1],
+                          ),
+                        ),
+                        ActionChip(
+                          label: const Text('Voce'),
+                          onPressed: () => c.setEqualizer(
+                            enabled: true,
+                            preset: [-2, -1, 3, 4, 1],
+                          ),
+                        ),
+                      ],
+                    ),
+                    for (var i = 0; i < 5; i++)
+                      Row(
+                        children: [
+                          SizedBox(
+                            width: 48,
+                            child: Text(['60', '230', '910', '3.6k', '14k'][i]),
+                          ),
+                          Expanded(
+                            child: Slider(
+                              min: -12,
+                              max: 12,
+                              divisions: 24,
+                              value: c.equalizerGains[i],
+                              onChanged: c.equalizerEnabled
+                                  ? (v) => c.setEqualizer(band: i, gain: v)
+                                  : null,
+                            ),
+                          ),
+                          SizedBox(
+                            width: 48,
+                            child: Text('${c.equalizerGains[i].round()} dB'),
+                          ),
+                        ],
+                      ),
+                  ] else
+                    Text(
+                      'Equalizzatore non disponibile su questo dispositivo.',
+                      style: TextStyle(color: context.muted),
+                    ),
+                  if (c.equalizerEnabled)
+                    FutureBuilder<bool>(
+                      future: c.audio.equalizerProcessing(),
+                      builder: (_, snapshot) => Text(
+                        snapshot.data == true
+                            ? 'Filtro applicato al brano'
+                            : 'In attesa del flusso audio…',
+                        style: TextStyle(color: context.muted, fontSize: 12),
+                      ),
+                    ),
+                  const SizedBox(height: 12),
+                  Text(
+                    'L’uscita audio si sceglie dai controlli di sistema.',
+                    style: TextStyle(color: context.muted, fontSize: 12),
+                  ),
+                ],
+              ),
             ),
           ),
         ),

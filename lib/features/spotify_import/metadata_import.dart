@@ -6,8 +6,10 @@ class ImportedSong {
     required this.artist,
     this.album = '',
     this.uri = '',
+    this.durationSeconds = 0,
   });
   final String title, artist, album, uri;
+  final int durationSeconds;
   String get identity =>
       '${artist.trim().toLowerCase()}::${title.trim().toLowerCase()}::${album.trim().toLowerCase()}';
   Map<String, dynamic> toJson() => {
@@ -15,12 +17,14 @@ class ImportedSong {
     'artist': artist,
     'album': album,
     'uri': uri,
+    'durationSeconds': durationSeconds,
   };
   factory ImportedSong.fromJson(Map<String, dynamic> j) => ImportedSong(
     title: j['title'] as String,
     artist: j['artist'] as String,
     album: j['album'] as String? ?? '',
     uri: j['uri'] as String? ?? '',
+    durationSeconds: (j['durationSeconds'] as num?)?.toInt() ?? 0,
   );
   Uri get youtubeSearch => Uri.https('www.youtube.com', '/results', {
     'search_query': '$title $artist',
@@ -28,17 +32,24 @@ class ImportedSong {
 }
 
 class ImportedCollection {
-  const ImportedCollection({required this.name, required this.songs});
+  const ImportedCollection({
+    required this.name,
+    required this.songs,
+    this.sourceId = '',
+  });
   final String name;
+  final String sourceId;
   final List<ImportedSong> songs;
   String get identity => '$name::${songs.map((s) => s.identity).join('|')}';
   Map<String, dynamic> toJson() => {
     'name': name,
+    'sourceId': sourceId,
     'songs': songs.map((s) => s.toJson()).toList(),
   };
   factory ImportedCollection.fromJson(Map<String, dynamic> j) =>
       ImportedCollection(
         name: j['name'] as String,
+        sourceId: j['sourceId'] as String? ?? '',
         songs: (j['songs'] as List)
             .map(
               (s) => ImportedSong.fromJson(Map<String, dynamic>.from(s as Map)),

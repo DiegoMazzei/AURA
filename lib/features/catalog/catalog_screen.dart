@@ -4,11 +4,62 @@ import 'package:flutter/material.dart';
 
 import '../../app/aura_controller.dart';
 import '../../core/catalog/artist_directory.dart';
+import '../../shared/models/music.dart';
+import '../../core/catalog/catalog_identity.dart';
 import '../../core/catalog/musicbrainz_catalog.dart' show normalizeMusicText;
 import '../player/player_screen.dart' show MiniPlayer, openPlayer;
 import '../../core/design/aura_design.dart';
 import '../../core/artwork/music_image.dart';
 import '../youtube/online_search_screen.dart';
+
+Future<void> openTrackArtist(
+  BuildContext context,
+  AuraController c,
+  Track track, {
+  CatalogArtist? creditedArtist,
+}) async {
+  final credits = creditedArtist != null
+      ? [creditedArtist]
+      : track.catalogIdentity?.artists;
+  final name =
+      credits?.firstOrNull?.name ??
+      track.artist.split(RegExp(r',|\s+&\s+')).first.trim();
+  final id = credits?.firstOrNull?.id ?? '';
+  final appleId = id.startsWith('apple:')
+      ? int.tryParse(id.substring(6))
+      : null;
+  if (appleId != null) {
+    openCatalogArtist(context, c, DirectoryArtist(id: appleId, name: name));
+    return;
+  }
+  if (c.artistDirectory == null) return;
+  ScaffoldMessenger.of(context).showSnackBar(
+    const SnackBar(
+      content: Text('Apro la pagina artista…'),
+      duration: Duration(seconds: 2),
+    ),
+  );
+  try {
+    final results = await c.artistDirectory!.searchArtists(name);
+    if (!context.mounted) return;
+    final exact = results
+        .where((a) => normalizeMusicText(a.name) == normalizeMusicText(name))
+        .firstOrNull;
+    if (exact != null) {
+      openCatalogArtist(context, c, exact);
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Pagina artista non trovata.')),
+      );
+    }
+  } catch (_) {
+    if (context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Impossibile aprire l’artista. Riprova.')),
+      );
+    }
+  }
+}
 
 void openCatalogArtist(
   BuildContext context,
@@ -472,8 +523,9 @@ class AlbumScreen extends StatefulWidget {
 }
 
 class _AlbumScreenState extends State<AlbumScreen> {
+  late DirectoryAlbum _album = widget.album;
   late Future<List<DirectorySong>> _songs = widget.controller.artistDirectory!
-      .songs(widget.album);
+      .songs(_album);
   @override
   Widget build(BuildContext context) => _CatalogScaffold(
     controller: widget.controller,
@@ -484,15 +536,15 @@ class _AlbumScreenState extends State<AlbumScreen> {
         Center(
           child: MusicImage(
             controller: widget.controller,
-            artist: widget.album.artist,
-            album: widget.album.title,
+            artist: _album.artist,
+            album: _album.title,
             size: 240,
             radius: 18,
           ),
         ),
         const SizedBox(height: 24),
         Text(
-          widget.album.title,
+          _album.title,
           style: const TextStyle(
             fontSize: 36,
             height: 1.1,
@@ -502,18 +554,50 @@ class _AlbumScreenState extends State<AlbumScreen> {
         ),
         const SizedBox(height: 12),
         Text(
-          '${widget.album.artist} · ${widget.album.year == 0 ? '' : widget.album.year}',
+          '${_album.artist} · ${_album.year == 0 ? '' : _album.year}',
           style: TextStyle(fontSize: 17, color: context.muted),
         ),
-        if (widget.album.releaseDate?.isAfter(widget.controller.now()) == true)
+        if (_album.releaseDate?.isAfter(widget.controller.now()) == true)
           Padding(
             padding: const EdgeInsets.only(top: 16),
             child: Text(
-              'In uscita il ${_dateLabel(widget.album.releaseDate!)}. La scaletta è in anteprima: alcuni brani potrebbero non essere ancora disponibili.',
+              'In uscita il ${_dateLabel(_album.releaseDate!)}. La scaletta è in anteprima: alcuni brani potrebbero non essere ancora disponibili.',
               style: TextStyle(color: context.muted),
             ),
           ),
         const SizedBox(height: 30),
+        if (widget.album.editions.length > 1)
+          Padding(
+            padding: const EdgeInsets.only(bottom: 18),
+            child: DropdownButtonFormField<int>(
+              initialValue: _album.id,
+              decoration: const InputDecoration(
+                labelText: 'Versione dell’album',
+              ),
+              items: widget.album.editions
+                  .map(
+                    (a) => DropdownMenuItem(
+                      value: a.id,
+                      child: Text(
+                        '${a.title} · ${a.trackCount} brani',
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  )
+                  .toList(),
+              isExpanded: true,
+              onChanged: (id) {
+                if (id != null) {
+                  setState(() {
+                    _album = widget.album.editions.firstWhere(
+                      (a) => a.id == id,
+                    );
+                    _songs = widget.controller.artistDirectory!.songs(_album);
+                  });
+                }
+              },
+            ),
+          ),
         FutureBuilder<List<DirectorySong>>(
           future: _songs,
           builder: (context, snap) {
@@ -521,9 +605,8 @@ class _AlbumScreenState extends State<AlbumScreen> {
               return _Failure(
                 message: 'Scaletta non disponibile.',
                 onRetry: () => setState(
-                  () => _songs = widget.controller.artistDirectory!.songs(
-                    widget.album,
-                  ),
+                  () =>
+                      _songs = widget.controller.artistDirectory!.songs(_album),
                 ),
               );
             }
@@ -631,7 +714,7 @@ class AlbumRow extends StatelessWidget {
       style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w500),
     ),
     subtitle: Text(
-      '${album.artist}${album.year > 0 ? ' · ${album.year}' : ''}',
+      '${album.artist}${album.year > 0 ? ' · ${album.year}' : ''}${album.editions.length > 1 ? ' · ${album.editions.length} versioni' : ''}',
     ),
     trailing: const Icon(Icons.chevron_right, size: 20),
     onTap: onTap,

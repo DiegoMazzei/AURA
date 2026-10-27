@@ -46,11 +46,28 @@ List<MusicGroup> groupByArtist(Iterable<Track> tracks) {
 
 List<MusicGroup> groupByAlbum(Iterable<Track> tracks) {
   final groups = <String, List<Track>>{};
-  for (final t in tracks) {
+  final values = tracks.toList();
+  String titleKey(Track t) {
     final identity = t.catalogIdentity;
-    final key = identity?.releaseGroupId.isNotEmpty == true
-        ? 'mb:${identity!.releaseGroupId}'
-        : '${_normalized(identity?.albumArtist ?? t.artist)}::${_normalized(t.album)}';
+    final artist = identity?.albumArtist.isNotEmpty == true
+        ? identity!.albumArtist
+        : identity?.artists.firstOrNull?.name ?? t.artist;
+    return '${_normalized(artist)}::${_normalized(t.album)}';
+  }
+
+  final canonical = <String, String>{
+    for (final t in values)
+      if (t.catalogIdentity?.provider == 'MusicBrainz' &&
+          t.catalogIdentity!.releaseGroupId.isNotEmpty)
+        titleKey(t): 'mb:${t.catalogIdentity!.releaseGroupId}',
+  };
+  for (final t in values) {
+    final identity = t.catalogIdentity;
+    final key =
+        identity?.provider == 'MusicBrainz' &&
+            identity!.releaseGroupId.isNotEmpty
+        ? 'mb:${identity.releaseGroupId}'
+        : canonical[titleKey(t)] ?? titleKey(t);
     (groups[key] ??= []).add(t);
   }
   return groups.values

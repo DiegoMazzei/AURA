@@ -13,6 +13,7 @@ analyzer:
   exclude:
     - build/**
     - work/**
+    - vendor/**
     - android/**
     - ios/**
 
