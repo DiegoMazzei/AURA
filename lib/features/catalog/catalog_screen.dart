@@ -153,7 +153,7 @@ class _RecordingPickerState extends State<_RecordingPicker> {
                         horizontal: 24,
                         vertical: 12,
                       ),
-                      child: Text('Scegli la versione che vuoi ascoltare.'),
+                      child: Text('Scegli la registrazione: controlla titolo e artista.'),
                     ),
                     ...snap.data!.map(
                       (t) => ListTile(

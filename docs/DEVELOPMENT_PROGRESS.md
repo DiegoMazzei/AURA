@@ -93,3 +93,9 @@ Riferimenti esaminati: Namida e Orbit-Music. Nessun codice o asset copiato da qu
 - 63 test superati, analisi senza segnalazioni. Coperti ordine da traccia intermedia, precedente/successiva automatica, fine album, riavvio, sorgente alternativa, assenza di sorgenti, avvio dalla riga UI, data futura e crediti collaborativi.
 
 - Release 0.4.2 build 6 installata e avviata su iPhone di prova. Xcode riporta app in esecuzione; artefatto AOT senza kernel Debug verificato. I test della coda non sostituiscono una prova acustica sul telefono.
+
+## Revisione 0.4.3 - risultati Visual e scelta manuale
+
+- Riprodotto il caso BU! di Ernia: risultato reale presente ma escluso dal suffisso (Visual). Normalizzazione corretta e risultati incerti disponibili per scelta esplicita; nessun allargamento della selezione automatica a Live, Remix o interpreti diversi.
+- 65 test superati, analisi senza segnalazioni. Nuovi test su BU! (Visual), ordine dei risultati, conservazione della scelta manuale e rifiuto automatico di versioni diverse. Verifica pubblica del risultato reale e del matcher completata.
+- Verificata anche la sorgente di BU! con lo stesso resolver dell’app: risposta HTTP 206 video/mp4 e primo blocco ricevuto. Questa verifica di trasporto non equivale a un ascolto completo sul telefono.

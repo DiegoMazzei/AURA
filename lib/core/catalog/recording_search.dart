@@ -12,7 +12,10 @@ String _recordingTitle(String value) => cleanMusicTitle(value)
       '',
     )
     .replaceAll(
-      RegExp(r'[\[(](?:audio|music video)[\])]', caseSensitive: false),
+      RegExp(
+        r'[\[(](?:audio|music video|visual(?: video)?|lyric video|video lyrics|testo)[\])]',
+        caseSensitive: false,
+      ),
       '',
     )
     .trim();
@@ -82,10 +85,7 @@ Future<List<OnlineTrack>> findRecordings(
   }
   if (!succeeded && failure != null) throw failure;
   final exact = results.values.where((t) => matchesRecording(song, t));
-  return [
-    ...exact,
-    ...results.values.where(
-      (t) => _sameCreditAndTitle(song, t) && !matchesRecording(song, t),
-    ),
-  ];
+  // Discovery results remain selectable when matching is uncertain. Only
+  // matchesRecording is used for unattended playback, never the search rank.
+  return [...exact, ...results.values.where((t) => !matchesRecording(song, t))];
 }
