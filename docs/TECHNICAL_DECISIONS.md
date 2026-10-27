@@ -45,3 +45,7 @@ Fonti tecniche: [MusicBrainz](https://musicbrainz.org/doc/MusicBrainz_API), [App
 31. Direzione 0.4 derivata dal nuovo screenshot dell'utente: Home fotografica e accento viola. Le proposte editoriali non sono presentate come classifiche o preferiti personali.
 32. Foto artista e copertine: TheAudioDB con riserva Deezer e miniature originali. Gli omonimi non sono selezionati solo per posizione nei risultati; confronto esatto dei nomi, ranking per pubblico nella riserva e nomi completi per album. URL e immagini hanno cache separate.
 33. Seguire un artista e salvare un brano sono azioni distinte; ascoltare non salva automaticamente nessuno dei due. I vecchi recenti rimangono nella cronologia.
+
+## 2026-10-27 · Materiale nativo e latenza immagini
+
+Sostituiti i controlli custom del dock con UITabBarController e UITabAccessory. Evitate modifiche private alle sottoviste UIKit. Restano i comandi glass di sistema per gli altri pulsanti. Per le immagini: fallback del brano immediato da cache, fonti indipendenti con deduplicazione, immagini Deezer medium per ridurre il download e righe artista lazy. I limiti delle fonti e i controlli sulle corrispondenze rimangono attivi. Il tempo del primo caricamento dipende ancora da rete e fonti; non viene dichiarata una latenza garantita.

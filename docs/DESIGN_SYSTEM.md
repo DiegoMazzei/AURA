@@ -42,3 +42,7 @@ Il nuovo riferimento `docs/reference/ui-purple-direction.png` sostituisce la pre
 Palette scura: fondo #100B18, schede #21162F, accento #B486FF, selezioni #8342CD. Variante chiara #FAF7FF e accento #7435BC. Restano materiali UIKit nel dock e controlli di sistema, con tinta viola. Tre destinazioni: Ascolta, Cerca, Libreria.
 
 Schede artista: foto circolare 168 punti, azione Segui artista, sezioni Brani/Album/Feat. Schede album: copertina da 240 punti e scaletta. Foto e copertine compaiono anche nelle righe di ricerca e negli artisti salvati. Immagini mancanti non sono sostituite da foto inventate.
+
+## Dock di sistema · 0.4.1
+
+Il dock iOS 26+ ora è un UITabBarController con UITabAccessory per il miniplayer. UIKit gestisce geometria, materiale e indicatore di selezione: non vengono più disegnati tre pulsanti dentro una capsula personalizzata. Il controller è contenuto nel FlutterViewController e comunica le azioni sul bridge esistente.

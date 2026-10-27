@@ -13,14 +13,16 @@ class MusicServiceException implements Exception {
   String toString() => message;
 }
 
-/// Sequential, identified requests; honors Retry-After without retry storms.
+/// Rate-limited per source: artwork cannot hold up another catalog or lyrics.
 class PublicMusicJsonClient implements MusicJsonClient {
-  Future<void> _pending = Future.value();
+  final Map<String, Future<void>> _pending = {};
   final Map<String, DateTime> _lastRequest = {}, _blockedUntil = {};
   @override
   Future<Object?> get(Uri uri) {
     final result = Completer<Object?>();
-    _pending = _pending.then((_) async {
+    _pending[uri.host] = (_pending[uri.host] ?? Future<void>.value()).then((
+      _,
+    ) async {
       try {
         result.complete(await _get(uri));
       } catch (e, st) {

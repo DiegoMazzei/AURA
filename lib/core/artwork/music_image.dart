@@ -31,14 +31,21 @@ class _MusicImageState extends State<MusicImage> {
   late Future<File?> _image = _load();
   Future<File?> _load() async {
     final repository = widget.controller.artwork;
+    // A track already has a usable thumbnail. Display its disk-cached image
+    // before asking a metadata service to identify another cover.
+    final fallback = widget.fallbackUrl;
+    if (!widget.portrait && fallback != null && fallback.isNotEmpty) {
+      try {
+        return await DefaultCacheManager().getSingleFile(fallback);
+      } catch (_) {
+        // A stale thumbnail can still be replaced by the album artwork.
+      }
+    }
     if (repository == null) return null;
     final url = widget.portrait
         ? await repository.artist(widget.artist)
         : await repository.album(widget.artist, widget.album);
-    for (final source in {
-      ?url,
-      if (widget.fallbackUrl != null) widget.fallbackUrl!,
-    }) {
+    for (final source in {?url, ?fallback}) {
       try {
         return await DefaultCacheManager().getSingleFile(source);
       } catch (_) {
@@ -97,7 +104,7 @@ class _MusicImageState extends State<MusicImage> {
       : CosmicCover(
           size: widget.size,
           radius: widget.radius,
-          imageUrl: widget.fallbackUrl,
+          imageUrl: null,
           color: const Color(0xff9b62ef),
         );
 }

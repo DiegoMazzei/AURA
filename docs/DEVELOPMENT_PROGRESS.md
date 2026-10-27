@@ -76,3 +76,11 @@ Riferimenti esaminati: Namida e Orbit-Music. Nessun codice o asset copiato da qu
 - 53 test superati, inclusi salvataggio/rimozione artisti, indipendenza dalla cronologia, ripristino della cache e fallback delle immagini. Analisi senza segnalazioni. Home e schede verificate nel simulatore con immagini reali.
 
 - Release 0.4.0 build 4 installata e avviata su iPhone di prova. Verificato artefatto AOT senza kernel Debug; Xcode riporta app in esecuzione. Nessun rinnovo di conferma acustica implicito nella revisione grafica.
+
+## Revisione 0.4.1 - dock di sistema e velocità immagini
+
+- Dock iOS 26+ con UITabBarController e miniplayer UITabAccessory; materiale, selezione e forma gestiti dal sistema. Verificati nel simulatore cambio scheda e apertura player dal miniplayer.
+- Code separate per host e fonti artwork concorrenti con corrispondenza verificata. Miniature già note dei brani caricate direttamente dalla cache file, senza attendere metadati alternativi.
+- Scheda artista con liste lazy: la discografia non istanzia tutte le immagini fuori schermo. Immagini Deezer medium per contenere download. Nessun cambiamento al percorso audio.
+- 55 test superati, compresi fonte lenta e discografia da 200 album. Analisi senza segnalazioni. Tempi di rete non misurati sul dispositivo e non garantiti.
+- Release 0.4.1 build 5 installata e avviata su iPhone di prova; Xcode conferma app in esecuzione. Verificato artefatto AOT senza kernel Debug.

@@ -67,6 +67,21 @@ class _Directory implements ArtistDirectory {
   Future<List<DirectorySong>> songs(DirectoryAlbum a) async => [solo, feat];
 }
 
+class _LargeDirectory extends _Directory {
+  @override
+  Future<List<DirectoryAlbum>> albums(DirectoryArtist a) async => List.generate(
+    200,
+    (i) => DirectoryAlbum(
+      id: i,
+      artistId: a.id,
+      title: 'Album $i',
+      artist: a.name,
+      year: 2026,
+      trackCount: 10,
+    ),
+  );
+}
+
 class _Client implements MusicJsonClient {
   int calls = 0;
   @override
@@ -160,6 +175,31 @@ class _Client implements MusicJsonClient {
 }
 
 void main() {
+  testWidgets('large discography only mounts covers near the viewport', (
+    tester,
+  ) async {
+    final c = AuraController(
+      audio: FakeAudioEngine(),
+      store: MemoryLibraryStore(),
+      artistDirectory: _LargeDirectory(),
+    );
+    await c.initialize();
+    await tester.pumpWidget(
+      MaterialApp(
+        home: ArtistScreen(controller: c, artist: artist),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.ensureVisible(find.text('Album'));
+    await tester.tap(find.text('Album'));
+    await tester.pumpAndSettle();
+    expect(find.byType(AlbumRow).evaluate().length, lessThan(20));
+    expect(find.text('Album 199'), findsNothing);
+    expect(tester.takeException(), isNull);
+    await tester.pumpWidget(const SizedBox());
+    c.dispose();
+  });
+
   test('mixed catalog works without listening, caches and keeps categories and identities', () async {
     final client = _Client();
     final directory = AppleArtistDirectory(client);

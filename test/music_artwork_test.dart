@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:aura/core/artwork/music_artwork.dart';
 import 'package:aura/core/catalog/music_json_client.dart';
@@ -51,7 +53,33 @@ class _Client implements MusicJsonClient {
   }
 }
 
+class _SlowClient implements MusicJsonClient {
+  final slow = Completer<Object?>();
+  @override
+  Future<Object?> get(Uri uri) {
+    if (uri.host == 'www.theaudiodb.com') return slow.future;
+    return Future.value({
+      'data': [
+        {'name': 'Gemitaiz', 'picture_medium': 'https://images.test/fast.jpg'},
+      ],
+    });
+  }
+}
+
 void main() {
+  test(
+    'a slow provider does not delay a matching photo from another source',
+    () async {
+      final client = _SlowClient();
+      final images = MusicArtwork(client);
+      expect(
+        await images.artist('Gemitaiz').timeout(const Duration(seconds: 1)),
+        'https://images.test/fast.jpg',
+      );
+      client.slow.complete(null);
+      expect(await images.artist('Gemitaiz'), 'https://images.test/fast.jpg');
+    },
+  );
   test('artist photos and album covers require matching names, deduplicate and persist URLs', () async {
     final client = _Client();
     final images = MusicArtwork(client);
@@ -63,7 +91,7 @@ void main() {
       'https://images.test/artist.jpg',
       'https://images.test/artist.jpg',
     ]);
-    expect(client.calls.length, 1);
+    expect(client.calls.length, 2);
     expect(
       await images.album('Gemitaiz', 'Disco'),
       'https://images.test/album.jpg',

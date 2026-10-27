@@ -165,15 +165,17 @@ class _AuraShellState extends State<AuraShell> with WidgetsBindingObserver {
                     ),
                   ),
                   Positioned(
-                    left: 20,
-                    right: 20,
-                    bottom: MediaQuery.paddingOf(context).bottom + 8,
+                    left: NativeMaterials.available ? 0 : 20,
+                    right: NativeMaterials.available ? 0 : 20,
+                    bottom: NativeMaterials.available
+                        ? 0
+                        : MediaQuery.paddingOf(context).bottom + 8,
                     child: Center(
                       child: ConstrainedBox(
                         constraints: const BoxConstraints(maxWidth: 680),
                         child: NativeMaterials.available
                             ? SizedBox(
-                                height: c.hasCurrent ? 132 : 66,
+                                height: c.hasCurrent ? 164 : 88,
                                 child: ListenableBuilder(
                                   listenable: c.audio,
                                   builder: (_, _) => NativeGlassControl(

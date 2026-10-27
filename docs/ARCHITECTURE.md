@@ -50,3 +50,7 @@ La directory e' iniettata in produzione e sostituibile nei test. Consultare il c
 `ArtworkRepository` separa foto artista e copertine album. `MusicArtwork` interroga TheAudioDB, poi Deezer come riserva, richiede corrispondenze di nome e titolo e deduplica le richieste. Gli URL risolti sono conservati nel JSON, i file in cache su disco tramite flutter_cache_manager. Il client applica 2,1 secondi fra richieste AudioDB e 550 ms per Deezer, con Retry-After. Le immagini sono indipendenti dal caricamento audio.
 
 `favoriteArtists` conserva ID, nome e genere separatamente dai preferiti dei brani. Non viene popolato dagli ascolti. `libraryTracks` include solo file personali, brani preferiti o playlist; la cronologia rimane separata. La vista Artisti di Libreria mostra soltanto artisti seguiti esplicitamente e apre la directory completa.
+
+## Caricamento artwork · 0.4.1
+
+Code di richieste separate per host, mantenendo intervalli e Retry-After. TheAudioDB e Deezer vengono consultati senza attendersi a vicenda; prevale il primo risultato con identità corrispondente. Le miniature dei brani già disponibili passano direttamente alla cache su disco senza ricerca preliminare. Discografia e brani nella scheda artista usano SliverList per istanziare solo le righe vicine al viewport. Nessuna modifica al motore audio.

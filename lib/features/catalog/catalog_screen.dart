@@ -399,148 +399,189 @@ class _ArtistScreenState extends State<ArtistScreen> {
   Widget build(BuildContext context) => _CatalogScaffold(
     controller: widget.controller,
     title: 'Artista',
-    body: ListView(
-      padding: const EdgeInsets.fromLTRB(24, 8, 24, 40),
-      children: [
-        Center(
-          child: MusicImage(
-            controller: widget.controller,
-            artist: widget.artist.name,
-            portrait: true,
-            size: 168,
-            radius: 84,
-          ),
-        ),
-        const SizedBox(height: 24),
-        Text(
-          widget.artist.name,
-          style: const TextStyle(
-            fontSize: 48,
-            fontWeight: FontWeight.w700,
-            height: 1.05,
-            letterSpacing: -1.8,
-          ),
-        ),
-        const SizedBox(height: 14),
-        Text(
-          widget.artist.genre.isEmpty ? 'Artista' : widget.artist.genre,
-          style: TextStyle(color: context.muted, fontSize: 17),
-        ),
-        const SizedBox(height: 18),
-        ListenableBuilder(
-          listenable: widget.controller,
-          builder: (_, _) {
-            final followed = widget.controller.favoriteArtists.containsKey(
-              widget.artist.id,
-            );
-            return Align(
-              alignment: Alignment.centerLeft,
-              child: FilledButton.icon(
-                onPressed: () =>
-                    widget.controller.toggleArtistFavorite(widget.artist),
-                icon: Icon(followed ? Icons.favorite : Icons.favorite_border),
-                label: Text(
-                  followed ? 'Artista nei preferiti' : 'Segui artista',
+    body: CustomScrollView(
+      slivers: [
+        SliverPadding(
+          padding: const EdgeInsets.fromLTRB(24, 8, 24, 40),
+          sliver: SliverMainAxisGroup(
+            slivers: [
+              SliverToBoxAdapter(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Center(
+                      child: MusicImage(
+                        controller: widget.controller,
+                        artist: widget.artist.name,
+                        portrait: true,
+                        size: 168,
+                        radius: 84,
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+                    Text(
+                      widget.artist.name,
+                      style: const TextStyle(
+                        fontSize: 48,
+                        fontWeight: FontWeight.w700,
+                        height: 1.05,
+                        letterSpacing: -1.8,
+                      ),
+                    ),
+                    const SizedBox(height: 14),
+                    Text(
+                      widget.artist.genre.isEmpty
+                          ? 'Artista'
+                          : widget.artist.genre,
+                      style: TextStyle(color: context.muted, fontSize: 17),
+                    ),
+                    const SizedBox(height: 18),
+                    ListenableBuilder(
+                      listenable: widget.controller,
+                      builder: (_, _) {
+                        final followed = widget.controller.favoriteArtists
+                            .containsKey(widget.artist.id);
+                        return Align(
+                          alignment: Alignment.centerLeft,
+                          child: FilledButton.icon(
+                            onPressed: () => widget.controller
+                                .toggleArtistFavorite(widget.artist),
+                            icon: Icon(
+                              followed ? Icons.favorite : Icons.favorite_border,
+                            ),
+                            label: Text(
+                              followed
+                                  ? 'Artista nei preferiti'
+                                  : 'Segui artista',
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                    const SizedBox(height: 28),
+                    _Categories(
+                      labels: const ['Brani', 'Album', 'Feat.'],
+                      selected: _tab,
+                      onChanged: (v) => setState(() => _tab = v),
+                    ),
+                    const SizedBox(height: 24),
+                  ],
                 ),
               ),
-            );
-          },
-        ),
-        const SizedBox(height: 28),
-        _Categories(
-          labels: const ['Brani', 'Album', 'Feat.'],
-          selected: _tab,
-          onChanged: (v) => setState(() => _tab = v),
-        ),
-        const SizedBox(height: 24),
-        if (_tab == 1)
-          FutureBuilder<List<DirectoryAlbum>>(
-            future: _albums,
-            builder: (context, snap) {
-              if (snap.hasError) {
-                return _Failure(
-                  message: 'Discografia non disponibile.',
-                  onRetry: () => setState(
-                    () => _albums = widget.controller.artistDirectory!.albums(
+              if (_tab == 1)
+                FutureBuilder<List<DirectoryAlbum>>(
+                  future: _albums,
+                  builder: (context, snap) {
+                    if (snap.hasError) {
+                      return SliverToBoxAdapter(
+                        child: _Failure(
+                          message: 'Discografia non disponibile.',
+                          onRetry: () => setState(
+                            () => _albums = widget.controller.artistDirectory!
+                                .albums(widget.artist),
+                          ),
+                        ),
+                      );
+                    }
+                    if (!snap.hasData) {
+                      return const SliverToBoxAdapter(
+                        child: LinearProgressIndicator(minHeight: 2),
+                      );
+                    }
+                    final albums = snap.data!;
+                    return SliverList.builder(
+                      itemCount: albums.length + 2,
+                      itemBuilder: (context, index) {
+                        if (index == 0) {
+                          return Padding(
+                            padding: const EdgeInsets.only(bottom: 14),
+                            child: Text(
+                              'Discografia · ${albums.length} uscite',
+                              style: TextStyle(color: context.muted),
+                            ),
+                          );
+                        }
+                        if (index == albums.length + 1) {
+                          return Text(
+                            albums.isEmpty
+                                ? 'Nessuna uscita disponibile nel catalogo.'
+                                : albums.length >= 200
+                                ? 'Mostrate le prime 200 uscite disponibili.'
+                                : '',
+                          );
+                        }
+                        final album = albums[index - 1];
+                        return AlbumRow(
+                          album: album,
+                          controller: widget.controller,
+                          onTap: () => openCatalogAlbum(
+                            context,
+                            widget.controller,
+                            album,
+                          ),
+                        );
+                      },
+                    );
+                  },
+                )
+              else
+                FutureBuilder<DirectoryResults>(
+                  future: _songs,
+                  builder: (context, snap) {
+                    if (snap.hasError) {
+                      return SliverToBoxAdapter(
+                        child: _Failure(
+                          message: 'Brani non disponibili.',
+                          onRetry: () => setState(
+                            () => _songs = widget.controller.artistDirectory!
+                                .search(widget.artist.name),
+                          ),
+                        ),
+                      );
+                    }
+                    if (!snap.hasData) {
+                      return const SliverToBoxAdapter(
+                        child: LinearProgressIndicator(minHeight: 2),
+                      );
+                    }
+                    final songs = artistSongs(
+                      snap.data!.songs,
                       widget.artist,
-                    ),
-                  ),
-                );
-              }
-              if (!snap.hasData) {
-                return const LinearProgressIndicator(minHeight: 2);
-              }
-              final albums = snap.data!;
-              return Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Discografia · ${albums.length} uscite',
-                    style: TextStyle(color: context.muted),
-                  ),
-                  const SizedBox(height: 14),
-                  ...albums.map(
-                    (a) => AlbumRow(
-                      album: a,
-                      controller: widget.controller,
-                      onTap: () =>
-                          openCatalogAlbum(context, widget.controller, a),
-                    ),
-                  ),
-                  if (albums.isEmpty)
-                    const Text('Nessuna uscita disponibile nel catalogo.'),
-                  if (albums.length >= 200)
-                    const Text('Mostrate le prime 200 uscite disponibili.'),
-                ],
-              );
-            },
-          )
-        else
-          FutureBuilder<DirectoryResults>(
-            future: _songs,
-            builder: (context, snap) {
-              if (snap.hasError) {
-                return _Failure(
-                  message: 'Brani non disponibili.',
-                  onRetry: () => setState(
-                    () => _songs = widget.controller.artistDirectory!.search(
-                      widget.artist.name,
-                    ),
-                  ),
-                );
-              }
-              if (!snap.hasData) {
-                return const LinearProgressIndicator(minHeight: 2);
-              }
-              final songs = artistSongs(
-                snap.data!.songs,
-                widget.artist,
-                collaborationsOnly: _tab == 2,
-              );
-              return Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    _tab == 2
-                        ? 'Collaborazioni nel catalogo'
-                        : 'Brani in evidenza',
-                    style: TextStyle(color: context.muted),
-                  ),
-                  const SizedBox(height: 14),
-                  ...songs.map(
-                    (s) => SongRow(
-                      song: s,
-                      controller: widget.controller,
-                      onTap: () =>
-                          openCatalogSong(context, widget.controller, s),
-                    ),
-                  ),
-                  if (songs.isEmpty)
-                    const Text('Nessun brano disponibile in questa sezione.'),
-                ],
-              );
-            },
+                      collaborationsOnly: _tab == 2,
+                    );
+                    return SliverList.builder(
+                      itemCount: songs.length + 1 + (songs.isEmpty ? 1 : 0),
+                      itemBuilder: (context, index) {
+                        if (index == 0) {
+                          return Padding(
+                            padding: const EdgeInsets.only(bottom: 14),
+                            child: Text(
+                              _tab == 2
+                                  ? 'Collaborazioni nel catalogo'
+                                  : 'Brani in evidenza',
+                              style: TextStyle(color: context.muted),
+                            ),
+                          );
+                        }
+                        if (songs.isEmpty) {
+                          return const Text(
+                            'Nessun brano disponibile in questa sezione.',
+                          );
+                        }
+                        final song = songs[index - 1];
+                        return SongRow(
+                          song: song,
+                          controller: widget.controller,
+                          onTap: () =>
+                              openCatalogSong(context, widget.controller, song),
+                        );
+                      },
+                    );
+                  },
+                ),
+            ],
           ),
+        ),
       ],
     ),
   );
